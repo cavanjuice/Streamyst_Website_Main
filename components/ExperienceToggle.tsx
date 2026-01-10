@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { EyeOff, MessageSquare, Settings, Frown, Ghost, Lock, BatteryWarning, MonitorStop } from 'lucide-react';
 
@@ -10,6 +10,51 @@ interface ExperienceToggleProps {
   setRole: (role: Role) => void;
 }
 
+const SpotlightCard: React.FC<{ children: React.ReactNode; index: number; className?: string }> = ({ children, index, className = "" }) => {
+  const divRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [opacity, setOpacity] = useState(0);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!divRef.current) return;
+
+    const div = divRef.current;
+    const rect = div.getBoundingClientRect();
+
+    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
+
+  const handleMouseEnter = () => {
+    setOpacity(1);
+  };
+
+  const handleMouseLeave = () => {
+    setOpacity(0);
+  };
+
+  return (
+    <motion.div
+      ref={divRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1, duration: 0.5 }}
+      className={`relative overflow-hidden rounded-xl border border-white/10 bg-white/5 ${className}`}
+    >
+      <div
+        className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
+        style={{
+          opacity,
+          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(255,255,255,0.06), transparent 40%)`,
+        }}
+      />
+      <div className="relative h-full">{children}</div>
+    </motion.div>
+  );
+};
+
 const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) => {
 
   const problems = {
@@ -17,20 +62,20 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
       title: "Streaming should be connective",
       description: "Whether you're big or small, you're pouring your heart into every stream, but the digital barrier still keeps you from truly feeling your community.",
       items: [
-        { icon: <EyeOff className="w-5 h-5 text-violet-400" />, title: "Not feeling seen", desc: "Discovery and growth are limited" },
-        { icon: <MessageSquare className="w-5 h-5 text-violet-400" />, title: "Chat overload", desc: "Messages flying by faster than you can read them" },
-        { icon: <Settings className="w-5 h-5 text-violet-400" />, title: "Complex setups", desc: "Interactive tools require complicated setups" },
-        { icon: <Frown className="w-5 h-5 text-violet-400" />, title: "Missed moments", desc: "Unable to feel the energy of epic chat reactions" }
+        { Icon: EyeOff, title: "Not feeling seen", desc: "Discovery and growth are limited" },
+        { Icon: MessageSquare, title: "Chat overload", desc: "Messages flying by faster than you can read them" },
+        { Icon: Settings, title: "Complex setups", desc: "Interactive tools require complicated setups" },
+        { Icon: Frown, title: "Missed moments", desc: "Unable to feel the energy of epic chat reactions" }
       ]
     },
     viewer: {
       title: "Streaming Should Be Connected",
       description: "You're trying your best to be part of the stream, but the digital barrier keeps you from truly connecting with the Creators.",
       items: [
-        { icon: <Ghost className="w-5 h-5 text-orange-400" />, title: "Lost in the crowd", desc: "Chat goes so fast, you feel invisible and anonymous" },
-        { icon: <Lock className="w-5 h-5 text-orange-400" />, title: "Limited agency", desc: "You want to participate but can't fully be a meaningful part" },
-        { icon: <BatteryWarning className="w-5 h-5 text-orange-400" />, title: "Social Fatigue", desc: "Not easy to find the streaming community that fits you" },
-        { icon: <MonitorStop className="w-5 h-5 text-orange-400" />, title: "Interrupted", desc: "Ads really break the immersion of the experience" }
+        { Icon: Ghost, title: "Lost in the crowd", desc: "Chat goes so fast, you feel invisible and anonymous" },
+        { Icon: Lock, title: "Limited agency", desc: "You want to participate but can't fully be a meaningful part" },
+        { Icon: BatteryWarning, title: "Social Fatigue", desc: "Not easy to find the streaming community that fits you" },
+        { Icon: MonitorStop, title: "Interrupted", desc: "Ads really break the immersion of the experience" }
       ]
     }
   };
@@ -43,6 +88,20 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
   return (
     <section id="choose-player" className="py-12 md:py-16 relative z-10 overflow-hidden bg-black/20">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_90%)] pointer-events-none" />
+      
+      {/* SVG Definitions for Gradients */}
+      <svg width="0" height="0" className="absolute pointer-events-none">
+          <defs>
+              <linearGradient id="grad-streamer" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#c084fc" />
+                  <stop offset="100%" stopColor="#818cf8" />
+              </linearGradient>
+              <linearGradient id="grad-viewer" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#fb923c" />
+                  <stop offset="100%" stopColor="#f87171" />
+              </linearGradient>
+          </defs>
+      </svg>
 
       <div className="container mx-auto px-6 relative z-10">
         
@@ -89,6 +148,10 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
                     src={viewerImage} 
                     alt="Viewer" 
                     className="w-full h-full object-contain"
+                    style={{
+                        maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)',
+                        WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)'
+                    }}
                 />
              </motion.div>
 
@@ -112,6 +175,10 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
                     src={streamerImage} 
                     alt="Streamer" 
                     className="w-full h-full object-contain"
+                    style={{
+                        maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)',
+                        WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)'
+                    }}
                 />
              </motion.div>
 
@@ -158,22 +225,19 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.5, ease: "circOut" }}
                 >
-                    {/* Problem Cards */}
+                    {/* Problem Cards with Spotlight Effect */}
                     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
                         {currentProblem.items.map((item, i) => (
-                            <motion.div 
-                                key={i}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: i * 0.1 }}
-                                className="bg-white/5 border border-white/10 rounded-xl p-5 backdrop-blur-sm hover:bg-white/10 transition-colors"
-                            >
+                            <SpotlightCard key={i} index={i} className="p-5 backdrop-blur-sm">
                                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-3 ${role === 'streamer' ? 'bg-violet-500/10' : 'bg-orange-500/10'}`}>
-                                    {item.icon}
+                                    <item.Icon 
+                                        className="w-5 h-5" 
+                                        style={{ stroke: role === 'streamer' ? "url(#grad-streamer)" : "url(#grad-viewer)" }} 
+                                    />
                                 </div>
                                 <h3 className="font-bold text-base text-white mb-1.5">{item.title}</h3>
                                 <p className="text-gray-400 text-[11px] leading-relaxed">{item.desc}</p>
-                            </motion.div>
+                            </SpotlightCard>
                         ))}
                     </div>
                 </motion.div>

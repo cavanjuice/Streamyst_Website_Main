@@ -3,40 +3,107 @@ import React, { useState, Suspense, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Canvas, useLoader, useFrame } from '@react-three/fiber';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
-import { Stage, PresentationControls, Float } from '@react-three/drei';
+import { Stage, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { Loader2, Eye, Zap, Wifi, Battery } from 'lucide-react';
+
+const MovingHighlight = ({ color }: { color: string | null }) => {
+  const lightRef = useRef<THREE.SpotLight>(null);
+  
+  useFrame((state) => {
+    const t = state.clock.elapsedTime;
+    
+    if (lightRef.current) {
+        // Move the light in a figure-8 pattern across the front of the object
+        // This creates the "Chase" effect on the metallic surface
+        lightRef.current.position.x = Math.sin(t * 1.5) * 4;
+        lightRef.current.position.y = Math.cos(t * 1) * 2;
+        lightRef.current.position.z = 6 + Math.sin(t * 2) * 1;
+
+        // Smooth Intensity Transition
+        const targetIntensity = color ? 300 : 0; 
+        lightRef.current.intensity = THREE.MathUtils.lerp(lightRef.current.intensity, targetIntensity, 0.05);
+        
+        // Smooth Color Transition
+        if (color) {
+            lightRef.current.color.lerp(new THREE.Color(color), 0.05);
+        }
+    }
+  });
+
+  return (
+    <spotLight 
+        ref={lightRef} 
+        position={[0, 0, 5]} 
+        angle={0.6} 
+        penumbra={0.5} 
+        distance={15} 
+        castShadow 
+    />
+  );
+};
 
 const VybeModel = ({ activeColor }: { activeColor: string | null }) => {
   const obj = useLoader(OBJLoader, 'https://raw.githubusercontent.com/cavanjuice/assets/main/Assembly%20vybe%203.obj');
   const meshRef = useRef<THREE.Group>(null);
+  // Store references to materials to animate them without re-traversing
+  const materialsRef = useRef<THREE.MeshPhysicalMaterial[]>([]);
 
   useMemo(() => {
+    materialsRef.current = [];
     obj.traverse((child) => {
       if (child instanceof THREE.Mesh) {
-         child.material = new THREE.MeshPhysicalMaterial({
-             color: activeColor ? activeColor : '#25252b',
+         // High quality dark metallic material
+         const mat = new THREE.MeshPhysicalMaterial({
+             color: '#1a1a1a', // Dark Grey Base (allows light to show better than pure black)
              metalness: 0.8,
-             roughness: 0.25,
+             roughness: 0.4,   // Slightly rougher to catch the chase light better over the surface
              clearcoat: 1,
-             clearcoatRoughness: 0.1,
-             emissive: activeColor ? activeColor : '#8B5CF6',
-             emissiveIntensity: activeColor ? 0.6 : 0.15,
+             clearcoatRoughness: 0.2,
+             emissive: '#000000',
+             emissiveIntensity: 0
          });
-         child.castShadow = false;
-         child.receiveShadow = false;
+         child.material = mat;
+         child.castShadow = true;
+         child.receiveShadow = true;
+         materialsRef.current.push(mat);
       }
     });
-  }, [obj, activeColor]);
+  }, [obj]);
 
-  // Gentle rotation if idle
   useFrame((state) => {
-    if (meshRef.current && !activeColor) {
-        meshRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.1;
+    const t = state.clock.elapsedTime;
+
+    // 1. Idle Rotation Animation (Applied to the container Group)
+    if (meshRef.current) {
+        // Base rotation 0 (Front Facing) + gentle sine wave sway
+        const sway = Math.sin(t * 0.5) * 0.15;
+        meshRef.current.rotation.y = 0 + sway;
     }
+
+    // 2. Material "Gradient Chase" Effect (Emissive Pulse)
+    // We lerp the emissive color to create a subtle glow that matches the active feature
+    const targetColor = activeColor ? new THREE.Color(activeColor) : new THREE.Color(0,0,0);
+    const targetIntensity = activeColor ? 0.25 : 0; // Subtle intensity
+
+    materialsRef.current.forEach((mat) => {
+        // Smoothly interpolate color
+        mat.emissive.lerp(targetColor, 0.05);
+        // Smoothly interpolate intensity
+        mat.emissiveIntensity = THREE.MathUtils.lerp(mat.emissiveIntensity, targetIntensity, 0.05);
+    });
   });
 
-  return <primitive object={obj} ref={meshRef} />;
+  return (
+    <group>
+        {/* Container Group handles the Y-axis sway animation */}
+        <group ref={meshRef}>
+            {/* Primitive handles the static 90-degree X-axis flip */}
+            <primitive object={obj} rotation={[Math.PI / 2, 0, 0]} />
+        </group>
+        <MovingHighlight color={activeColor} />
+    </group>
+  );
 };
 
 const ProductShowcase: React.FC = () => {
@@ -46,28 +113,28 @@ const ProductShowcase: React.FC = () => {
     { 
       title: "Sentiment Mapping", 
       description: "Real-time emotional translation engine.", 
-      hex: "#f97316", // Orange (Fyre)
+      hex: "#f97316", // Orange
       icon: <Eye className="w-5 h-5" />, 
       accentColor: "text-orange-500" 
     },
     { 
       title: "Haptic Luminance", 
       description: "Visible on camera, physical sensation in room.", 
-      hex: "#ec4899", // Pink (Love)
+      hex: "#ec4899", // Pink
       icon: <Zap className="w-5 h-5" />, 
       accentColor: "text-pink-500" 
     },
     { 
       title: "Zero-Latency Link", 
       description: "Sub-10ms connection via proprietary protocol.", 
-      hex: "#22c55e", // Green (Happy)
+      hex: "#22c55e", // Green
       icon: <Wifi className="w-5 h-5" />, 
       accentColor: "text-green-500" 
     },
     { 
       title: "Marathon Cell", 
       description: "12-hour continuous broadcasting capacity.", 
-      hex: "#eab308", // Yellow (Clap/Neutral)
+      hex: "#eab308", // Yellow
       icon: <Battery className="w-5 h-5" />, 
       accentColor: "text-yellow-500" 
     }
@@ -77,7 +144,7 @@ const ProductShowcase: React.FC = () => {
     <section id="product" className="relative z-10 min-h-screen flex items-center py-12 md:py-0 overflow-hidden">
       <div className="container mx-auto px-6 max-w-7xl">
         
-        {/* Title Section - Tightened */}
+        {/* Title Section */}
         <div className="text-center mb-10 md:mb-12">
            <motion.h2 
              initial={{ opacity: 0, y: 15 }}
@@ -98,7 +165,7 @@ const ProductShowcase: React.FC = () => {
 
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           
-          {/* Product Visual - Scaled for Viewport */}
+          {/* Product Visual */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -117,32 +184,33 @@ const ProductShowcase: React.FC = () => {
                     </div>
                  }>
                     <Canvas dpr={[1, 2]} camera={{ fov: 40 }} gl={{ preserveDrawingBuffer: true, alpha: true }}>
-                         <PresentationControls 
-                            speed={1.2} 
-                            global 
-                            zoom={0.8} 
-                            polar={[-Math.PI / 2, Math.PI / 2]} // Full vertical rotation freedom
-                            azimuth={[-Infinity, Infinity]} // Full horizontal rotation freedom
-                            rotation={[Math.PI / 3, Math.PI - 0.4, 0]} // 60 degree angle for better 3D depth/front visibility
+                         <Stage 
+                            environment="city" 
+                            intensity={0.5} 
+                            shadows={false}
+                            adjustCamera={1.2} // Ensures full product visibility without clipping
                          >
-                             <Stage 
-                                environment="city" 
-                                intensity={0.5} 
-                                shadows={false}
-                             >
-                                <VybeModel activeColor={activeFeature !== null ? features[activeFeature].hex : null} />
-                             </Stage>
-                         </PresentationControls>
+                            <VybeModel activeColor={activeFeature !== null ? features[activeFeature].hex : null} />
+                         </Stage>
+                         <OrbitControls 
+                            makeDefault 
+                            enableZoom={false} 
+                            enablePan={false}
+                            enableDamping={true}
+                            dampingFactor={0.05}
+                            minPolarAngle={0}
+                            maxPolarAngle={Math.PI}
+                         />
                     </Canvas>
                  </Suspense>
 
-                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-white/10 text-[9px] font-mono tracking-[0.3em] pointer-events-none uppercase">
-                    Tactile Manipulation Active
+                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-white/10 text-[9px] font-mono tracking-[0.3em] pointer-events-none uppercase w-full text-center">
+                    Interactive Model • Drag to Rotate
                  </div>
             </div>
           </motion.div>
 
-          {/* Content - Optimized Hierarchy */}
+          {/* Content */}
           <motion.div
              initial={{ opacity: 0, x: 30 }}
              whileInView={{ opacity: 1, x: 0 }}
