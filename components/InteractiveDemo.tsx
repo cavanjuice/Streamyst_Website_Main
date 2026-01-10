@@ -1,15 +1,15 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'framer-motion';
-import { Activity, Battery, Fingerprint, Sparkles } from 'lucide-react';
+import { Sparkles, MessageSquare, Users, Wifi } from 'lucide-react';
 
 type Emotion = 'happy' | 'love' | 'hype' | 'shock' | 'clap';
 
 const emotions: { id: Emotion; emoji: string; label: string; color: string; hex: string }[] = [
-  { id: 'happy', emoji: '😊', label: 'Joy', color: 'bg-indigo-500', hex: '#6366f1' },
+  { id: 'happy', emoji: '😊', label: 'Joy', color: 'bg-green-500', hex: '#22c55e' },
   { id: 'love', emoji: '❤️', label: 'Love', color: 'bg-pink-500', hex: '#ec4899' },
   { id: 'hype', emoji: '🔥', label: 'Hype', color: 'bg-orange-500', hex: '#f97316' },
-  { id: 'shock', emoji: '⚡', label: 'Shock', color: 'bg-cyan-400', hex: '#22d3ee' },
+  { id: 'shock', emoji: '⚡', label: 'Shock', color: 'bg-zinc-200', hex: '#e4e4e7' },
   { id: 'clap', emoji: '👏', label: 'Support', color: 'bg-yellow-400', hex: '#facc15' },
 ];
 
@@ -25,39 +25,48 @@ const StarIcon = ({ className, style }: { className?: string, style?: React.CSSP
     </svg>
 );
 
+interface ChatMessage {
+    id: number;
+    user: string;
+    text: string;
+    color: string;
+    isSystem?: boolean;
+}
+
 const InteractiveDemo: React.FC = () => {
   const [activeEmotion, setActiveEmotion] = useState<Emotion | null>(null);
   const [triggerKey, setTriggerKey] = useState(0); // Forces re-render on same-click
   const [currentFrame, setCurrentFrame] = useState(0);
-  const [bpm, setBpm] = useState(72);
   const [shake, setShake] = useState(0);
+
+  // Chat State
+  const [messages, setMessages] = useState<ChatMessage[]>([
+      { id: 1, user: 'StreamBot', text: 'Connected to Streamyst Live Demo.', color: 'text-violet-400', isSystem: true },
+      { id: 2, user: 'PixelRogue', text: 'Waiting for the drop...', color: 'text-blue-400' },
+      { id: 3, user: 'NeonNinja', text: 'Is this actually real-time?', color: 'text-green-400' },
+  ]);
+  const chatScrollRef = useRef<HTMLDivElement>(null);
 
   // Mouse Tilt Logic
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   
   // Physics config: EXACT MATCH to ExperienceToggle for consistency.
-  // Higher mass (1.2) + Low Stiffness (40) = Weighted, Premium Feel.
   const springConfig = { stiffness: 40, damping: 20, mass: 1.2 };
   
   const springX = useSpring(mouseX, springConfig);
   const springY = useSpring(mouseY, springConfig);
 
   // Transforms
-  // Constrained range (-10 to 10 deg) prevents it from looking "floppy"
   const rotateX = useTransform(springY, [-0.5, 0.5], [10, -10]);
   const rotateY = useTransform(springX, [-0.5, 0.5], [-10, 10]);
   
-  // Glare moves across the surface
   const glareX = useTransform(springX, [-0.5, 0.5], [0, 100]);
   const glareY = useTransform(springY, [-0.5, 0.5], [0, 100]);
 
-  // Internal Layer Parallax (Subtle depth)
   const layerX = useTransform(springX, [-0.5, 0.5], [-15, 15]);
   const layerY = useTransform(springY, [-0.5, 0.5], [-15, 15]);
 
-  // Tracking attached to SECTION now, not just the card.
-  // This makes the movement smoother as 'width' is larger.
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     const { clientX, clientY, currentTarget } = e;
     const { left, top, width, height } = currentTarget.getBoundingClientRect();
@@ -97,23 +106,44 @@ const InteractiveDemo: React.FC = () => {
     return () => clearTimeout(timeoutId);
   }, []);
 
-  // Biometric Simulation
+  // Chat Auto-scroll
   useEffect(() => {
-    const interval = setInterval(() => {
-      setBpm(prev => {
-        const target = activeEmotion === 'hype' || activeEmotion === 'shock' ? 120 : (activeEmotion === 'love' ? 95 : 72);
-        const diff = target - prev;
-        return Math.round(prev + diff * 0.1 + (Math.random() * 4 - 2));
-      });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [activeEmotion]);
+      if (chatScrollRef.current) {
+          chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
+      }
+  }, [messages]);
 
   const triggerReaction = (e: Emotion) => {
     setActiveEmotion(e);
     setTriggerKey(prev => prev + 1);
     setShake(e === 'shock' ? 20 : 5); 
     setTimeout(() => setShake(0), e === 'shock' ? 500 : 200);
+
+    // Add Chat Reaction
+    const userNames = ['CyberSamurai', 'GlitchGamer', 'VaporWave', 'RetroRider', 'TechnoTitan', 'Lurker_007', 'NoobMaster'];
+    const userColors = ['text-red-400', 'text-blue-400', 'text-green-400', 'text-yellow-400', 'text-pink-400', 'text-orange-400'];
+    
+    const reactionTexts: Record<Emotion, string[]> = {
+        happy: ["So wholesome! 😊", "Good vibes only", "Love this energy", "😊😊😊", "Made my day"],
+        love: ["❤️❤️❤️", "Sending love!", "Heartbeat sync engaged", "So much love", "<3"],
+        hype: ["LETS GOOO 🔥", "HYPE TRAIN", "INSANE ENERGY", "🔥🔥🔥🔥🔥", "W Stream"],
+        shock: ["WHAT???", "No way!", "Did that just happen??", "⚡⚡⚡", "MIND BLOWN 🤯"],
+        clap: ["GG WP", "Well played 👏", "👏 👏 👏", "Bravo!", "Legendary"]
+    };
+
+    const randomText = reactionTexts[e][Math.floor(Math.random() * reactionTexts[e].length)];
+    const randomUser = userNames[Math.floor(Math.random() * userNames.length)];
+    const randomColor = userColors[Math.floor(Math.random() * userColors.length)];
+
+    setMessages(prev => [
+        ...prev.slice(-7), // Keep only last 8 messages
+        { 
+            id: Date.now(), 
+            user: randomUser, 
+            text: randomText, 
+            color: randomColor 
+        }
+    ]);
   };
 
   // --- PARTICLE SYSTEMS (Memoized for stability) ---
@@ -167,7 +197,7 @@ const InteractiveDemo: React.FC = () => {
     });
   }, [triggerKey]);
 
-  // Happy: Cosmic Euphoria (Stars)
+  // Happy: Cosmic Euphoria (Stars) -> Now Green Joy
   const joyParticles = useMemo(() => {
     return Array.from({ length: 40 }).map((_, i) => {
         const angle = (i / 40) * Math.PI * 2 + (Math.random() - 0.5); 
@@ -182,7 +212,7 @@ const InteractiveDemo: React.FC = () => {
             rotate: Math.random() * 360,
             delay: Math.random() * 0.2,
             duration: 1.5 + Math.random(),
-            color: Math.random() > 0.5 ? '#6366f1' : '#a5b4fc' // Indigo to Light Indigo
+            color: Math.random() > 0.5 ? '#22c55e' : '#86efac' // Green to Light Green
         };
     });
   }, [triggerKey]);
@@ -191,11 +221,9 @@ const InteractiveDemo: React.FC = () => {
   const clapParticles = useMemo(() => {
     return Array.from({ length: 60 }).map((_, i) => {
         // Physics Simulation: Ballistic arc
-        // Start from random horizontal positions at bottom
         const startX = (Math.random() - 0.5) * 400; 
         const startY = 400; // Start below screen
         
-        // Shoot up high
         const endX = startX + (Math.random() - 0.5) * 200;
         const endY = -250 - Math.random() * 200; // Peak height
         
@@ -207,36 +235,17 @@ const InteractiveDemo: React.FC = () => {
             startY,
             midX: (startX + endX) / 2,
             midY: endY,
-            finalX: endX + (Math.random() - 0.5) * 150, // Drift slightly on fall
-            finalY: 600, // Fall back down below screen
+            finalX: endX + (Math.random() - 0.5) * 150, 
+            finalY: 600, 
             size: Math.random() * 8 + 4,
             color: ['#facc15', '#fde047', '#eab308', '#ffffff'][Math.floor(Math.random() * 4)],
             rotationAxis,
-            rotateAmount: 720 + Math.random() * 720, // Spin a lot
-            delay: Math.random() * 0.15, // Burst tightly
-            // KEY: Total duration is longer for slow fall
+            rotateAmount: 720 + Math.random() * 720, 
+            delay: Math.random() * 0.15, 
             duration: 3 + Math.random() * 2 
         };
     });
   }, [triggerKey]);
-
-  // --- SVG Path Animation for ECG ---
-  const [ecgPath, setEcgPath] = useState("");
-  useEffect(() => {
-    const generatePath = () => {
-      let d = "M0,50 ";
-      let x = 0;
-      while (x < 300) {
-        x += 5;
-        const spike = Math.random() > 0.9 ? (Math.random() > 0.5 ? -40 : 40) : (Math.random() * 10 - 5);
-        d += `L${x},${50 + spike} `;
-      }
-      setEcgPath(d);
-    };
-    generatePath();
-    const interval = setInterval(generatePath, 2000); 
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <section 
@@ -264,7 +273,6 @@ const InteractiveDemo: React.FC = () => {
                       <feMergeNode in="SourceGraphic"/>
                   </feMerge>
               </filter>
-              {/* Gold gradient for stars maybe? */}
               <radialGradient id="star-glow">
                    <stop offset="0%" stopColor="#ffffff" stopOpacity="1"/>
                    <stop offset="100%" stopColor="#6366f1" stopOpacity="0"/>
@@ -276,16 +284,8 @@ const InteractiveDemo: React.FC = () => {
         
         {/* Header */}
         <div className="text-center mb-16">
-           <motion.div 
-             initial={{ opacity: 0, y: 10 }}
-             whileInView={{ opacity: 1, y: 0 }}
-             className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-cyan-500/30 bg-cyan-900/10 text-cyan-400 text-xs font-mono mb-6 backdrop-blur-md shadow-[0_0_15px_rgba(6,182,212,0.2)]"
-           >
-              <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-              <span>LIVE FEED: CONNECTED</span>
-           </motion.div>
            <h2 className="font-display font-bold text-4xl md:text-6xl mb-4 text-white tracking-tight">
-             CONTROL THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500 filter drop-shadow-[0_0_20px_rgba(139,92,246,0.3)]">EXPERIENCE</span>
+             CONTROL THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-purple-600 filter drop-shadow-[0_0_20px_rgba(139,92,246,0.3)]">EXPERIENCE</span>
            </h2>
         </div>
 
@@ -323,7 +323,7 @@ const InteractiveDemo: React.FC = () => {
                             className="absolute inset-0 transition-colors duration-500 ease-out"
                             style={{ 
                                 background: activeEmotion 
-                                    ? `radial-gradient(circle at center, ${emotions.find(e => e.id === activeEmotion)?.hex}15 0%, transparent 70%)` 
+                                    ? `radial-gradient(circle at center, ${emotions.find(e => e.id === activeEmotion)?.hex}25 0%, transparent 70%)` 
                                     : 'radial-gradient(circle at center, rgba(139,92,246,0.05) 0%, transparent 70%)' 
                             }} 
                         />
@@ -350,7 +350,7 @@ const InteractiveDemo: React.FC = () => {
                                         transition={{ duration: 3, ease: "circOut" }}
                                         className="absolute w-[600px] h-[600px] rounded-full"
                                         style={{
-                                            background: 'conic-gradient(from 0deg, transparent 0%, #6366f1 10%, transparent 20%, #818cf8 30%, transparent 40%, #6366f1 50%, transparent 60%, #818cf8 70%, transparent 80%, #6366f1 90%, transparent 100%)',
+                                            background: 'conic-gradient(from 0deg, transparent 0%, #22c55e 10%, transparent 20%, #86efac 30%, transparent 40%, #22c55e 50%, transparent 60%, #86efac 70%, transparent 80%, #22c55e 90%, transparent 100%)',
                                             filter: 'blur(40px)'
                                         }}
                                      />
@@ -360,7 +360,7 @@ const InteractiveDemo: React.FC = () => {
                                         initial={{ scale: 0 }}
                                         animate={{ scale: [0, 1.2, 0.8] }}
                                         transition={{ duration: 0.8, ease: "backOut" }}
-                                        className="absolute w-40 h-40 bg-indigo-500/20 rounded-full blur-2xl"
+                                        className="absolute w-40 h-40 bg-green-500/20 rounded-full blur-2xl"
                                      />
 
                                      {/* 3. Star Particles */}
@@ -400,6 +400,15 @@ const InteractiveDemo: React.FC = () => {
                                     key={`love-${triggerKey}`} 
                                     className="absolute inset-0 z-0 pointer-events-none overflow-hidden"
                                 >
+                                     {/* Persistent Ambiance - NEW */}
+                                     <motion.div
+                                         initial={{ opacity: 0 }}
+                                         animate={{ opacity: 0.3 }}
+                                         exit={{ opacity: 0 }}
+                                         transition={{ duration: 1 }}
+                                         className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(236,72,153,0.3)_0%,transparent_70%)] blur-xl"
+                                     />
+                                     
                                      {/* Explosive Pulse (Center) */}
                                      <motion.div
                                         initial={{ scale: 0, opacity: 0.8, borderWidth: '2px' }}
@@ -421,21 +430,24 @@ const InteractiveDemo: React.FC = () => {
                                              <HeartIcon className="w-8 h-8 md:w-12 md:h-12" style={{ fill: p.fill }} />
                                          </motion.div>
                                      ))}
-                                     <motion.div
-                                         initial={{ opacity: 0 }}
-                                         animate={{ opacity: [0, 0.4, 0] }}
-                                         transition={{ duration: 2 }}
-                                         className="absolute inset-0 bg-gradient-to-t from-pink-600/20 via-transparent to-transparent mix-blend-screen"
-                                     />
                                 </motion.div>
                             )}
 
-                            {/* === HYPE === */}
+                            {/* === HYPE (FYRE) === */}
                             {activeEmotion === 'hype' && (
                                 <motion.div 
                                     key={`hype-${triggerKey}`} 
                                     className="absolute inset-0 z-0 pointer-events-none flex items-end justify-center pb-12"
                                 >
+                                        {/* Persistent Ambiance - NEW */}
+                                        <motion.div 
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 0.4 }}
+                                            exit={{ opacity: 0 }}
+                                            transition={{ duration: 0.8 }}
+                                            className="absolute bottom-0 inset-x-0 h-3/4 bg-gradient-to-t from-orange-600/30 via-orange-500/10 to-transparent"
+                                        />
+
                                         <motion.div
                                             initial={{ opacity: 1, scale: 0 }}
                                             animate={{ opacity: 0, scale: 2.5 }}
@@ -455,12 +467,21 @@ const InteractiveDemo: React.FC = () => {
                                 </motion.div>
                             )}
 
-                            {/* === SHOCK === */}
+                            {/* === SHOCK (NEUTRAL/ELECTRIC WHITE) === */}
                             {activeEmotion === 'shock' && (
                                 <motion.div 
                                     key={`shock-${triggerKey}`} 
                                     className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center"
                                 >
+                                        {/* Persistent Ambiance - NEW */}
+                                        <motion.div
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 0.2 }}
+                                            exit={{ opacity: 0 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1)_0%,transparent_60%)]"
+                                        />
+
                                         <motion.div
                                             initial={{ opacity: 1 }}
                                             animate={{ opacity: [1, 0] }}
@@ -468,22 +489,16 @@ const InteractiveDemo: React.FC = () => {
                                             className="absolute inset-0 bg-white mix-blend-overlay z-50"
                                         />
                                         <motion.div
-                                            className="absolute inset-0 bg-cyan-500/10 mix-blend-color-dodge z-10"
+                                            className="absolute inset-0 bg-white/10 mix-blend-color-dodge z-10"
                                             initial={{ x: -20, opacity: 0 }}
                                             animate={{ x: [0, -20, 20, -10, 0], opacity: [0, 0.5, 0] }}
-                                            transition={{ duration: 0.4 }}
-                                        />
-                                        <motion.div
-                                            className="absolute inset-0 bg-red-500/10 mix-blend-color-dodge z-10"
-                                            initial={{ x: 20, opacity: 0 }}
-                                            animate={{ x: [0, 20, -20, 10, 0], opacity: [0, 0.5, 0] }}
                                             transition={{ duration: 0.4 }}
                                         />
                                         <motion.div
                                             initial={{ scale: 0, opacity: 1, borderWidth: '10px' }}
                                             animate={{ scale: 2.2, opacity: 0, borderWidth: '0px' }}
                                             transition={{ duration: 0.4, ease: "circOut" }}
-                                            className="absolute w-[300px] h-[300px] rounded-full border-cyan-400 blur-[2px] shadow-[0_0_80px_#22d3ee] z-20"
+                                            className="absolute w-[300px] h-[300px] rounded-full border-white blur-[2px] shadow-[0_0_80px_#ffffff] z-20"
                                             style={{ borderStyle: 'solid' }}
                                         />
                                         <svg className="absolute inset-0 w-full h-full overflow-visible z-30" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -506,20 +521,6 @@ const InteractiveDemo: React.FC = () => {
                                                 />
                                             ))}
                                         </svg>
-                                        {[...Array(5)].map((_, i) => (
-                                            <motion.div
-                                                key={`glitch-${i}`}
-                                                initial={{ opacity: 0, scaleX: 1, x: 0 }}
-                                                animate={{ 
-                                                    opacity: [0, 1, 0],
-                                                    x: (Math.random() - 0.5) * 300,
-                                                    scaleX: Math.random() * 5 + 1,
-                                                }}
-                                                transition={{ duration: 0.1, delay: Math.random() * 0.2 }}
-                                                className="absolute h-[2px] w-20 bg-cyan-300 mix-blend-hard-light shadow-[0_0_10px_#22d3ee] z-40"
-                                                style={{ top: `${20 + Math.random() * 60}%` }}
-                                            />
-                                        ))}
                                 </motion.div>
                             )}
 
@@ -564,9 +565,7 @@ const InteractiveDemo: React.FC = () => {
                                              transition={{ 
                                                  duration: p.duration, 
                                                  delay: p.delay,
-                                                 // Fast launch (circOut), then floating drift down (easeInOut)
                                                  ease: ["circOut", "easeInOut"], 
-                                                 // 15% time up, 85% time down
                                                  times: [0, 0.15, 1]
                                              }}
                                              style={{ 
@@ -599,7 +598,7 @@ const InteractiveDemo: React.FC = () => {
                                         initial={{ x: 0 }}
                                         animate={{ x: [-5, 5, -5, 0], opacity: [0.5, 0.8, 0] }}
                                         transition={{ duration: 0.3 }}
-                                        style={{ filter: 'hue-rotate(90deg)' }}
+                                        style={{ filter: 'grayscale(100%)' }}
                                     />
                                     <motion.img 
                                         key="ghost-b"
@@ -608,7 +607,7 @@ const InteractiveDemo: React.FC = () => {
                                         initial={{ x: 0 }}
                                         animate={{ x: [5, -5, 5, 0], opacity: [0.5, 0.8, 0] }}
                                         transition={{ duration: 0.3 }}
-                                        style={{ filter: 'hue-rotate(-90deg)' }}
+                                        style={{ filter: 'invert(100%)' }}
                                     />
                                 </>
                              )}
@@ -656,80 +655,63 @@ const InteractiveDemo: React.FC = () => {
 
                     </div>
 
-                    {/* RIGHT: CONTROL PANEL & HUD */}
+                    {/* RIGHT: CONTROL PANEL & CHAT */}
                     <motion.div 
                         style={{ x: layerX, y: layerY }}
                         className="lg:col-span-5 bg-[#05040a]/90 backdrop-blur-md p-8 flex flex-col justify-between border-l border-white/5 relative z-30"
                     >
                         
-                        {/* HUD TOP */}
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-between text-gray-400 border-b border-white/10 pb-4">
+                        {/* CHAT INTERFACE (Replacing HUD) */}
+                        <div className="flex-1 flex flex-col min-h-[300px] mb-8 relative">
+                            <div className="flex items-center justify-between text-gray-400 border-b border-white/10 pb-3 mb-2">
                                 <div className="flex items-center gap-2">
-                                    <Fingerprint className="w-4 h-4 text-cyan-500" />
-                                    <span className="text-[10px] font-mono tracking-widest uppercase">Bio-Auth: Verified</span>
+                                    <Wifi className="w-4 h-4 text-violet-500" />
+                                    <span className="text-[10px] font-mono tracking-widest uppercase">Live Connection</span>
                                 </div>
-                                <div className="flex gap-1.5">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                                    <div className="w-1.5 h-1.5 rounded-full bg-green-500/30" />
-                                    <div className="w-1.5 h-1.5 rounded-full bg-green-500/30" />
+                                <div className="flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                                    <span className="text-[10px] font-mono font-bold text-white">12.4k</span>
                                 </div>
                             </div>
 
-                            {/* Biometric Graphs */}
-                            <div className="space-y-4">
-                                {/* Heart Rate ECG */}
-                                <div className="bg-black/40 rounded-xl p-4 border border-white/5 shadow-inner relative overflow-hidden">
-                                    <div className="flex justify-between items-center mb-2 relative z-10">
-                                        <span className="text-[10px] text-gray-500 uppercase font-bold flex items-center gap-2">
-                                            <Activity className="w-3 h-3 text-red-500" /> Heart Rate
-                                        </span>
-                                        <span className="text-xl font-mono font-bold text-white tabular-nums tracking-tighter">{bpm} <span className="text-[10px] text-gray-500 font-sans">BPM</span></span>
-                                    </div>
-                                    
-                                    {/* ECG SVG */}
-                                    <div className="h-16 w-full relative">
-                                        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:10px_10px]" />
-                                        <svg viewBox="0 0 300 100" className="w-full h-full overflow-visible preserve-3d">
-                                            <motion.path
-                                                d={ecgPath}
-                                                fill="none"
-                                                stroke={bpm > 100 ? '#ef4444' : '#22d3ee'}
-                                                strokeWidth="2"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                initial={{ pathLength: 0, x: -50 }}
-                                                animate={{ pathLength: 1, x: 0 }}
-                                                transition={{ duration: 2, ease: "linear", repeat: Infinity }}
-                                            />
-                                        </svg>
-                                        <div className="absolute right-0 top-0 h-full w-20 bg-gradient-to-r from-transparent to-[#05040a]/80" />
-                                    </div>
-                                </div>
-
-                                {/* Status Grid */}
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div className="bg-black/40 rounded-xl p-3 border border-white/5">
-                                        <span className="text-[10px] text-gray-500 uppercase block mb-1">GSR Level</span>
-                                        <div className="text-sm font-mono text-cyan-300 truncate">
-                                            {activeEmotion ? 'SPIKE_DETECTED' : 'NOMINAL'}
-                                        </div>
-                                    </div>
-                                    <div className="bg-black/40 rounded-xl p-3 border border-white/5">
-                                        <span className="text-[10px] text-gray-500 uppercase block mb-1">Battery</span>
-                                        <div className="flex items-center gap-2 text-sm font-mono text-green-400">
-                                            <Battery className="w-3 h-3" /> 98%
-                                        </div>
-                                    </div>
-                                </div>
+                            {/* Chat Container */}
+                            <div className="relative flex-1 bg-black/40 rounded-xl border border-white/5 overflow-hidden flex flex-col">
+                                 {/* Messages */}
+                                 <div 
+                                    ref={chatScrollRef}
+                                    className="flex-1 overflow-y-auto p-3 space-y-3 scrollbar-hide scroll-smooth"
+                                 >
+                                    <AnimatePresence initial={false}>
+                                        {messages.map((msg) => (
+                                            <motion.div 
+                                                key={msg.id}
+                                                initial={{ opacity: 0, x: -10 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                className={`text-xs md:text-sm leading-relaxed ${msg.isSystem ? 'italic opacity-60' : ''}`}
+                                            >
+                                                {!msg.isSystem && (
+                                                    <span className={`font-bold mr-2 ${msg.color}`}>{msg.user}:</span>
+                                                )}
+                                                <span className="text-gray-300">{msg.text}</span>
+                                            </motion.div>
+                                        ))}
+                                    </AnimatePresence>
+                                 </div>
+                                 
+                                 {/* Fake Input */}
+                                 <div className="p-2 bg-white/5 border-t border-white/5 flex gap-2 items-center">
+                                     <div className="flex-1 h-6 bg-black/50 rounded flex items-center px-2 text-[10px] text-gray-500">
+                                         React with emojis below...
+                                     </div>
+                                 </div>
                             </div>
                         </div>
 
                         {/* INTERACTION CONTROLS */}
-                        <div className="mt-8">
+                        <div>
                             <div className="flex items-center gap-2 mb-4">
                                 <Sparkles className="w-4 h-4 text-violet-400 animate-pulse" />
-                                <span className="text-[10px] font-bold text-violet-200 tracking-wider uppercase">Initiate Feedback</span>
+                                <span className="text-[10px] font-bold text-violet-200 tracking-wider uppercase">Send Feedback</span>
                             </div>
                             
                             <div className="grid grid-cols-3 gap-3">
@@ -763,8 +745,8 @@ const InteractiveDemo: React.FC = () => {
 
                             <div className="mt-6 pt-4 border-t border-white/5">
                                 <p className="text-[10px] text-gray-600 font-mono leading-relaxed">
-                                    > SYSTEM READY <br/>
-                                    > WAITING FOR INPUT... <span className="animate-pulse text-cyan-500">_</span>
+                                    > STREAM STATUS: LIVE <br/>
+                                    > WAITING FOR INPUT... <span className="animate-pulse text-violet-500">_</span>
                                 </p>
                             </div>
                         </div>

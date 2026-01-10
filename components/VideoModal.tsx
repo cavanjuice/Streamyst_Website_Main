@@ -74,7 +74,7 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose }) => {
                          {/* Placeholder Video / Embed */}
                          <div className="w-full h-full bg-cosmic-900 flex items-center justify-center relative overflow-hidden">
                             {/* Animated Background for placeholder */}
-                             <div className="absolute inset-0 bg-gradient-to-br from-violet-900/20 via-black to-cyan-900/20" />
+                             <div className="absolute inset-0 bg-gradient-to-br from-violet-900/20 via-black to-orange-900/20" />
                              <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
                              
                              <div className="text-center relative z-10">
@@ -96,7 +96,7 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose }) => {
                                     initial={{ width: 0 }}
                                     animate={{ width: "100%" }}
                                     transition={{ duration: 30, ease: "linear" }}
-                                    className="h-full bg-gradient-to-r from-blue-500 to-violet-500"
+                                    className="h-full bg-gradient-to-r from-orange-500 to-violet-500"
                                  />
                              </div>
                          </div>
@@ -104,13 +104,13 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose }) => {
 
                     {/* Cosmetic Tech Borders */}
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-violet-500 to-transparent opacity-50" />
-                    <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50" />
+                    <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-50" />
                     
                     {/* Corner Brackets */}
                     <svg className="absolute top-0 left-0 w-8 h-8 text-violet-500 pointer-events-none" viewBox="0 0 32 32">
                         <path d="M1 31V1H31" fill="none" stroke="currentColor" strokeWidth="2" />
                     </svg>
-                    <svg className="absolute bottom-0 right-0 w-8 h-8 text-cyan-500 pointer-events-none" viewBox="0 0 32 32">
+                    <svg className="absolute bottom-0 right-0 w-8 h-8 text-orange-500 pointer-events-none" viewBox="0 0 32 32">
                         <path d="M31 1V31H1" fill="none" stroke="currentColor" strokeWidth="2" />
                     </svg>
 

@@ -46,30 +46,30 @@ const ProductShowcase: React.FC = () => {
     { 
       title: "Sentiment Mapping", 
       description: "Real-time emotional translation engine.", 
-      hex: "#22d3ee", 
+      hex: "#f97316", // Orange (Fyre)
       icon: <Eye className="w-5 h-5" />, 
-      accentColor: "text-cyan-400" 
+      accentColor: "text-orange-500" 
     },
     { 
       title: "Haptic Luminance", 
       description: "Visible on camera, physical sensation in room.", 
-      hex: "#ec4899", 
+      hex: "#ec4899", // Pink (Love)
       icon: <Zap className="w-5 h-5" />, 
       accentColor: "text-pink-500" 
     },
     { 
       title: "Zero-Latency Link", 
       description: "Sub-10ms connection via proprietary protocol.", 
-      hex: "#4ade80", 
+      hex: "#22c55e", // Green (Happy)
       icon: <Wifi className="w-5 h-5" />, 
-      accentColor: "text-green-400" 
+      accentColor: "text-green-500" 
     },
     { 
       title: "Marathon Cell", 
       description: "12-hour continuous broadcasting capacity.", 
-      hex: "#facc15", 
+      hex: "#eab308", // Yellow (Clap/Neutral)
       icon: <Battery className="w-5 h-5" />, 
-      accentColor: "text-yellow-400" 
+      accentColor: "text-yellow-500" 
     }
   ];
 
@@ -92,7 +92,7 @@ const ProductShowcase: React.FC = () => {
              whileInView={{ width: '60px' }}
              viewport={{ once: true }}
              transition={{ delay: 0.2 }}
-             className="h-1 bg-gradient-to-r from-cyan-400 to-violet-500 mx-auto rounded-full" 
+             className="h-1 bg-gradient-to-r from-violet-500 to-indigo-500 mx-auto rounded-full" 
            />
         </div>
 
@@ -121,8 +121,9 @@ const ProductShowcase: React.FC = () => {
                             speed={1.2} 
                             global 
                             zoom={0.8} 
-                            polar={[-0.1, Math.PI / 4]}
-                            rotation={[0, -Math.PI / 6, 0]}
+                            polar={[-Math.PI / 2, Math.PI / 2]} // Full vertical rotation freedom
+                            azimuth={[-Infinity, Infinity]} // Full horizontal rotation freedom
+                            rotation={[Math.PI / 3, Math.PI - 0.4, 0]} // 60 degree angle for better 3D depth/front visibility
                          >
                              <Stage 
                                 environment="city" 
@@ -192,9 +193,9 @@ const ProductShowcase: React.FC = () => {
             </div>
             
             <div className="flex items-center gap-6">
-                <button className="text-[11px] font-bold font-mono tracking-widest text-cyan-400 uppercase border-b border-cyan-400/30 pb-1 hover:text-white hover:border-white transition-all">
-                    Full Schematics →
-                </button>
+                <span className="text-[11px] font-bold font-mono tracking-widest text-gray-500 uppercase">
+                    Coming Soon
+                </span>
                 <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
             </div>
           </motion.div>

@@ -55,7 +55,7 @@ const App: React.FC = () => {
                 <InteractiveDemo />
                 <DataStats />
                 <Testimonials />
-                <Waitlist />
+                <Waitlist onJoinSurvey={() => setCurrentView('survey')} />
             </motion.div>
           ) : currentView === 'about' ? (
             <motion.div

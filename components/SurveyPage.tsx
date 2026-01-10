@@ -80,7 +80,7 @@ const Card: React.FC<CardProps> = ({
         {selected && (
             <motion.div 
                 layoutId="selectionGlow"
-                className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-violet-500/10 pointer-events-none"
+                className="absolute inset-0 bg-gradient-to-r from-violet-500/10 to-indigo-500/10 pointer-events-none"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -90,8 +90,8 @@ const Card: React.FC<CardProps> = ({
             {children}
         </div>
         {/* Selection Check */}
-        <div className={`absolute top-4 right-4 w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${selected ? 'bg-cyan-500 border-cyan-500' : 'border-white/20'}`}>
-            {selected && <Check size={14} className="text-black" />}
+        <div className={`absolute top-4 right-4 w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${selected ? 'bg-violet-500 border-violet-500' : 'border-white/20'}`}>
+            {selected && <Check size={14} className="text-white" />}
         </div>
     </motion.div>
 );
@@ -161,19 +161,6 @@ const SurveyPage: React.FC<{ onExit: () => void }> = ({ onExit }) => {
         exit: { opacity: 0, x: -20, transition: { duration: 0.3, ease: "circIn" } }
     };
 
-    const ParticleBurst = ({ x, y }: { x: number, y: number }) => {
-        // A simple implementation of a click effect - in production would use a proper particle system
-        return (
-            <motion.div 
-                initial={{ scale: 0, opacity: 1 }}
-                animate={{ scale: 2, opacity: 0 }}
-                transition={{ duration: 0.5 }}
-                className="absolute w-12 h-12 rounded-full border-2 border-cyan-400 pointer-events-none z-50"
-                style={{ left: x - 24, top: y - 24 }}
-            />
-        );
-    };
-
     // --- STEP CONTENT ---
 
     const renderStep = () => {
@@ -186,12 +173,12 @@ const SurveyPage: React.FC<{ onExit: () => void }> = ({ onExit }) => {
                             animate={{ scale: 1, opacity: 1 }}
                             transition={{ duration: 0.8 }}
                         >
-                            <div className="inline-block mb-6 px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-900/20 text-cyan-400 font-mono text-xs tracking-widest uppercase animate-pulse">
+                            <div className="inline-block mb-6 px-4 py-1.5 rounded-full border border-violet-500/30 bg-violet-900/20 text-violet-400 font-mono text-xs tracking-widest uppercase animate-pulse">
                                 Transmission Incoming
                             </div>
                             <h1 className="font-display font-bold text-5xl md:text-7xl mb-8 leading-tight">
                                 Help Us Build The <br/>
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500">Future of Streaming</span>
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-500">Future of Streaming</span>
                             </h1>
                             <p className="text-xl text-gray-400 mb-12 font-light leading-relaxed max-w-lg mx-auto">
                                 We're creating something that could change how creators and audiences connect. 
@@ -203,7 +190,7 @@ const SurveyPage: React.FC<{ onExit: () => void }> = ({ onExit }) => {
                                 className="group relative px-10 py-5 bg-white text-black font-bold text-lg rounded-full overflow-hidden transition-transform hover:scale-105 active:scale-95"
                             >
                                 <span className="relative z-10 flex items-center gap-2">I'm In <ArrowRight size={20} /></span>
-                                <div className="absolute inset-0 bg-gradient-to-r from-cyan-300 via-violet-300 to-cyan-300 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-violet-300 via-indigo-300 to-violet-300 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                             </button>
                             <p className="mt-6 text-xs text-gray-500 uppercase tracking-widest font-mono">
                                 + Early Access Perks Included
@@ -249,13 +236,13 @@ const SurveyPage: React.FC<{ onExit: () => void }> = ({ onExit }) => {
                             <div className="mb-12">
                                 <label className="block text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Hours per week watching streams?</label>
                                 <div className="flex items-center gap-4">
-                                    <span className="font-mono text-cyan-400 text-xl w-12 text-right">{data.hoursWatched || 0}</span>
+                                    <span className="font-mono text-violet-400 text-xl w-12 text-right">{data.hoursWatched || 0}</span>
                                     <input 
                                         type="range" 
                                         min="0" max="60" 
                                         value={data.hoursWatched || 0} 
                                         onChange={(e) => updateData('hoursWatched', parseInt(e.target.value))}
-                                        className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+                                        className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-violet-500"
                                     />
                                     <span className="text-gray-500">40+</span>
                                 </div>
@@ -269,8 +256,8 @@ const SurveyPage: React.FC<{ onExit: () => void }> = ({ onExit }) => {
                                         onClick={() => updateData('interactionStyle', opt)}
                                         className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center gap-3 ${data.interactionStyle === opt ? 'bg-violet-900/20 border-violet-500' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
                                     >
-                                        <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${data.interactionStyle === opt ? 'border-cyan-500' : 'border-gray-500'}`}>
-                                            {data.interactionStyle === opt && <div className="w-2.5 h-2.5 rounded-full bg-cyan-500" />}
+                                        <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${data.interactionStyle === opt ? 'border-violet-500' : 'border-gray-500'}`}>
+                                            {data.interactionStyle === opt && <div className="w-2.5 h-2.5 rounded-full bg-violet-500" />}
                                         </div>
                                         <span>{opt}</span>
                                     </div>
@@ -292,7 +279,7 @@ const SurveyPage: React.FC<{ onExit: () => void }> = ({ onExit }) => {
                             <div>
                                 <label className="block text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">How often do you stream?</label>
                                 <select 
-                                    className="w-full bg-[#1A1830] border border-white/10 rounded-xl p-4 text-white focus:border-cyan-500 outline-none"
+                                    className="w-full bg-[#1A1830] border border-white/10 rounded-xl p-4 text-white focus:border-violet-500 outline-none"
                                     onChange={(e) => updateData('streamFreq', e.target.value)}
                                     value={data.streamFreq || ''}
                                 >
@@ -308,7 +295,7 @@ const SurveyPage: React.FC<{ onExit: () => void }> = ({ onExit }) => {
                             <div>
                                 <label className="block text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Typical viewer count?</label>
                                 <select 
-                                    className="w-full bg-[#1A1830] border border-white/10 rounded-xl p-4 text-white focus:border-cyan-500 outline-none"
+                                    className="w-full bg-[#1A1830] border border-white/10 rounded-xl p-4 text-white focus:border-violet-500 outline-none"
                                     onChange={(e) => updateData('viewerCount', e.target.value)}
                                     value={data.viewerCount || ''}
                                 >
@@ -345,18 +332,18 @@ const SurveyPage: React.FC<{ onExit: () => void }> = ({ onExit }) => {
                             placeholder="yourname@email.com"
                             value={data.email || ''}
                             onChange={(e) => updateData('email', e.target.value)}
-                            className="w-full bg-[#1A1830] border border-white/20 rounded-xl p-5 text-xl text-center text-white focus:border-cyan-500 outline-none mb-6 placeholder-gray-600 font-mono"
+                            className="w-full bg-[#1A1830] border border-white/20 rounded-xl p-5 text-xl text-center text-white focus:border-violet-500 outline-none mb-6 placeholder-gray-600 font-mono"
                         />
                         
                         <div className="flex items-center justify-center gap-2 text-sm text-gray-400 mb-10">
-                            <Check size={16} className="text-cyan-500" />
+                            <Check size={16} className="text-violet-500" />
                             <span>We promise not to spam you. Ever.</span>
                         </div>
 
                         <button 
                             onClick={nextStep}
                             disabled={!data.email?.includes('@')}
-                            className="w-full py-4 bg-gradient-to-r from-cyan-600 to-violet-600 rounded-xl font-bold text-white shadow-lg hover:shadow-cyan-500/20 transition-all disabled:opacity-50"
+                            className="w-full py-4 bg-gradient-to-r from-violet-600 to-indigo-600 rounded-xl font-bold text-white shadow-lg hover:shadow-violet-500/20 transition-all disabled:opacity-50"
                         >
                             Lock In Access →
                         </button>
@@ -374,7 +361,7 @@ const SurveyPage: React.FC<{ onExit: () => void }> = ({ onExit }) => {
                         <div className="flex flex-col md:flex-row gap-8">
                             {/* Selected Slots */}
                             <div className="md:w-1/2 space-y-4">
-                                <h3 className="text-xs font-bold uppercase tracking-widest text-cyan-400 mb-4">Your Top 3 Priorities</h3>
+                                <h3 className="text-xs font-bold uppercase tracking-widest text-violet-400 mb-4">Your Top 3 Priorities</h3>
                                 {[0, 1, 2].map((index) => {
                                     const item = data.problemRank ? data.problemRank[index] : null;
                                     const itemDetails = item ? PROBLEM_OPTIONS.find(p => p.id === item) : null;
@@ -423,7 +410,7 @@ const SurveyPage: React.FC<{ onExit: () => void }> = ({ onExit }) => {
                                         >
                                             <div className="text-gray-500 group-hover:text-white transition-colors">{opt.icon}</div>
                                             <span className="text-sm">{opt.label}</span>
-                                            <div className="ml-auto opacity-0 group-hover:opacity-100 text-cyan-400">
+                                            <div className="ml-auto opacity-0 group-hover:opacity-100 text-violet-400">
                                                 <ArrowLeft size={16} />
                                             </div>
                                         </motion.div>
@@ -491,8 +478,8 @@ const SurveyPage: React.FC<{ onExit: () => void }> = ({ onExit }) => {
                                     onClick={() => toggleArrayItem('attemptedSolutions', sol)}
                                     className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${data.attemptedSolutions?.includes(sol) ? 'bg-violet-900/20 border-violet-500' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
                                 >
-                                    <div className={`mt-0.5 w-5 h-5 rounded border flex items-center justify-center ${data.attemptedSolutions?.includes(sol) ? 'border-cyan-500 bg-cyan-500' : 'border-gray-500'}`}>
-                                        {data.attemptedSolutions?.includes(sol) && <Check size={14} className="text-black" />}
+                                    <div className={`mt-0.5 w-5 h-5 rounded border flex items-center justify-center ${data.attemptedSolutions?.includes(sol) ? 'border-violet-500 bg-violet-500' : 'border-gray-500'}`}>
+                                        {data.attemptedSolutions?.includes(sol) && <Check size={14} className="text-white" />}
                                     </div>
                                     <span>{sol}</span>
                                 </div>
@@ -522,14 +509,14 @@ const SurveyPage: React.FC<{ onExit: () => void }> = ({ onExit }) => {
                                     key={opt.id}
                                     selected={data.solutionPreference === opt.id}
                                     onClick={() => updateData('solutionPreference', opt.id)}
-                                    className={`flex flex-col items-center text-center h-full ${opt.highlight ? 'md:col-span-1 md:row-span-1 ring-2 ring-cyan-500/50' : ''}`}
+                                    className={`flex flex-col items-center text-center h-full ${opt.highlight ? 'md:col-span-1 md:row-span-1 ring-2 ring-violet-500/50' : ''}`}
                                 >
-                                    <div className={`mb-4 p-4 rounded-full ${opt.highlight ? 'bg-cyan-500/20 text-cyan-400' : 'bg-white/5 text-gray-400'}`}>
+                                    <div className={`mb-4 p-4 rounded-full ${opt.highlight ? 'bg-violet-500/20 text-violet-400' : 'bg-white/5 text-gray-400'}`}>
                                         {opt.icon}
                                     </div>
                                     <h3 className="text-lg font-bold mb-2">{opt.title}</h3>
                                     <p className="text-sm text-gray-400">{opt.desc}</p>
-                                    {opt.highlight && <div className="mt-4 px-2 py-1 bg-cyan-500/10 rounded text-[10px] font-bold text-cyan-400 uppercase tracking-widest">Streamyst Approach</div>}
+                                    {opt.highlight && <div className="mt-4 px-2 py-1 bg-violet-500/10 rounded text-[10px] font-bold text-violet-400 uppercase tracking-widest">Streamyst Approach</div>}
                                 </Card>
                             ))}
                         </div>
@@ -550,7 +537,7 @@ const SurveyPage: React.FC<{ onExit: () => void }> = ({ onExit }) => {
                     <div className="max-w-3xl mx-auto">
                         <div className="text-center mb-12">
                             <h2 className="text-3xl font-display font-bold mb-2">Which features excite you most?</h2>
-                            <p className="text-cyan-400 font-bold uppercase tracking-widest text-sm">Pick your top 2</p>
+                            <p className="text-violet-400 font-bold uppercase tracking-widest text-sm">Pick your top 2</p>
                         </div>
                         
                         <div className="grid md:grid-cols-2 gap-4">
@@ -574,8 +561,8 @@ const SurveyPage: React.FC<{ onExit: () => void }> = ({ onExit }) => {
                                                 : 'bg-white/5 border-white/10 hover:bg-white/10'}
                                     `}
                                 >
-                                    <div className={`mt-0.5 w-6 h-6 rounded border flex items-center justify-center shrink-0 ${data.desiredFeatures?.includes(feat) ? 'border-cyan-500 bg-cyan-500' : 'border-gray-500'}`}>
-                                        {data.desiredFeatures?.includes(feat) && <Check size={16} className="text-black" />}
+                                    <div className={`mt-0.5 w-6 h-6 rounded border flex items-center justify-center shrink-0 ${data.desiredFeatures?.includes(feat) ? 'border-violet-500 bg-violet-500' : 'border-gray-500'}`}>
+                                        {data.desiredFeatures?.includes(feat) && <Check size={16} className="text-white" />}
                                     </div>
                                     <span className="font-medium text-lg">{feat}</span>
                                 </div>
@@ -600,9 +587,9 @@ const SurveyPage: React.FC<{ onExit: () => void }> = ({ onExit }) => {
                         
                         <div className="space-y-4">
                             {[
-                                { id: 'take_money', label: "🔥 TAKE MY MONEY", sub: "I'd pre-order today if I could", glow: "shadow-[0_0_30px_rgba(251,146,60,0.4)] border-orange-500" },
-                                { id: 'very_interested', label: "✋ VERY INTERESTED", sub: "Definitely want early access", glow: "shadow-[0_0_20px_rgba(139,92,246,0.3)] border-violet-500" },
-                                { id: 'curious', label: "👀 CURIOUS", sub: "Sounds interesting, want to learn more", glow: "border-cyan-500/50" },
+                                { id: 'take_money', label: "🔥 TAKE MY MONEY", sub: "I'd pre-order today if I could", glow: "shadow-[0_0_30px_rgba(139,92,246,0.4)] border-violet-500" },
+                                { id: 'very_interested', label: "✋ VERY INTERESTED", sub: "Definitely want early access", glow: "shadow-[0_0_20px_rgba(99,102,241,0.3)] border-indigo-500" },
+                                { id: 'curious', label: "👀 CURIOUS", sub: "Sounds interesting, want to learn more", glow: "border-violet-500/50" },
                                 { id: 'neutral', label: "😐 NEUTRAL", sub: "Not sure yet", glow: "border-white/20" },
                                 { id: 'not_for_me', label: "👎 NOT FOR ME", sub: "Doesn't solve my problem", glow: "border-gray-700 opacity-60" }
                             ].map((opt) => (
@@ -682,7 +669,7 @@ const SurveyPage: React.FC<{ onExit: () => void }> = ({ onExit }) => {
                                 >
                                     <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">{opt.title}</h3>
                                     <div className="text-3xl font-bold text-white mb-2">{opt.price}</div>
-                                    <p className="text-cyan-400 text-sm font-bold mb-6">{opt.detail}</p>
+                                    <p className="text-violet-400 text-sm font-bold mb-6">{opt.detail}</p>
                                     <p className="text-xs text-gray-500">{opt.sub}</p>
                                 </Card>
                             ))}
@@ -700,7 +687,7 @@ const SurveyPage: React.FC<{ onExit: () => void }> = ({ onExit }) => {
                             className="mb-8 relative"
                          >
                             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-violet-500/20 rounded-full blur-[80px]" />
-                            <div className="w-24 h-24 bg-gradient-to-tr from-cyan-400 to-violet-500 rounded-full mx-auto flex items-center justify-center shadow-[0_0_50px_rgba(139,92,246,0.5)]">
+                            <div className="w-24 h-24 bg-gradient-to-tr from-violet-400 to-indigo-500 rounded-full mx-auto flex items-center justify-center shadow-[0_0_50px_rgba(139,92,246,0.5)]">
                                 <Check size={48} className="text-white" />
                             </div>
                          </motion.div>
@@ -709,7 +696,7 @@ const SurveyPage: React.FC<{ onExit: () => void }> = ({ onExit }) => {
                          <p className="text-xl text-gray-300 mb-12 leading-relaxed">
                             Thank you for helping us build the future of streaming.
                             <br/>
-                            <span className="text-cyan-400 font-bold">You've been added to the priority alpha list.</span>
+                            <span className="text-violet-400 font-bold">You've been added to the priority alpha list.</span>
                          </p>
 
                          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mb-12">
@@ -752,7 +739,7 @@ const SurveyPage: React.FC<{ onExit: () => void }> = ({ onExit }) => {
             {/* PROGRESS BAR */}
             <div className="fixed top-0 left-0 w-full h-2 bg-white/5 z-50">
                 <motion.div 
-                    className="h-full bg-gradient-to-r from-cyan-500 to-violet-500 shadow-[0_0_20px_rgba(139,92,246,0.5)]"
+                    className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 shadow-[0_0_20px_rgba(139,92,246,0.5)]"
                     initial={{ width: 0 }}
                     animate={{ width: `${progress}%` }}
                     transition={{ duration: 0.5 }}
@@ -813,7 +800,7 @@ const SurveyPage: React.FC<{ onExit: () => void }> = ({ onExit }) => {
             {/* BACKGROUND ELEMENTS */}
             <div className="fixed inset-0 pointer-events-none -z-10">
                 <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.05)_0%,transparent_70%)]" />
-                <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-cyan-900/10 blur-[120px]" />
+                <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-violet-900/10 blur-[120px]" />
             </div>
         </div>
     );

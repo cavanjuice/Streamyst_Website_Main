@@ -34,7 +34,7 @@ const ParticleField = () => {
 
   const uniforms = useMemo(() => ({
     uTime: { value: 0 },
-    uColor1: { value: new THREE.Color('#06B6D4') }, // Cyan
+    uColor1: { value: new THREE.Color('#F97316') }, // Orange
     uColor2: { value: new THREE.Color('#8B5CF6') }, // Violet
     uColor3: { value: new THREE.Color('#EC4899') }, // Pink
     uMouse: { value: new THREE.Vector2(0, 0) },
@@ -169,7 +169,7 @@ const AuroraLayer = () => {
         uTime: { value: 0 },
         uColorBg: { value: new THREE.Color('#05040a') },
         uColor1: { value: new THREE.Color('#1A1633') }, // Dark Violet
-        uColor2: { value: new THREE.Color('#0e1c26') }, // Dark Cyan
+        uColor2: { value: new THREE.Color('#1f0e08') }, // Dark Red/Orange Tint
     }), []);
 
     useFrame(({ clock }) => {
@@ -248,4 +248,3 @@ const ParticleBackground: React.FC = () => {
 };
 
 export default ParticleBackground;
-    

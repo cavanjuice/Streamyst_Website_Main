@@ -1,372 +1,261 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, Users, Frown, Sword, Gem, Star, Crown, Gift, Smile, Settings, EyeOff, MonitorStop, Ghost, Lock, BatteryWarning, Play } from 'lucide-react';
+import { Users, Send, Zap, Wind, AlertCircle, MessageSquare } from 'lucide-react';
 
 interface ProblemSectionProps {
   role: 'streamer' | 'viewer';
 }
 
+const USERNAMES = [
+  "NeonNinja", "PixelPioneer", "CyberSamurai", "GlitchGamer", "VaporWave99", 
+  "RetroRider", "QuantumQueen", "DigitalDruid", "TechnoTitan", "StreamLover45", 
+  "NightOwl_92", "Lurker_007", "SpeedRunner", "CoolDude123", "xX_Slayer_Xx", 
+  "NoobMaster69", "TwitchKitten", "PogChamp2024", "Kappa_Pride", "FrankerZ"
+];
+
+const MESSAGES_QUIET = [
+  "Hello?", "Anyone here?", "Stream looks good!", "What game is this?", "Hi streamer!",
+  "Nice vibe", "How are you today?", "First time chatter", "Lurk mode on", "GG"
+];
+
+const MESSAGES_CHAOS = [
+  "POG", "LUL", "OMEGALUL", "HYPE 🔥", "🔥🔥🔥🔥🔥", "Can't believe that happened!", 
+  "what resolution?", "HELLO FROM BRAZIL", "FIRST", "gg", "ez clap", "no way", "RIP", "F",
+  "playing so well today", "song name?", "vibes", "Wait what???", "clutch", "monkaS", "Kappa",
+  "LET'S GOOO", "Streamyst is the future", "insane gameplay", "lol", "nice", "POGGERS",
+  "CLIP IT", "RIGGED", "????????", "modCheck", "I WAS HERE", "SCAM", "LMAO", "KEKW"
+];
+
+const COLORS = [
+  "text-red-400", "text-orange-400", "text-amber-400", "text-yellow-400", 
+  "text-lime-400", "text-green-400", "text-emerald-400", "text-teal-400", 
+  "text-cyan-400", "text-sky-400", "text-blue-400", "text-indigo-400", 
+  "text-violet-400", "text-purple-400", "text-fuchsia-400", "text-pink-400", "text-rose-400"
+];
+
 const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1, delayChildren: 0.2 }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } }
-  };
-
-  const streamerProblems = [
-      {
-          icon: <EyeOff className="w-6 h-6 text-red-400" />,
-          title: "Not feeling seen",
-          desc: "Discovery and growth are limited"
-      },
-      {
-          icon: <MessageSquare className="w-6 h-6 text-red-400" />,
-          title: "Chat overload",
-          desc: "Messages flying by faster than you can read them"
-      },
-      {
-          icon: <Settings className="w-6 h-6 text-red-400" />,
-          title: "Complex setups",
-          desc: "Interactive tools require complicated setups"
-      },
-      {
-          icon: <Frown className="w-6 h-6 text-red-400" />,
-          title: "Missed moments",
-          desc: "Unable to feel the energy of epic chat reactions"
-      }
-  ];
-
-  const viewerProblems = [
-      {
-          icon: <Ghost className="w-6 h-6 text-fuchsia-400" />,
-          title: "Lost in the crowd",
-          desc: "Chat goes so fast, you feel invisible and anonymous"
-      },
-      {
-          icon: <Lock className="w-6 h-6 text-fuchsia-400" />,
-          title: "Limited agency",
-          desc: "You want to participate but can't fully be a meaningful part"
-      },
-      {
-          icon: <BatteryWarning className="w-6 h-6 text-fuchsia-400" />,
-          title: "Social Fatigue",
-          desc: "Not easy to find the streaming community that fits you"
-      },
-      {
-          icon: <MonitorStop className="w-6 h-6 text-fuchsia-400" />,
-          title: "Interrupted",
-          desc: "Ads really break the immersion of the experience"
-      }
-  ];
-
-  const currentProblems = role === 'streamer' ? streamerProblems : viewerProblems;
-
-  // --- Chat Simulation Logic (For Streamer) ---
-  
-  interface ChatMessage {
-    id: number;
-    user: string;
-    color: string;
-    text: string;
-    badges: ('mod' | 'vip' | 'sub' | 'prime' | null)[];
-  }
-
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [mode, setMode] = useState<'quiet' | 'overload'>('quiet');
+  const [messages, setMessages] = useState<{ id: number; user: string; text: string; color: string; isUser?: boolean }[]>([]);
+  const [inputValue, setInputValue] = useState("");
+  const scrollRef = useRef<HTMLDivElement>(null);
   const msgIdRef = useRef(0);
 
-  const generateMessage = () => {
-      const users = ["NeonNinja", "PixelPioneer", "CyberSamurai", "GlitchGamer", "VaporWave99", "RetroRider", "QuantumQueen", "DigitalDruid", "TechnoTitan", "StreamLover45", "ChatSpammer40", "NightOwl_92", "Lurker_007", "SpeedRunner", "CoolDude123", "xX_Slayer_Xx", "NoobMaster69", "TwitchKitten"];
-      
-      const colors = [
-          "text-[#FF0000]", "text-[#0000FF]", "text-[#008000]", "text-[#B22222]", "text-[#FF7F50]", 
-          "text-[#9ACD32]", "text-[#FF4500]", "text-[#2E8B57]", "text-[#DAA520]", "text-[#D2691E]", 
-          "text-[#5F9EA0]", "text-[#1E90FF]", "text-[#FF69B4]", "text-[#8A2BE2]", "text-[#00FF7F]"
-      ];
-
-      const texts = [
-        "POG", "LUL", "OMEGALUL", "HYPE 🔥", "🔥🔥🔥🔥🔥", "Can't believe that happened!", "stream looks crisp", 
-        "what resolution is this?", "hello from brazil", "first", "gg", "ez clap", "no way", "RIP", "F",
-        "playing so well today", "song name?", "vibes", "Wait what???", "clutch", "monkaS", "Kappa",
-        "so many viewers wow", "let's gooooo", "Streamyst is the future", "insane gameplay", "lol", "nice", 
-        "hi chat", "PogChamp", "KEKW", "NotLikeThis", "BibleThump", "Rigged", "????????", "clip that", "modCheck"
-      ];
-      
-      const badgeTypes: ('mod' | 'vip' | 'sub' | 'prime' | null)[] = ['mod', 'vip', 'sub', 'prime', null, null, null, null, null, null];
-      
-      const numBadges = Math.random() > 0.7 ? (Math.random() > 0.8 ? 2 : 1) : 0;
-      const selectedBadges = [];
-      for(let i=0; i<numBadges; i++) {
-          const b = badgeTypes[Math.floor(Math.random() * badgeTypes.length)];
-          if (b && !selectedBadges.includes(b)) selectedBadges.push(b);
-      }
-
-      msgIdRef.current += 1;
-
-      return {
-          id: msgIdRef.current,
-          user: users[Math.floor(Math.random() * users.length)],
-          color: colors[Math.floor(Math.random() * colors.length)],
-          text: texts[Math.floor(Math.random() * texts.length)],
-          badges: selectedBadges
-      };
-  };
-
+  // --- Chat Generation Logic ---
   useEffect(() => {
-    // Only run simulation if role is streamer
-    if (role !== 'streamer') return;
+    let interval: ReturnType<typeof setInterval>;
 
-    const initial = Array.from({ length: 12 }, () => generateMessage());
-    setMessages(initial);
-
-    let timeoutId: ReturnType<typeof setTimeout>;
-    let isBursting = false;
-    let burstRemaining = 0;
-
-    const scheduleNextMessage = () => {
-        if (!isBursting && Math.random() > 0.92) {
-            isBursting = true;
-            burstRemaining = Math.floor(Math.random() * 15) + 5; 
+    const addMessage = (count = 1) => {
+      setMessages(prev => {
+        const newMsgs = [];
+        for (let i = 0; i < count; i++) {
+          msgIdRef.current++;
+          const isChaos = mode === 'overload';
+          const pool = isChaos ? MESSAGES_CHAOS : MESSAGES_QUIET;
+          
+          newMsgs.push({
+            id: msgIdRef.current,
+            user: USERNAMES[Math.floor(Math.random() * USERNAMES.length)],
+            text: pool[Math.floor(Math.random() * pool.length)],
+            color: COLORS[Math.floor(Math.random() * COLORS.length)]
+          });
         }
-
-        let delay;
-        if (isBursting) {
-            delay = Math.random() * 150 + 50; 
-            burstRemaining--;
-            if (burstRemaining <= 0) isBursting = false;
-        } else {
-            if (Math.random() > 0.7) {
-                delay = Math.random() * 1000 + 800; 
-            } else {
-                delay = Math.random() * 600 + 200; 
-            }
-        }
-
-        timeoutId = setTimeout(() => {
-            setMessages(prev => {
-                const newMsg = generateMessage();
-                if (isBursting && Math.random() > 0.3 && prev.length > 0) {
-                     newMsg.text = prev[prev.length - 1].text; 
-                }
-                const updated = [...prev, newMsg];
-                if (updated.length > 20) return updated.slice(updated.length - 20);
-                return updated;
-            });
-            scheduleNextMessage();
-        }, delay);
+        
+        // Keep buffer size manageable
+        const combined = [...prev, ...newMsgs];
+        return combined.slice(-100); 
+      });
     };
 
-    scheduleNextMessage();
-    return () => clearTimeout(timeoutId);
-  }, [role]);
+    if (mode === 'quiet') {
+      // Slow trickle
+      interval = setInterval(() => addMessage(1), 2500);
+      // Initial population for quiet
+      if (messages.length === 0) addMessage(3);
+    } else {
+      // CHAOS MODE
+      interval = setInterval(() => addMessage(4), 50); // 4 messages every 50ms = 80 msg/sec
+    }
 
+    return () => clearInterval(interval);
+  }, [mode]);
+
+  // --- Auto Scroll ---
   useEffect(() => {
-      if (chatContainerRef.current) {
-          chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-      }
-  }, [messages, role]);
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const handleSendMessage = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (!inputValue.trim()) return;
+
+    const userMsg = {
+      id: Date.now(),
+      user: "YOU",
+      text: inputValue,
+      color: "text-white",
+      isUser: true
+    };
+
+    setMessages(prev => [...prev, userMsg]);
+    setInputValue("");
+    
+    // Force scroll immediately
+    setTimeout(() => {
+        if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }, 10);
+  };
 
   return (
-    <section className="py-24 md:py-32 relative z-10 overflow-hidden">
-      {/* 
-         Fixed Background Transition 
-      */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] -z-10 pointer-events-none">
-          <div 
-            className="absolute inset-0" 
-            style={{ 
-              background: 'radial-gradient(ellipse at center, rgba(13, 11, 26, 0.6) 0%, transparent 70%)' 
-            }}
-          />
-      </div>
+    <section className="py-24 relative z-10 overflow-hidden">
+      {/* Background Ambience */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#030205] via-[#0A0A0B] to-[#030205] -z-10" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[60%] bg-violet-900/10 blur-[150px] rounded-full pointer-events-none" />
 
       <div className="container mx-auto px-6 relative z-10">
         
         {/* Header */}
-        <div className="text-center max-w-4xl mx-auto mb-16">
-            <motion.h2 
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.6 }}
-                className="font-display font-bold text-4xl md:text-5xl mb-6"
-            >
-                Streaming <span className="text-gray-500">should be connective</span>
-            </motion.h2>
-            <motion.p 
-                key={role}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2, duration: 0.6 }}
-                className="text-gray-400 text-lg leading-relaxed max-w-2xl mx-auto"
-            >
-                {role === 'streamer' 
-                    ? "Whether you're big or small, you're pouring your heart into every stream, but the digital barrier still keeps you from truly feeling your community."
-                    : "You're trying your best to be part of the stream, but the digital barrier keeps you from truly connecting with the creators."
-                }
-            </motion.p>
+        <div className="text-center max-w-4xl mx-auto mb-12">
+            <h2 className="font-display font-bold text-3xl md:text-5xl mb-4">
+                The <span className="text-red-500">Visibility</span> Problem.
+            </h2>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+                In a crowded digital room, connection is lost in the noise. <br className="hidden md:block"/>
+                Experience the difference between being present and being buried.
+            </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left: Problem Cards */}
-            <motion.div 
-                key={`${role}-cards`}
-                variants={containerVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-50px" }}
-                className="grid sm:grid-cols-2 gap-6"
-            >
-                {currentProblems.map((problem, i) => (
-                    <motion.div key={i} variants={itemVariants} className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/[0.07] transition-colors backdrop-blur-sm">
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 ${role === 'streamer' ? 'bg-red-500/10' : 'bg-fuchsia-500/10'}`}>
-                            {problem.icon}
-                        </div>
-                        <h3 className="font-bold text-xl text-white mb-2">{problem.title}</h3>
-                        <p className="text-gray-400 text-sm">{problem.desc}</p>
-                    </motion.div>
-                ))}
-            </motion.div>
+        {/* --- HORIZONTAL CHAT SIMULATOR --- */}
+        <div className="max-w-6xl mx-auto bg-[#0A0A0B] border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row h-[600px] relative group">
+            
+            {/* LEFT: CONTROLS */}
+            <div className="w-full md:w-80 bg-[#13131F] border-r border-white/5 p-6 flex flex-col justify-between shrink-0 relative z-20">
+                <div>
+                    <div className="flex items-center gap-3 mb-8">
+                        <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
+                        <span className="font-mono text-xs font-bold text-gray-400 uppercase tracking-widest">Live Simulation</span>
+                    </div>
 
-            {/* Right: Visual (Chat Simulator for Streamer / Viewer Ad Interrupt for Viewer) */}
-            <motion.div
-                key={`${role}-visual`}
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8 }}
-                className="relative"
-            >
-                {role === 'streamer' ? (
-                    /* STREAMER VISUAL: CHAT OVERLOAD */
-                    <div className="bg-[#18181b] border border-[#26262c] rounded-lg overflow-hidden shadow-2xl max-w-sm mx-auto h-[480px] flex flex-col font-sans relative z-10">
-                        {/* Header */}
-                        <div className="h-10 border-b border-[#26262c] flex justify-between items-center px-3 bg-[#18181b] shrink-0">
-                            <div className="flex items-center space-x-2">
-                                <div className="rotate-90 p-1 hover:bg-[#26262c] rounded cursor-pointer">
-                                    <svg width="16" height="16" viewBox="0 0 20 20" fill="#adadb8"><path d="M14 8l-4-4-4 4"></path><path d="M10 4v12"></path></svg>
-                                </div>
-                                <span className="text-[#efeff1] text-xs font-bold uppercase tracking-wide">Stream Chat</span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Users className="w-4 h-4 text-[#adadb8]" />
-                                <span className="text-[#adadb8] text-xs font-semibold">12.8k</span>
-                            </div>
-                        </div>
-
-                        {/* Chat Area */}
-                        <div 
-                            ref={chatContainerRef}
-                            className="flex-1 overflow-hidden relative flex flex-col bg-[#18181b] p-2 space-y-0.5"
+                    <div className="space-y-4">
+                        <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Select Environment</label>
+                        
+                        <button 
+                            onClick={() => setMode('quiet')}
+                            className={`w-full p-4 rounded-xl border flex items-center gap-4 transition-all duration-300 ${mode === 'quiet' ? 'bg-emerald-500/10 border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.1)]' : 'bg-white/5 border-white/5 hover:bg-white/10'}`}
                         >
-                            <AnimatePresence initial={false}>
-                                {messages.map((msg) => (
-                                    <motion.div 
-                                        key={msg.id}
-                                        initial={{ opacity: 0, x: -5 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        className="text-[13px] leading-5 px-2 py-0.5 hover:bg-[#26262c] rounded transition-colors break-words"
-                                    >
-                                        <span className="inline-flex items-center align-middle mr-1.5 space-x-0.5 select-none">
-                                            {msg.badges.map((badge, idx) => (
-                                                <span key={idx} className="inline-block">
-                                                    {badge === 'mod' && <div className="w-4 h-4 bg-[#00ad03] rounded flex items-center justify-center"><Sword size={10} className="text-white fill-current" /></div>}
-                                                    {badge === 'vip' && <div className="w-4 h-4 bg-[#e005b9] rounded flex items-center justify-center"><Gem size={10} className="text-white fill-current" /></div>}
-                                                    {badge === 'sub' && <div className="w-4 h-4 bg-[#8205b4] rounded flex items-center justify-center"><Star size={10} className="text-white fill-current" /></div>}
-                                                    {badge === 'prime' && <div className="w-4 h-4 bg-[#0073e6] rounded flex items-center justify-center"><Crown size={10} className="text-white fill-current" /></div>}
-                                                </span>
-                                            ))}
-                                        </span>
-                                        <span className={`font-bold ${msg.color} hover:underline cursor-pointer mr-1`}>
-                                            {msg.user}
-                                        </span>
-                                        <span className="text-[#adadb8] mr-1">:</span>
-                                        <span className="text-[#efeff1]">{msg.text}</span>
-                                    </motion.div>
-                                ))}
-                            </AnimatePresence>
-                        </div>
-
-                        {/* Input Area */}
-                        <div className="p-3 bg-[#18181b] shrink-0">
-                            <div className="relative">
-                                <div className="w-full bg-[#26262c] rounded flex items-center p-2 border-2 border-transparent focus-within:border-[#a970ff] transition-colors">
-                                    <span className="text-[#adadb8] text-xs">Send a message</span>
-                                </div>
-                                <div className="flex justify-between items-center mt-2 px-1">
-                                    <div className="flex space-x-2">
-                                        <div className="text-[#adadb8] hover:bg-[#26262c] p-1 rounded cursor-pointer"><div className="w-5 h-5 flex items-center justify-center border border-[#adadb8] rounded text-[10px] font-bold">💎</div></div>
-                                        <div className="text-[#adadb8] hover:bg-[#26262c] p-1 rounded cursor-pointer"><Gift size={18} /></div>
-                                    </div>
-                                    <div className="flex space-x-2 items-center">
-                                        <div className="text-[#adadb8] hover:bg-[#26262c] p-1 rounded cursor-pointer"><Smile size={18} /></div>
-                                        <div className="bg-[#9147ff] text-white px-3 py-1.5 rounded text-xs font-bold hover:bg-[#772ce8] cursor-pointer">Chat</div>
-                                    </div>
-                                </div>
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${mode === 'quiet' ? 'bg-emerald-500 text-black' : 'bg-gray-800 text-gray-400'}`}>
+                                <Wind size={20} />
                             </div>
+                            <div className="text-left">
+                                <div className={`font-bold ${mode === 'quiet' ? 'text-white' : 'text-gray-400'}`}>Quiet Room</div>
+                                <div className="text-[10px] text-gray-500">Low traffic • Readable</div>
+                            </div>
+                        </button>
+
+                        <button 
+                            onClick={() => setMode('overload')}
+                            className={`w-full p-4 rounded-xl border flex items-center gap-4 transition-all duration-300 ${mode === 'overload' ? 'bg-red-500/10 border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.1)]' : 'bg-white/5 border-white/5 hover:bg-white/10'}`}
+                        >
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${mode === 'overload' ? 'bg-red-500 text-white' : 'bg-gray-800 text-gray-400'}`}>
+                                <Zap size={20} />
+                            </div>
+                            <div className="text-left">
+                                <div className={`font-bold ${mode === 'overload' ? 'text-white' : 'text-gray-400'}`}>Overload</div>
+                                <div className="text-[10px] text-gray-500">Extreme traffic • Chaotic</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <div className="mt-8 md:mt-0 p-4 bg-white/5 rounded-xl border border-white/5">
+                    <div className="flex items-start gap-3">
+                        <AlertCircle className="w-5 h-5 text-violet-400 shrink-0 mt-0.5" />
+                        <div>
+                            <h4 className="font-bold text-sm text-violet-200 mb-1">Try It Yourself</h4>
+                            <p className="text-xs text-gray-400 leading-relaxed">
+                                Type a message in the chat on the right. Notice how quickly it disappears in <strong>Overload</strong> mode vs <strong>Quiet</strong> mode.
+                            </p>
                         </div>
                     </div>
-                ) : (
-                    /* VIEWER VISUAL: AD INTERRUPTION / DISCONNECT */
-                    <div className="bg-[#0A0A0B] border border-white/10 rounded-lg overflow-hidden shadow-2xl max-w-sm mx-auto h-[480px] flex flex-col font-sans relative z-10 group">
-                        {/* Video Area (Blurred/Blocked) */}
-                        <div className="flex-1 bg-gray-900 relative flex items-center justify-center overflow-hidden">
-                             {/* Fake Stream Background */}
-                             <div className="absolute inset-0 bg-cosmic-800 opacity-50 blur-sm flex items-center justify-center">
-                                 <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800" className="w-full h-full object-cover opacity-30 grayscale" alt="Stream BG" />
-                             </div>
-                             
-                             {/* AD Overlay */}
-                             <div className="absolute top-4 right-4 bg-black/80 px-3 py-1 rounded text-[10px] font-bold text-gray-400 border border-white/10 z-20">
-                                 Ad 1 of 2 · 0:15
-                             </div>
+                </div>
+            </div>
 
-                             <div className="relative z-10 text-center p-6 bg-black/60 backdrop-blur-md rounded-xl border border-white/10 max-w-[80%]">
-                                 <MonitorStop className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
-                                 <h3 className="text-white font-bold text-lg mb-1">Commercial Break</h3>
-                                 <p className="text-gray-400 text-xs">This ad supports the streamer.</p>
-                                 <div className="mt-4 w-full h-1 bg-gray-700 rounded-full overflow-hidden">
-                                     <div className="h-full bg-yellow-500 w-1/3"></div>
-                                 </div>
-                             </div>
-
-                             {/* Play controls (fake) */}
-                             <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-black/80 to-transparent flex items-center px-4 gap-4">
-                                <Play className="w-4 h-4 text-white fill-white" />
-                                <div className="h-1 bg-white/30 rounded flex-1"></div>
-                             </div>
-                        </div>
-
-                        {/* Chat Area (Static/Fast) */}
-                        <div className="h-1/3 border-t border-white/10 bg-[#18181b] p-2 overflow-hidden relative">
-                             {/* Fast scrolling blur effect */}
-                             <div className="space-y-2 opacity-50 blur-[1px]">
-                                <div className="h-3 bg-white/10 rounded w-3/4"></div>
-                                <div className="h-3 bg-white/10 rounded w-1/2"></div>
-                                <div className="h-3 bg-white/10 rounded w-5/6"></div>
-                                <div className="h-3 bg-white/10 rounded w-2/3"></div>
-                                <div className="h-3 bg-white/10 rounded w-full"></div>
-                                <div className="h-3 bg-white/10 rounded w-1/2"></div>
-                             </div>
-                             <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                                 <span className="text-xs text-gray-500 font-mono">Chat paused due to scroll speed</span>
-                             </div>
-                        </div>
+            {/* RIGHT: CHAT VISUALIZER */}
+            <div className="flex-1 flex flex-col bg-[#05040a] relative overflow-hidden">
+                {/* Header Stats */}
+                <div className="h-14 border-b border-white/5 flex items-center justify-between px-6 bg-[#0A0A0B]/50 backdrop-blur-md z-10">
+                    <div className="flex items-center gap-2">
+                        <MessageSquare className="w-4 h-4 text-gray-500" />
+                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Stream Chat</span>
                     </div>
+                    <div className="flex items-center gap-3">
+                        <Users className="w-4 h-4 text-gray-500" />
+                        <span className={`font-mono text-sm font-bold transition-colors duration-500 ${mode === 'overload' ? 'text-red-400' : 'text-emerald-400'}`}>
+                            {mode === 'overload' ? '142,893' : '12'}
+                        </span>
+                        <span className="text-xs text-gray-600 uppercase tracking-widest">Viewers</span>
+                    </div>
+                </div>
+
+                {/* Messages Area */}
+                <div className="relative flex-1 overflow-hidden">
+                    {/* Gradient Masks */}
+                    <div className="absolute top-0 left-0 w-full h-16 bg-gradient-to-b from-[#05040a] to-transparent z-10 pointer-events-none" />
+                    
+                    <div 
+                        ref={scrollRef}
+                        className="absolute inset-0 overflow-y-auto px-6 py-4 space-y-1 scroll-smooth scrollbar-hide"
+                    >
+                        {messages.map((msg) => (
+                            <motion.div 
+                                key={msg.id}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                className={`
+                                    text-sm py-1 px-2 rounded flex items-baseline gap-2 leading-relaxed transition-all
+                                    ${msg.isUser 
+                                        ? 'bg-violet-600/20 border border-violet-500/30 shadow-[0_0_15px_rgba(139,92,246,0.1)]' 
+                                        : 'hover:bg-white/5'}
+                                `}
+                            >
+                                {msg.isUser && (
+                                    <span className="inline-block px-1.5 py-0.5 rounded bg-violet-600 text-[10px] font-bold text-white uppercase tracking-wider">
+                                        YOU
+                                    </span>
+                                )}
+                                <span className={`font-bold text-xs md:text-sm whitespace-nowrap ${msg.color}`}>{msg.user}:</span>
+                                <span className={`${msg.isUser ? 'text-white font-medium' : 'text-gray-300'}`}>{msg.text}</span>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Input Area */}
+                <form onSubmit={handleSendMessage} className="p-4 bg-[#0A0A0B] border-t border-white/5 relative z-20">
+                    <div className="relative">
+                        <input 
+                            type="text" 
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
+                            placeholder={mode === 'overload' ? "Good luck being seen..." : "Say something..."}
+                            className="w-full bg-[#1A1830] border border-white/10 rounded-xl py-3 pl-4 pr-12 text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors"
+                        />
+                        <button 
+                            type="submit"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-violet-600 hover:bg-violet-500 text-white rounded-lg transition-colors"
+                        >
+                            <Send size={16} />
+                        </button>
+                    </div>
+                </form>
+
+                {/* Overload Effect Overlay */}
+                {mode === 'overload' && (
+                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-transparent to-red-500/5 z-0" />
                 )}
-                
-                {/* Back glow for visual integration */}
-                <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[90%] blur-3xl -z-0 rounded-full ${role === 'streamer' ? 'bg-violet-900/10' : 'bg-fuchsia-900/10'}`}></div>
-            </motion.div>
+            </div>
+
         </div>
 
       </div>

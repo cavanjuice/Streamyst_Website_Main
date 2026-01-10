@@ -1,9 +1,13 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Loader2, ChevronRight } from 'lucide-react';
+import { Check, Loader2, ChevronRight, ClipboardList } from 'lucide-react';
 
-const Waitlist: React.FC = () => {
+interface WaitlistProps {
+    onJoinSurvey?: () => void;
+}
+
+const Waitlist: React.FC<WaitlistProps> = ({ onJoinSurvey }) => {
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<'streamer' | 'viewer' | 'both'>('streamer');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle');
@@ -40,7 +44,8 @@ const Waitlist: React.FC = () => {
                 
                 <div className="absolute bottom-12 left-12 z-20">
                      <div className="font-display font-bold text-white text-2xl mb-2 tracking-tight">The Future is Tactile</div>
-                     <div className="w-10 h-1 bg-cyan-500 rounded-full"></div>
+                     {/* Updated bar to violet to match theme */}
+                     <div className="w-10 h-1 bg-violet-500 rounded-full"></div>
                 </div>
             </div>
 
@@ -50,13 +55,34 @@ const Waitlist: React.FC = () => {
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="flex flex-col items-center text-center justify-center h-full w-full py-12"
+                            className="flex flex-col items-center text-center justify-center h-full w-full py-8"
                         >
                             <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mb-6 text-green-400 border border-green-500/20">
                                 <Check className="w-8 h-8" />
                             </div>
-                            <h3 className="font-display font-bold text-2xl mb-3 text-white">Sequence Initiated 🚀</h3>
-                            <p className="text-gray-400 text-sm">You are now in the queue. Stand by for transmission.</p>
+                            <h3 className="font-display font-bold text-2xl mb-2 text-white">You're on the list! 🚀</h3>
+                            
+                            <div className="max-w-sm mx-auto mb-8 space-y-4">
+                                <p className="text-gray-300 text-sm font-medium">
+                                    Your spot is secured.
+                                </p>
+                                <div className="p-4 bg-violet-500/5 border border-violet-500/20 rounded-xl relative overflow-hidden">
+                                    <div className="absolute top-0 left-0 w-1 h-full bg-violet-500" />
+                                    <p className="text-xs text-gray-400 leading-relaxed text-left pl-2">
+                                         It will only take <span className="text-violet-300 font-bold">2 minutes</span>, but it would help us immensely. We are building this custom for you, so your feedback is our most important blueprint.
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <button 
+                                onClick={onJoinSurvey}
+                                className="group relative overflow-hidden bg-white text-black font-bold py-3.5 px-8 rounded-full text-sm transition-all transform hover:-translate-y-0.5 hover:shadow-lg hover:shadow-violet-500/20 flex items-center gap-2 w-full sm:w-auto justify-center"
+                            >
+                                <span className="relative z-10 flex items-center gap-2">
+                                    Take Beta Survey <ClipboardList className="w-4 h-4" />
+                                </span>
+                                <div className="absolute inset-0 bg-gradient-to-r from-violet-200 to-indigo-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            </button>
                         </motion.div>
                     ) : (
                         <motion.div
@@ -65,16 +91,16 @@ const Waitlist: React.FC = () => {
                             exit={{ opacity: 0 }}
                             className="w-full max-w-sm mx-auto"
                         >
-                            <div className="inline-block px-3 py-1 rounded-full border border-cyan-500/20 bg-cyan-500/5 text-cyan-400 text-[9px] font-bold uppercase tracking-[0.2em] mb-8">
+                            <div className="inline-block px-3 py-1 rounded-full border border-violet-500/20 bg-violet-500/5 text-violet-400 text-[9px] font-bold uppercase tracking-[0.2em] mb-8">
                                 ALPHA ACCESS PROGRAM
                             </div>
 
                             <h2 className="font-display font-bold text-3xl md:text-4xl mb-4 leading-tight tracking-tight">
-                                Join the <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-violet-400">Waitlist</span>
+                                Join the <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">Experience</span>
                             </h2>
                             
                             <p className="text-gray-500 text-sm md:text-base mb-10 leading-relaxed font-light">
-Be among the first to experience the future. Early adopters get exclusive pricing and first access to Vybe.
+                                Be among the first! The product is not available yet. Help us make it custom for you and the community.
                             </p>
 
                             <form onSubmit={handleSubmit} className="space-y-5">
@@ -115,7 +141,7 @@ Be among the first to experience the future. Early adopters get exclusive pricin
                                     disabled={status === 'loading'}
                                     className="relative w-full overflow-hidden bg-white text-black font-bold py-3.5 rounded-xl text-sm transition-all transform hover:-translate-y-0.5 group shadow-xl shadow-white/5"
                                 >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-200 to-violet-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                    <div className="absolute inset-0 bg-gradient-to-r from-violet-200 to-indigo-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                     <span className="relative z-10 flex items-center justify-center gap-2">
                                         {status === 'loading' ? (
                                             <><Loader2 className="animate-spin w-4 h-4" /> PROCESSING...</>

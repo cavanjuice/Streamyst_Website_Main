@@ -36,9 +36,9 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
              <div>
                 <h4 className="font-bold text-white mb-4">Product</h4>
                 <ul className="space-y-2 text-sm text-gray-400">
-                    <li><a href="#" className="hover:text-cyan-400 transition-colors">The Vybe</a></li>
-                    <li><a href="#" className="hover:text-cyan-400 transition-colors">Software</a></li>
-                    <li><a href="#" className="hover:text-cyan-400 transition-colors">Integrations</a></li>
+                    <li><a href="#" className="hover:text-orange-400 transition-colors">The Vybe</a></li>
+                    <li><a href="#" className="hover:text-orange-400 transition-colors">Software</a></li>
+                    <li><a href="#" className="hover:text-orange-400 transition-colors">Integrations</a></li>
                 </ul>
              </div>
              <div>
@@ -47,13 +47,13 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                     <li>
                         <button 
                             onClick={() => onNavigate?.('about')} 
-                            className="hover:text-cyan-400 transition-colors text-left"
+                            className="hover:text-orange-400 transition-colors text-left"
                         >
                             About Us
                         </button>
                     </li>
-                    <li><a href="#" className="hover:text-cyan-400 transition-colors">Careers</a></li>
-                    <li><a href="#" className="hover:text-cyan-400 transition-colors">Blog</a></li>
+                    <li><a href="#" className="hover:text-orange-400 transition-colors">Careers</a></li>
+                    <li><a href="#" className="hover:text-orange-400 transition-colors">Blog</a></li>
                 </ul>
              </div>
              <div>

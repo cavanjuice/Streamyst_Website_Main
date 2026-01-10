@@ -9,7 +9,7 @@ const testimonials = [
     name: "Alex_Streams",
     role: "Variety Streamer • 45K followers",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex&backgroundColor=b6e3f4",
-    borderColor: "border-cyan-500/30"
+    borderColor: "border-orange-500/30" // Was Cyan
   },
   {
     quote: "The burnout reduction is real. I used to feel drained after every stream. Now I leave feeling connected, not exhausted.",
@@ -23,14 +23,8 @@ const testimonials = [
     name: "ChillVibes_",
     role: "Just Chatting • 80K followers",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Chill&backgroundColor=c0aede",
-    borderColor: "border-purple-500/30"
+    borderColor: "border-violet-500/30" // Changed to violet for purple theme
   }
-];
-
-const stats = [
-    { value: "200+", label: "creators testing" },
-    { value: "50K+", label: "hours processed" },
-    { value: "4.9/5", label: "beta satisfaction" },
 ];
 
 const Testimonials: React.FC = () => {
@@ -59,10 +53,10 @@ const Testimonials: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="bg-[#0A0A0B] border border-white/10 p-8 rounded-3xl relative hover:border-white/20 transition-all group"
+              className="bg-[#0A0A0B] border border-white/10 p-8 rounded-3xl relative"
             >
               {/* Quote Icon */}
-              <div className="mb-6 opacity-30 group-hover:opacity-50 transition-opacity">
+              <div className="mb-6 opacity-30">
                 <Quote size={40} strokeWidth={1} className="text-gray-400 fill-transparent" />
               </div>
 
@@ -89,13 +83,13 @@ const Testimonials: React.FC = () => {
           ))}
         </div>
 
-        {/* Compatibility & Footer Stats */}
+        {/* Compatibility */}
         <div className="flex flex-col items-center">
             <motion.div 
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                className="flex flex-col md:flex-row items-center gap-4 md:gap-8 mb-16 bg-white/5 px-8 py-4 rounded-full border border-white/5 backdrop-blur-sm"
+                className="flex flex-col md:flex-row items-center gap-4 md:gap-8 mb-8 bg-white/5 px-8 py-4 rounded-full border border-white/5 backdrop-blur-sm"
             >
                 <span className="text-gray-500 text-xs font-bold uppercase tracking-widest mr-2">Compatible with</span>
                 <div className="flex items-center gap-8">
@@ -104,21 +98,6 @@ const Testimonials: React.FC = () => {
                     <span className="text-[#53fc18] font-bold text-sm hover:text-[#74ff42] transition-colors cursor-default">Kick</span>
                 </div>
             </motion.div>
-
-            <div className="grid grid-cols-3 gap-8 md:gap-24 text-center w-full max-w-4xl mx-auto">
-                {stats.map((stat, idx) => (
-                    <motion.div 
-                        key={idx}
-                        initial={{ opacity: 0, y: 10 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.2 + (idx * 0.1) }}
-                    >
-                        <div className="font-display font-bold text-3xl md:text-5xl text-white mb-2">{stat.value}</div>
-                        <div className="text-gray-500 text-xs md:text-sm tracking-wide font-medium opacity-80">{stat.label}</div>
-                    </motion.div>
-                ))}
-            </div>
         </div>
 
       </div>

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 const stats = [
   { value: "87%", label: "accuracy detecting sentiment shifts" },
-  { value: "40%", label: "less time reading chat" },
+  { value: "70%", label: "increase in interaction" },
   { value: "65%", label: "reduction in post-stream exhaustion" }
 ];
 

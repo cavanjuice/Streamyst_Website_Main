@@ -65,7 +65,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView = 'home', onNavigate }) => 
 
               <button 
                 onClick={() => handleNav('survey')}
-                className={`font-bold tracking-tight hover:text-cyan-400 transition-all duration-300 ${scrolled ? 'text-xs uppercase' : 'text-base'} ${currentView === 'survey' ? 'text-cyan-400' : 'text-gray-400'}`}
+                className={`font-bold tracking-tight hover:text-violet-400 transition-all duration-300 ${scrolled ? 'text-xs uppercase' : 'text-base'} ${currentView === 'survey' ? 'text-violet-400' : 'text-gray-400'}`}
               >
                   Beta Survey
               </button>
@@ -74,7 +74,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView = 'home', onNavigate }) => 
             <button 
               onClick={() => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })}
               className={`
-                bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white rounded-full font-bold transition-all duration-500 shadow-lg shadow-violet-900/20 hover:shadow-violet-600/40 hover:-translate-y-0.5 whitespace-nowrap
+                bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-full font-bold transition-all duration-500 shadow-lg shadow-violet-900/20 hover:shadow-violet-600/40 hover:-translate-y-0.5 whitespace-nowrap
                 ${scrolled ? 'px-5 py-2 text-xs tracking-wider uppercase' : 'px-7 py-3 text-base'}
               `}
             >
