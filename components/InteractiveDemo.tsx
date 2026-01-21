@@ -688,8 +688,8 @@ const InteractiveDemo: React.FC = () => {
 
                             <div className="mt-4 pt-3 border-t border-white/5">
                                 <p className="text-[9px] lg:text-[10px] text-gray-600 font-mono leading-relaxed">
-                                    > STREAM STATUS: LIVE <br/>
-                                    > WAITING FOR INPUT... <span className="animate-pulse text-violet-500">_</span>
+                                    &gt; STREAM STATUS: LIVE <br/>
+                                    &gt; WAITING FOR INPUT... <span className="animate-pulse text-violet-500">_</span>
                                 </p>
                             </div>
                         </div>
