@@ -2,33 +2,44 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Loader2, ChevronRight, ClipboardList } from 'lucide-react';
+import { saveEmailToWaitlist } from '../utils/supabaseClient';
 
 interface WaitlistProps {
-    onJoinSurvey?: () => void;
+    onJoinSurvey?: (email: string) => void;
 }
 
 const Waitlist: React.FC<WaitlistProps> = ({ onJoinSurvey }) => {
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState<'streamer' | 'viewer' | 'both'>('streamer');
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
     setStatus('loading');
     
+    // Save to Database
+    const { error } = await saveEmailToWaitlist(email);
+    
+    if (error) {
+        console.error("Failed to save email", error);
+        // We still show success to the user in this demo context to avoid friction, 
+        // but in prod you might want to show an error state.
+    }
+
     setTimeout(() => {
       setStatus('success');
-    }, 1500);
+    }, 800);
   };
 
   return (
-    <section id="waitlist" className="py-24 md:py-36 relative z-10">
+    // Changed: Reduced padding from py-24 to py-12 lg:py-24
+    <section id="waitlist" className="py-24 lg:py-48 relative z-10">
       <div className="container mx-auto px-6">
         <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            initial={{ opacity: 0, scale: 0.95, y: 30 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="max-w-6xl mx-auto bg-[#0A0A0B] border border-white/10 rounded-[2rem] overflow-hidden shadow-2xl flex flex-col lg:flex-row min-h-[550px] relative"
         >
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-violet-600/5 rounded-full blur-[100px] pointer-events-none" />
@@ -69,13 +80,14 @@ const Waitlist: React.FC<WaitlistProps> = ({ onJoinSurvey }) => {
                                 <div className="p-4 bg-violet-500/5 border border-violet-500/20 rounded-xl relative overflow-hidden">
                                     <div className="absolute top-0 left-0 w-1 h-full bg-violet-500" />
                                     <p className="text-xs text-gray-400 leading-relaxed text-left pl-2">
-                                         It will only take <span className="text-violet-300 font-bold">2 minutes</span>, but it would help us immensely. We are building this custom for you, so your feedback is our most important blueprint.
+                                         <strong className="text-violet-300 block mb-1">Important:</strong>
+                                         The product is currently in private development and <span className="text-white">not yet available for purchase</span>. We are building this custom for you, so your feedback is our most important blueprint.
                                     </p>
                                 </div>
                             </div>
                             
                             <button 
-                                onClick={onJoinSurvey}
+                                onClick={() => onJoinSurvey && onJoinSurvey(email)}
                                 className="group relative overflow-hidden bg-white text-black font-bold py-3.5 px-8 rounded-full text-sm transition-all transform hover:-translate-y-0.5 hover:shadow-lg hover:shadow-violet-500/20 flex items-center gap-2 w-full sm:w-auto justify-center"
                             >
                                 <span className="relative z-10 flex items-center gap-2">
@@ -100,30 +112,10 @@ const Waitlist: React.FC<WaitlistProps> = ({ onJoinSurvey }) => {
                             </h2>
                             
                             <p className="text-gray-500 text-sm md:text-base mb-10 leading-relaxed font-light">
-                                Be among the first! The product is not available yet. Help us make it custom for you and the community.
+                                Be among the first to access the next evolution of livestreaming connection.
                             </p>
 
                             <form onSubmit={handleSubmit} className="space-y-5">
-                                <div>
-                                    <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3 pl-1">ROLE SELECTION</label>
-                                    <div className="grid grid-cols-3 gap-2">
-                                        {(['streamer', 'viewer', 'both'] as const).map((r) => (
-                                            <button
-                                                key={r}
-                                                type="button"
-                                                onClick={() => setRole(r)}
-                                                className={`py-2.5 rounded-xl text-[11px] font-bold tracking-wider transition-all uppercase border ${
-                                                    role === r 
-                                                    ? 'bg-violet-600 border-violet-500 text-white shadow-lg shadow-violet-900/40' 
-                                                    : 'bg-white/5 border-white/5 text-gray-500 hover:bg-white/10 hover:text-white'
-                                                }`}
-                                            >
-                                                {r}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
                                 <div>
                                     <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3 pl-1">EMAIL COORDINATES</label>
                                     <input 

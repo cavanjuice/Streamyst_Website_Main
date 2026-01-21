@@ -64,33 +64,46 @@
       }
     </script>
     <style>
+      /* Restore Native Scrolling */
+      html {
+        scroll-behavior: smooth; /* Native smooth scroll for anchors */
+      }
+      
       body {
         background-color: #030205;
         color: #ffffff;
         font-family: 'Outfit', sans-serif;
-        overflow-x: hidden;
+        margin: 0;
+        padding: 0;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-      }
-      
-      /* Smooth Scrolling */
-      html {
-        scroll-behavior: smooth;
+        /* Prevent horizontal scroll issues globally */
+        overflow-x: hidden; 
+        width: 100%;
       }
 
       /* Custom Scrollbar - Sleeker */
       ::-webkit-scrollbar {
-        width: 6px;
+        width: 8px;
       }
       ::-webkit-scrollbar-track {
         background: #030205;
       }
       ::-webkit-scrollbar-thumb {
         background: #2D2654;
-        border-radius: 10px;
+        border-radius: 4px;
       }
       ::-webkit-scrollbar-thumb:hover {
         background: #8B5CF6;
+      }
+
+      /* Utility to hide scrollbar but allow scrolling */
+      .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+      }
+      .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
       }
 
       .text-glow {
@@ -119,6 +132,8 @@
     "lucide-react": "https://esm.sh/lucide-react@0.303.0?external=react",
     "framer-motion": "https://esm.sh/framer-motion@10.18.0?external=react,react-dom",
     "three/examples/jsm/loaders/OBJLoader": "https://esm.sh/three@0.160.0/examples/jsm/loaders/OBJLoader?external=three",
+    "lenis": "https://esm.sh/lenis@1.1.5",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.39.3",
     "react/": "https://esm.sh/react@^19.2.3/",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
   }

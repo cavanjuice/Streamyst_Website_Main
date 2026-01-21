@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Send, Zap, Wind, AlertCircle, MessageSquare } from 'lucide-react';
@@ -26,6 +27,16 @@ const MESSAGES_CHAOS = [
   "CLIP IT", "RIGGED", "????????", "modCheck", "I WAS HERE", "SCAM", "LMAO", "KEKW"
 ];
 
+const MESSAGES_MISSED = [
+  "I've been subbed for 3 years, this stream saved me.",
+  "Hey! You missed the secret chest behind the waterfall!",
+  "My mom just passed away, your content helps so much.",
+  "I just donated $100, did the alert play?",
+  "Can you please wish my little brother a happy birthday?",
+  "Wait, I think your audio is desynced...",
+  "Thank you for being such an inspiration to me."
+];
+
 const COLORS = [
   "text-red-400", "text-orange-400", "text-amber-400", "text-yellow-400", 
   "text-lime-400", "text-green-400", "text-emerald-400", "text-teal-400", 
@@ -35,7 +46,7 @@ const COLORS = [
 
 const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
   const [mode, setMode] = useState<'quiet' | 'overload'>('quiet');
-  const [messages, setMessages] = useState<{ id: number; user: string; text: string; color: string; isUser?: boolean }[]>([]);
+  const [messages, setMessages] = useState<{ id: number; user: string; text: string; color: string; isUser?: boolean; isMissed?: boolean }[]>([]);
   const [inputValue, setInputValue] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const msgIdRef = useRef(0);
@@ -50,14 +61,27 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
         for (let i = 0; i < count; i++) {
           msgIdRef.current++;
           const isChaos = mode === 'overload';
-          const pool = isChaos ? MESSAGES_CHAOS : MESSAGES_QUIET;
           
-          newMsgs.push({
-            id: msgIdRef.current,
-            user: USERNAMES[Math.floor(Math.random() * USERNAMES.length)],
-            text: pool[Math.floor(Math.random() * pool.length)],
-            color: COLORS[Math.floor(Math.random() * COLORS.length)]
-          });
+          // 8% chance to inject a "missed" important message during chaos
+          const isMissedOpportunity = isChaos && Math.random() < 0.08;
+
+          if (isMissedOpportunity) {
+             newMsgs.push({
+                id: msgIdRef.current,
+                user: USERNAMES[Math.floor(Math.random() * USERNAMES.length)],
+                text: MESSAGES_MISSED[Math.floor(Math.random() * MESSAGES_MISSED.length)],
+                color: "text-yellow-400", // Gold to imply value
+                isMissed: true
+             });
+          } else {
+             const pool = isChaos ? MESSAGES_CHAOS : MESSAGES_QUIET;
+             newMsgs.push({
+                id: msgIdRef.current,
+                user: USERNAMES[Math.floor(Math.random() * USERNAMES.length)],
+                text: pool[Math.floor(Math.random() * pool.length)],
+                color: COLORS[Math.floor(Math.random() * COLORS.length)]
+             });
+          }
         }
         
         // Keep buffer size manageable
@@ -72,8 +96,8 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
       // Initial population for quiet
       if (messages.length === 0) addMessage(3);
     } else {
-      // CHAOS MODE
-      interval = setInterval(() => addMessage(4), 50); // 4 messages every 50ms = 80 msg/sec
+      // CHAOS MODE - Adjusted for ~5000 viewers
+      interval = setInterval(() => addMessage(1), 150); 
     }
 
     return () => clearInterval(interval);
@@ -108,155 +132,217 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
   };
 
   return (
-    <section className="py-24 relative z-10 overflow-hidden">
+    <section className="py-24 lg:py-40 relative z-10 overflow-hidden min-h-screen flex flex-col justify-center">
       {/* Background Ambience */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#030205] via-[#0A0A0B] to-[#030205] -z-10" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[60%] bg-violet-900/10 blur-[150px] rounded-full pointer-events-none" />
 
       <div className="container mx-auto px-6 relative z-10">
         
-        {/* Header */}
-        <div className="text-center max-w-4xl mx-auto mb-12">
-            <h2 className="font-display font-bold text-3xl md:text-5xl mb-4">
+        {/* Header - Unified Style */}
+        <div className="text-center mb-16 lg:mb-24 max-w-4xl mx-auto">
+            <motion.h2 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ delay: 0.1 }}
+                className="font-display font-bold text-4xl md:text-6xl lg:text-7xl text-white mb-6 tracking-tight"
+            >
                 The <span className="text-red-500">Visibility</span> Problem.
-            </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
-                In a crowded digital room, connection is lost in the noise. <br className="hidden md:block"/>
-                Experience the difference between being present and being buried.
-            </p>
+            </motion.h2>
+            
+            <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ delay: 0.2 }}
+                className="text-lg md:text-xl text-gray-400 font-light leading-relaxed max-w-2xl mx-auto"
+            >
+                {role === 'streamer' 
+                    ? "When the chat moves too fast, you lose the ability to connect with individuals. It becomes a wall of text."
+                    : "In a crowded chat, your voice is lost instantly. You're just another line of text scrolling by."
+                }
+            </motion.p>
         </div>
 
-        {/* --- HORIZONTAL CHAT SIMULATOR --- */}
-        <div className="max-w-6xl mx-auto bg-[#0A0A0B] border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row h-[600px] relative group">
+        {/* --- MAIN INTERFACE (VIDEO LEFT, CHAT RIGHT) --- */}
+        <motion.div 
+            initial={{ opacity: 0, scale: 0.95, y: 40 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            className="max-w-6xl mx-auto bg-[#0A0A0B] border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:flex-row h-auto lg:h-[480px] relative group"
+        >
             
-            {/* LEFT: CONTROLS */}
-            <div className="w-full md:w-80 bg-[#13131F] border-r border-white/5 p-6 flex flex-col justify-between shrink-0 relative z-20">
-                <div>
-                    <div className="flex items-center gap-3 mb-8">
-                        <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
-                        <span className="font-mono text-xs font-bold text-gray-400 uppercase tracking-widest">Live Simulation</span>
-                    </div>
-
-                    <div className="space-y-4">
-                        <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Select Environment</label>
-                        
-                        <button 
-                            onClick={() => setMode('quiet')}
-                            className={`w-full p-4 rounded-xl border flex items-center gap-4 transition-all duration-300 ${mode === 'quiet' ? 'bg-emerald-500/10 border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.1)]' : 'bg-white/5 border-white/5 hover:bg-white/10'}`}
-                        >
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${mode === 'quiet' ? 'bg-emerald-500 text-black' : 'bg-gray-800 text-gray-400'}`}>
-                                <Wind size={20} />
-                            </div>
-                            <div className="text-left">
-                                <div className={`font-bold ${mode === 'quiet' ? 'text-white' : 'text-gray-400'}`}>Quiet Room</div>
-                                <div className="text-[10px] text-gray-500">Low traffic • Readable</div>
-                            </div>
-                        </button>
-
-                        <button 
-                            onClick={() => setMode('overload')}
-                            className={`w-full p-4 rounded-xl border flex items-center gap-4 transition-all duration-300 ${mode === 'overload' ? 'bg-red-500/10 border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.1)]' : 'bg-white/5 border-white/5 hover:bg-white/10'}`}
-                        >
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${mode === 'overload' ? 'bg-red-500 text-white' : 'bg-gray-800 text-gray-400'}`}>
-                                <Zap size={20} />
-                            </div>
-                            <div className="text-left">
-                                <div className={`font-bold ${mode === 'overload' ? 'text-white' : 'text-gray-400'}`}>Overload</div>
-                                <div className="text-[10px] text-gray-500">Extreme traffic • Chaotic</div>
-                            </div>
-                        </button>
-                    </div>
+            {/* LEFT: VIDEO PLAYER */}
+            <div className="flex-1 relative bg-black overflow-hidden flex flex-col justify-between group/video min-h-[250px] lg:min-h-0">
+                
+                {/* Video Simulation */}
+                <div className="absolute inset-0 opacity-70">
+                     <video
+                        key={role} // Force reload on role change
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className={`w-full h-full object-cover transition-transform duration-[20s] ease-linear ${mode === 'overload' ? 'scale-110' : 'scale-100'}`}
+                     >
+                        <source 
+                            src={role === 'streamer' 
+                                ? "https://raw.githubusercontent.com/cavanjuice/assets/main/streamersad.mp4" 
+                                : "https://raw.githubusercontent.com/cavanjuice/assets/main/viewersad.mp4"
+                            } 
+                            type="video/mp4" 
+                        />
+                     </video>
+                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/60" />
                 </div>
 
-                <div className="mt-8 md:mt-0 p-4 bg-white/5 rounded-xl border border-white/5">
-                    <div className="flex items-start gap-3">
-                        <AlertCircle className="w-5 h-5 text-violet-400 shrink-0 mt-0.5" />
-                        <div>
-                            <h4 className="font-bold text-sm text-violet-200 mb-1">Try It Yourself</h4>
-                            <p className="text-xs text-gray-400 leading-relaxed">
-                                Type a message in the chat on the right. Notice how quickly it disappears in <strong>Overload</strong> mode vs <strong>Quiet</strong> mode.
-                            </p>
+                {/* --- VIDEO OVERLAYS --- */}
+
+                {/* Top Left: Live Status */}
+                <div className="relative z-20 p-4 flex justify-between items-start">
+                    <div className="flex gap-3">
+                        <div className="bg-red-600 px-2 py-0.5 rounded text-[10px] font-bold text-white uppercase tracking-widest flex items-center gap-2 shadow-lg">
+                            <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                            LIVE
                         </div>
                     </div>
                 </div>
+
+                {/* CENTER: SIMULATION CONTROLS */}
+                <div className="relative z-30 flex flex-col items-center justify-center space-y-4">
+                     <div className="bg-black/40 backdrop-blur-md border border-white/10 p-1.5 rounded-full inline-flex items-center gap-1 shadow-2xl">
+                          <button 
+                            onClick={() => setMode('quiet')}
+                            className={`flex items-center gap-2 px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${mode === 'quiet' ? 'bg-emerald-500 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                          >
+                             <Wind size={12} />
+                             Quiet
+                          </button>
+                          <button 
+                            onClick={() => setMode('overload')}
+                            className={`flex items-center gap-2 px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${mode === 'overload' ? 'bg-red-500 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                          >
+                             <Zap size={12} />
+                             Overload
+                          </button>
+                     </div>
+                     
+                     <AnimatePresence mode="wait">
+                        <motion.div
+                            key={mode}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="hidden md:block text-[10px] font-medium text-white/80 bg-black/60 px-4 py-2 rounded-lg backdrop-blur-sm border border-white/5 max-w-xs text-center"
+                        >
+                            {mode === 'quiet' 
+                                ? "Normal chat flow. Individual messages are visible and meaningful." 
+                                : "High traffic. Meaningful messages are lost in the noise instantly."}
+                        </motion.div>
+                     </AnimatePresence>
+                </div>
+
+                {/* Bottom Bar: Stream Info */}
+                <div className="relative z-20 p-4 flex justify-between items-end">
+                    <div className="space-y-0.5 max-w-[70%]">
+                    </div>
+                    
+                    {role === 'viewer' ? (
+                        <div className="flex items-center gap-2">
+                             <div className="hidden sm:block px-4 py-1.5 rounded-full bg-violet-600 text-[10px] font-bold uppercase tracking-wider hover:bg-violet-500 cursor-pointer transition-colors shadow-lg">
+                                Subscribe
+                             </div>
+                        </div>
+                    ) : (
+                         <div className="flex gap-2">
+                         </div>
+                    )}
+                </div>
+
             </div>
 
             {/* RIGHT: CHAT VISUALIZER */}
-            <div className="flex-1 flex flex-col bg-[#05040a] relative overflow-hidden">
+            <div className="w-full lg:w-80 bg-[#05040a] border-t lg:border-t-0 lg:border-l border-white/10 flex flex-col relative z-20 shrink-0 h-[280px] lg:h-auto">
                 {/* Header Stats */}
-                <div className="h-14 border-b border-white/5 flex items-center justify-between px-6 bg-[#0A0A0B]/50 backdrop-blur-md z-10">
+                <div className="h-12 border-b border-white/5 flex items-center justify-center md:justify-between px-4 bg-[#0A0A0B]/90 backdrop-blur-md z-10 sticky top-0">
                     <div className="flex items-center gap-2">
-                        <MessageSquare className="w-4 h-4 text-gray-500" />
-                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Stream Chat</span>
+                        <MessageSquare className="w-3 h-3 text-gray-500" />
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Chat</span>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <Users className="w-4 h-4 text-gray-500" />
-                        <span className={`font-mono text-sm font-bold transition-colors duration-500 ${mode === 'overload' ? 'text-red-400' : 'text-emerald-400'}`}>
-                            {mode === 'overload' ? '142,893' : '12'}
+                    <div className="flex items-center gap-2">
+                        <Users className="w-3 h-3 text-gray-500" />
+                        <span className={`font-mono text-xs font-bold transition-colors duration-500 ${mode === 'overload' ? 'text-red-400' : 'text-emerald-400'}`}>
+                            {mode === 'overload' ? '5,492' : '12'}
                         </span>
-                        <span className="text-xs text-gray-600 uppercase tracking-widest">Viewers</span>
                     </div>
                 </div>
 
                 {/* Messages Area */}
-                <div className="relative flex-1 overflow-hidden">
+                <div className="relative flex-1 overflow-hidden bg-[#05040a]">
                     {/* Gradient Masks */}
-                    <div className="absolute top-0 left-0 w-full h-16 bg-gradient-to-b from-[#05040a] to-transparent z-10 pointer-events-none" />
+                    <div className="absolute top-0 left-0 w-full h-8 bg-gradient-to-b from-[#05040a] to-transparent z-10 pointer-events-none" />
                     
                     <div 
                         ref={scrollRef}
-                        className="absolute inset-0 overflow-y-auto px-6 py-4 space-y-1 scroll-smooth scrollbar-hide"
+                        className="absolute inset-0 overflow-y-auto px-4 py-4 space-y-1.5 scroll-smooth scrollbar-hide"
                     >
                         {messages.map((msg) => (
                             <motion.div 
                                 key={msg.id}
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
+                                initial={{ opacity: 0, x: 10 }}
+                                animate={{ opacity: msg.isMissed ? 0.6 : 1, x: 0 }}
                                 className={`
-                                    text-sm py-1 px-2 rounded flex items-baseline gap-2 leading-relaxed transition-all
+                                    text-xs py-0.5 px-2 rounded flex items-baseline gap-2 leading-relaxed transition-all break-words
                                     ${msg.isUser 
                                         ? 'bg-violet-600/20 border border-violet-500/30 shadow-[0_0_15px_rgba(139,92,246,0.1)]' 
-                                        : 'hover:bg-white/5'}
+                                        : msg.isMissed
+                                            ? 'bg-yellow-500/5 border border-yellow-500/10 grayscale-[0.5]' 
+                                            : 'hover:bg-white/5'}
                                 `}
                             >
                                 {msg.isUser && (
-                                    <span className="inline-block px-1.5 py-0.5 rounded bg-violet-600 text-[10px] font-bold text-white uppercase tracking-wider">
+                                    <span className="shrink-0 inline-block px-1.5 py-0.5 rounded bg-violet-600 text-[8px] font-bold text-white uppercase tracking-wider">
                                         YOU
                                     </span>
                                 )}
-                                <span className={`font-bold text-xs md:text-sm whitespace-nowrap ${msg.color}`}>{msg.user}:</span>
-                                <span className={`${msg.isUser ? 'text-white font-medium' : 'text-gray-300'}`}>{msg.text}</span>
+                                {msg.isMissed && (
+                                    <AlertCircle size={10} className="text-yellow-500/50 shrink-0 self-center" />
+                                )}
+                                <span className={`font-bold shrink-0 text-[10px] md:text-xs ${msg.isMissed ? 'text-yellow-500/50' : msg.color}`}>{msg.user}:</span>
+                                <span className={`text-[10px] md:text-xs ${msg.isUser ? 'text-white font-medium' : msg.isMissed ? 'text-yellow-100/50 italic' : 'text-gray-300'}`}>{msg.text}</span>
                             </motion.div>
                         ))}
                     </div>
                 </div>
 
                 {/* Input Area */}
-                <form onSubmit={handleSendMessage} className="p-4 bg-[#0A0A0B] border-t border-white/5 relative z-20">
+                <form onSubmit={handleSendMessage} className="p-3 bg-[#0A0A0B] border-t border-white/5 relative z-20">
                     <div className="relative">
                         <input 
                             type="text" 
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
                             placeholder={mode === 'overload' ? "Good luck being seen..." : "Say something..."}
-                            className="w-full bg-[#1A1830] border border-white/10 rounded-xl py-3 pl-4 pr-12 text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors"
+                            className="w-full bg-[#1A1830] border border-white/10 rounded-lg py-2 pl-3 pr-10 text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors text-xs"
                         />
                         <button 
                             type="submit"
-                            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-violet-600 hover:bg-violet-500 text-white rounded-lg transition-colors"
+                            className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 bg-violet-600 hover:bg-violet-500 text-white rounded transition-colors"
                         >
-                            <Send size={16} />
+                            <Send size={12} />
                         </button>
                     </div>
                 </form>
 
-                {/* Overload Effect Overlay */}
+                {/* Overload Effect Overlay on Chat */}
                 {mode === 'overload' && (
                     <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-transparent to-red-500/5 z-0" />
                 )}
             </div>
 
-        </div>
+        </motion.div>
 
       </div>
     </section>

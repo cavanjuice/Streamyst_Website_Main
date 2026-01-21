@@ -19,49 +19,91 @@ const SocialLink = ({ icon }: { icon: React.ReactNode }) => (
 // --- ACT II: TIMELINE COMPONENT ---
 
 const TimelineNode = ({ title, date, children, index }: { title: string, date: string, children?: React.ReactNode, index: number }) => {
-    return (
-        <motion.div 
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ delay: index * 0.2 }}
-            className="relative pl-12 md:pl-24 py-12 border-l border-white/10 group"
-        >
-            {/* The Node */}
-            <div className="absolute left-[-8px] top-12 w-4 h-4 rounded-full bg-cosmic-950 border border-white/30 group-hover:border-violet-400 group-hover:scale-125 transition-all duration-300 shadow-[0_0_0_4px_rgba(0,0,0,1)]">
-                <div className="absolute inset-0 bg-violet-400 rounded-full opacity-0 group-hover:opacity-100 animate-ping" />
-            </div>
+    const ref = useRef<HTMLDivElement>(null);
+    const { scrollYProgress } = useScroll({
+        target: ref,
+        offset: ["start 85%", "center center"]
+    });
+    
+    // Content entry animation linked to scroll
+    const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
+    const x = useTransform(scrollYProgress, [0, 1], [-30, 0]);
 
-            <div className="mb-2 flex items-center gap-4">
-                <span className="font-mono text-xs text-violet-500 bg-violet-950/30 px-2 py-1 rounded border border-violet-900/50">{date}</span>
-            </div>
-            <h3 className="text-3xl font-display font-bold text-white mb-4">{title}</h3>
-            <div className="text-gray-400 text-lg leading-relaxed max-w-xl">
-                {children}
-            </div>
-        </motion.div>
+    // Line fill animation - fills as you scroll through the section
+    const { scrollYProgress: lineProgress } = useScroll({
+        target: ref,
+        offset: ["start center", "end center"]
+    });
+    const lineScale = useTransform(lineProgress, [0, 1], [0, 1]);
+
+    return (
+        <div ref={ref} className="relative pl-12 md:pl-24 py-12 group">
+            {/* Base Line */}
+            <div className="absolute left-0 top-0 bottom-0 w-px bg-white/10" />
+            
+            {/* Active Scroll Line */}
+            <motion.div 
+                style={{ scaleY: lineScale }}
+                className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-violet-500 to-indigo-500 origin-top"
+            />
+
+            {/* The Node Dot */}
+            <motion.div 
+                style={{ opacity, scale: opacity }}
+                className="absolute left-[-8px] top-12 w-4 h-4 rounded-full bg-[#030205] border border-white/30 group-hover:border-violet-400 group-hover:scale-125 transition-all duration-300 shadow-[0_0_0_4px_#030205] z-10"
+            >
+                <div className="absolute inset-0 bg-violet-400 rounded-full opacity-0 group-hover:opacity-100 animate-ping" />
+            </motion.div>
+
+            <motion.div style={{ opacity, x }}>
+                <div className="mb-2 flex items-center gap-4">
+                    <span className="font-mono text-xs text-violet-500 bg-violet-950/30 px-2 py-1 rounded border border-violet-900/50">{date}</span>
+                </div>
+                <h3 className="text-3xl font-display font-bold text-white mb-4">{title}</h3>
+                <div className="text-gray-400 text-lg leading-relaxed max-w-xl">
+                    {children}
+                </div>
+            </motion.div>
+        </div>
     );
 };
 
 // --- ACT IV: FOUNDER CARD ---
 
 const FounderCard = ({ img, name, role, quote, delay }: { img: string, name: string, role: string, quote: string, delay: number }) => {
+    const cardRef = useRef<HTMLDivElement>(null);
+    const { scrollYProgress } = useScroll({
+        target: cardRef,
+        offset: ["start end", "end start"]
+    });
+    
+    // Parallax: Image moves slower/faster than container
+    // We move the image from -15% (top hidden) to 15% (bottom hidden) as we scroll down
+    const y = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"]);
+
     return (
         <motion.div 
-            initial={{ opacity: 0, y: 30 }}
+            ref={cardRef}
+            initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay, duration: 0.8 }}
+            viewport={{ once: true, margin: "-10%" }}
+            transition={{ duration: 0.8, delay }}
             className="relative group w-full"
         >
             <div className="relative rounded-3xl overflow-hidden bg-[#0A0A0B] border border-white/10 shadow-2xl">
-                {/* Image */}
+                {/* Image Container with Overflow Hidden */}
                 <div className="relative h-[450px] overflow-hidden">
-                    <img 
-                        src={img} 
-                        alt={name} 
-                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 object-top"
-                    />
+                    <motion.div 
+                        style={{ y }} 
+                        className="absolute inset-0 h-[130%] -top-[15%] w-full"
+                    >
+                        <img 
+                            src={img} 
+                            alt={name} 
+                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 object-top"
+                        />
+                    </motion.div>
+
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0B] via-transparent to-transparent opacity-80" />
                     
                     {/* Scanlines Effect */}

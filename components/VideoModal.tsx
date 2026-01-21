@@ -18,7 +18,7 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose }) => {
                 initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
                 animate={{ opacity: 1, backdropFilter: "blur(12px)" }}
                 exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
-                transition={{ duration: 0.4 }}
+                transition={{ duration: 0.6, ease: "easeInOut" }}
                 onClick={onClose}
                 className="absolute inset-0 bg-black/80 cursor-pointer"
             />
@@ -27,9 +27,10 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose }) => {
             <div className="relative w-full max-w-5xl aspect-video pointer-events-none">
                 
                 {/* 
-                    Animation Concept: "The Cyber Split"
-                    1. A horizontal line appears (scaleX 0->1)
-                    2. It opens vertically (scaleY 0->1)
+                    Animation Concept: "The Cyber Split" - Refined for Fluidity
+                    1. Horizontal line expands (ScaleX)
+                    2. Opens vertically (ScaleY)
+                    Uses custom bezier curves [0.16, 1, 0.3, 1] for smooth settling
                 */}
                 <motion.div 
                     initial={{ scaleX: 0, scaleY: 0.005, opacity: 0 }}
@@ -38,9 +39,9 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose }) => {
                         opacity: 1,
                         scaleY: 1,
                         transition: {
-                            scaleX: { duration: 0.4, ease: "circOut" },
-                            scaleY: { duration: 0.5, delay: 0.4, ease: "circOut" },
-                            opacity: { duration: 0.1 }
+                            scaleX: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+                            scaleY: { duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] },
+                            opacity: { duration: 0.2 }
                         }
                     }}
                     exit={{ 
@@ -48,19 +49,19 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose }) => {
                         scaleX: 0,
                         opacity: 0,
                         transition: {
-                            scaleY: { duration: 0.4, ease: "circIn" },
-                            scaleX: { duration: 0.4, delay: 0.3, ease: "circIn" },
-                            opacity: { delay: 0.6 }
+                            scaleY: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+                            scaleX: { duration: 0.5, delay: 0.3, ease: [0.22, 1, 0.36, 1] },
+                            opacity: { duration: 0.2, delay: 0.7 }
                         }
                     }}
                     className="absolute inset-0 bg-black overflow-hidden pointer-events-auto border border-white/10 shadow-[0_0_100px_rgba(139,92,246,0.2)] rounded-sm"
                 >
-                    {/* Content Fade In (Slightly delayed to wait for box to open) */}
+                    {/* Content Fade In (Waits for box to fully open) */}
                     <motion.div
                          initial={{ opacity: 0 }}
                          animate={{ opacity: 1 }}
                          exit={{ opacity: 0 }}
-                         transition={{ duration: 0.3, delay: 0.7 }}
+                         transition={{ duration: 0.4, delay: 0.9 }} 
                          className="w-full h-full relative group"
                     >
                          {/* Close Button (Inside Frame) */}
@@ -81,7 +82,7 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose }) => {
                                  <motion.div 
                                     initial={{ scale: 0.8, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
-                                    transition={{ delay: 1 }}
+                                    transition={{ delay: 1.2 }}
                                     className="w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6 backdrop-blur-sm"
                                 >
                                     <Play className="w-10 h-10 text-white fill-white ml-1 opacity-80" />

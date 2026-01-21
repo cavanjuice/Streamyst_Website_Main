@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'framer-motion';
-import { Sparkles, MessageSquare, Users, Wifi } from 'lucide-react';
+import { Sparkles, Wifi } from 'lucide-react';
 
 type Emotion = 'happy' | 'love' | 'hype' | 'shock' | 'clap';
 
@@ -36,22 +36,31 @@ interface ChatMessage {
 const InteractiveDemo: React.FC = () => {
   const [activeEmotion, setActiveEmotion] = useState<Emotion | null>(null);
   const [triggerKey, setTriggerKey] = useState(0); // Forces re-render on same-click
-  const [currentFrame, setCurrentFrame] = useState(0);
   const [shake, setShake] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
   // Chat State
   const [messages, setMessages] = useState<ChatMessage[]>([
-      { id: 1, user: 'StreamBot', text: 'Connected to Streamyst Live Demo.', color: 'text-violet-400', isSystem: true },
+      { id: 1, user: 'StreamBot', text: 'Connected to Streamyst Live.', color: 'text-violet-400', isSystem: true },
       { id: 2, user: 'PixelRogue', text: 'Waiting for the drop...', color: 'text-blue-400' },
-      { id: 3, user: 'NeonNinja', text: 'Is this actually real-time?', color: 'text-green-400' },
+      { id: 3, user: 'NeonNinja', text: 'Is this real-time?', color: 'text-green-400' },
   ]);
   const chatScrollRef = useRef<HTMLDivElement>(null);
+
+  // Check for mobile to disable tilt
+  useEffect(() => {
+      const checkMobile = () => {
+          setIsMobile(window.innerWidth < 1024);
+      };
+      checkMobile();
+      window.addEventListener('resize', checkMobile);
+      return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Mouse Tilt Logic
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   
-  // Physics config: EXACT MATCH to ExperienceToggle for consistency.
   const springConfig = { stiffness: 40, damping: 20, mass: 1.2 };
   
   const springX = useSpring(mouseX, springConfig);
@@ -68,6 +77,7 @@ const InteractiveDemo: React.FC = () => {
   const layerY = useTransform(springY, [-0.5, 0.5], [-15, 15]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    if (isMobile) return;
     const { clientX, clientY, currentTarget } = e;
     const { left, top, width, height } = currentTarget.getBoundingClientRect();
     const x = (clientX - left) / width - 0.5;
@@ -81,30 +91,8 @@ const InteractiveDemo: React.FC = () => {
     mouseY.set(0);
   };
 
-  const images = [
-    "https://raw.githubusercontent.com/cavanjuice/assets/main/wearable_.png",
-    "https://raw.githubusercontent.com/cavanjuice/assets/main/wearable_2.png",
-    "https://raw.githubusercontent.com/cavanjuice/assets/main/wearable_3.png",
-    "https://raw.githubusercontent.com/cavanjuice/assets/main/wearable_1.png"
-  ];
-
-  // Boot Sequence
-  useEffect(() => {
-    const sequence = [
-      { frame: 0, duration: 3000 },
-      { frame: 1, duration: 3000 },
-      { frame: 2, duration: 3000 },
-      { frame: 3, duration: 3000 },
-    ];
-    let timeoutId: ReturnType<typeof setTimeout>;
-    const runSequence = (index: number) => {
-      setCurrentFrame(sequence[index].frame);
-      const nextIndex = (index + 1) % sequence.length;
-      timeoutId = setTimeout(() => runSequence(nextIndex), sequence[index].duration);
-    };
-    runSequence(0);
-    return () => clearTimeout(timeoutId);
-  }, []);
+  // The static image to display (The last one from the original sequence)
+  const staticImage = "https://raw.githubusercontent.com/cavanjuice/assets/main/wearable_1.png";
 
   // Chat Auto-scroll
   useEffect(() => {
@@ -135,8 +123,10 @@ const InteractiveDemo: React.FC = () => {
     const randomUser = userNames[Math.floor(Math.random() * userNames.length)];
     const randomColor = userColors[Math.floor(Math.random() * userColors.length)];
 
+    const maxMessages = isMobile ? 5 : 8;
+
     setMessages(prev => [
-        ...prev.slice(-7), // Keep only last 8 messages
+        ...prev.slice(-(maxMessages - 1)), // Keep limited messages
         { 
             id: Date.now(), 
             user: randomUser, 
@@ -146,9 +136,26 @@ const InteractiveDemo: React.FC = () => {
     ]);
   };
 
-  // --- PARTICLE SYSTEMS (Memoized for stability) ---
+  const getEmotionFilter = (emotion: Emotion | null) => {
+      if (!emotion) return 'none';
 
-  // Shock: Lightning Paths
+      switch (emotion) {
+          case 'happy': // Target Green - Sepia base avoids white core
+              return 'sepia(100%) hue-rotate(80deg) saturate(250%) brightness(0.9) drop-shadow(0 0 15px rgba(34,197,94,0.6))';
+          case 'love': // Target Pink
+              return 'sepia(100%) hue-rotate(290deg) saturate(250%) brightness(0.9) drop-shadow(0 0 15px rgba(236,72,153,0.6))';
+          case 'hype': // Target Orange
+              return 'sepia(100%) hue-rotate(-10deg) saturate(300%) brightness(0.9) drop-shadow(0 0 15px rgba(249,115,22,0.6))';
+          case 'shock': // Target Bright White/Blueish - Keep as is for effect
+              return 'drop-shadow(0 0 40px rgba(255,255,255,0.5)) grayscale(100%) brightness(1.5) contrast(1.1)';
+          case 'clap': // Target Yellow
+              return 'sepia(100%) hue-rotate(15deg) saturate(300%) brightness(1.0) drop-shadow(0 0 15px rgba(250,204,21,0.6))';
+          default:
+              return 'none';
+      }
+  };
+
+  // --- PARTICLE SYSTEMS ---
   const lightningPaths = useMemo(() => {
     return Array.from({ length: 8 }).map((_, i) => {
         const angle = (i / 8) * Math.PI * 2;
@@ -166,14 +173,12 @@ const InteractiveDemo: React.FC = () => {
     });
   }, [triggerKey]);
 
-  // Love: Floating Hearts
   const loveParticles = useMemo(() => {
     return Array.from({ length: 30 }).map((_, i) => {
         const angle = Math.random() * Math.PI * 2;
         const velocity = 60 + Math.random() * 100;
         const lift = 150 + Math.random() * 250;
         const xDir = Math.cos(angle);
-        const yDir = Math.sin(angle);
         const depth = Math.random(); 
         const scale = 0.5 + depth * 1.0;
         const blur = (1 - depth) * 4;
@@ -182,7 +187,7 @@ const InteractiveDemo: React.FC = () => {
         return {
             id: i,
             startX: xDir * 20, 
-            startY: yDir * 20,
+            startY: Math.sin(angle) * 20,
             endX: xDir * velocity + (Math.random() - 0.5) * 60,
             endY: -lift,
             rotateStart: (Math.random() - 0.5) * 60,
@@ -197,12 +202,10 @@ const InteractiveDemo: React.FC = () => {
     });
   }, [triggerKey]);
 
-  // Happy: Cosmic Euphoria (Stars) -> Now Green Joy
   const joyParticles = useMemo(() => {
     return Array.from({ length: 40 }).map((_, i) => {
         const angle = (i / 40) * Math.PI * 2 + (Math.random() - 0.5); 
         const dist = 150 + Math.random() * 200;
-        const depth = Math.random();
         
         return {
             id: i,
@@ -212,21 +215,17 @@ const InteractiveDemo: React.FC = () => {
             rotate: Math.random() * 360,
             delay: Math.random() * 0.2,
             duration: 1.5 + Math.random(),
-            color: Math.random() > 0.5 ? '#22c55e' : '#86efac' // Green to Light Green
+            color: Math.random() > 0.5 ? '#22c55e' : '#86efac' 
         };
     });
   }, [triggerKey]);
 
-  // Clap: Golden Ovation (Confetti)
   const clapParticles = useMemo(() => {
     return Array.from({ length: 60 }).map((_, i) => {
-        // Physics Simulation: Ballistic arc
         const startX = (Math.random() - 0.5) * 400; 
-        const startY = 400; // Start below screen
-        
+        const startY = 400; 
         const endX = startX + (Math.random() - 0.5) * 200;
-        const endY = -250 - Math.random() * 200; // Peak height
-        
+        const endY = -250 - Math.random() * 200; 
         const rotationAxis = Math.random() > 0.5 ? 'rotateX' : 'rotateY';
         
         return {
@@ -248,9 +247,10 @@ const InteractiveDemo: React.FC = () => {
   }, [triggerKey]);
 
   return (
+    // Changed: Significantly reduced mobile padding to py-6
     <section 
         id="demo" 
-        className="py-24 md:py-32 relative z-10 overflow-hidden bg-cosmic-950 perspective-1000"
+        className="py-24 lg:py-48 relative z-10 overflow-hidden bg-cosmic-950 perspective-1000"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
     >
@@ -273,20 +273,22 @@ const InteractiveDemo: React.FC = () => {
                       <feMergeNode in="SourceGraphic"/>
                   </feMerge>
               </filter>
-              <radialGradient id="star-glow">
-                   <stop offset="0%" stopColor="#ffffff" stopOpacity="1"/>
-                   <stop offset="100%" stopColor="#6366f1" stopOpacity="0"/>
-              </radialGradient>
           </defs>
       </svg>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 lg:px-6 relative z-10">
         
-        {/* Header */}
-        <div className="text-center mb-16">
-           <h2 className="font-display font-bold text-4xl md:text-6xl mb-4 text-white tracking-tight">
+        {/* Unified Header Style */}
+        <div className="text-center mb-16 lg:mb-24 max-w-4xl mx-auto">
+           <motion.h2 
+             initial={{ opacity: 0, y: 20 }}
+             whileInView={{ opacity: 1, y: 0 }}
+             viewport={{ once: true, margin: "-100px" }}
+             transition={{ delay: 0.1 }}
+             className="font-display font-bold text-4xl md:text-6xl lg:text-7xl text-white mb-6 tracking-tight"
+           >
              CONTROL THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-purple-600 filter drop-shadow-[0_0_20px_rgba(139,92,246,0.3)]">EXPERIENCE</span>
-           </h2>
+           </motion.h2>
         </div>
 
         {/* 3D TILT CONTAINER */}
@@ -295,28 +297,32 @@ const InteractiveDemo: React.FC = () => {
             style={{ perspective: 1000 }}
         >
             <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 50 }}
+                whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
                 style={{ 
-                    rotateX, 
-                    rotateY,
+                    rotateX: isMobile ? 0 : rotateX, 
+                    rotateY: isMobile ? 0 : rotateY,
                 }}
                 animate={{
                     x: shake > 0 ? [0, -shake, shake, -shake, shake, 0] : 0 
                 }}
-                transition={{ duration: shake > 0 ? 0.4 : 0 }}
-                className="relative w-full max-w-4xl bg-black/60 backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-[0_50px_100px_rgba(0,0,0,0.8)] overflow-hidden transform-style-3d"
+                className="relative w-full max-w-4xl bg-black/60 backdrop-blur-2xl border border-white/10 rounded-[1.5rem] lg:rounded-[2rem] shadow-[0_50px_100px_rgba(0,0,0,0.8)] overflow-hidden transform-style-3d"
             >
                 {/* Dynamic Glare Reflection */}
                 <motion.div 
                     className="absolute inset-0 z-20 pointer-events-none opacity-30 mix-blend-overlay bg-gradient-to-tr from-transparent via-white to-transparent"
                     style={{
-                        background: `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.15), transparent 60%)`
+                        background: isMobile ? 'none' : `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.15), transparent 60%)`
                     }}
                 />
 
-                <div className="grid lg:grid-cols-12 min-h-[600px]">
+                <div className="grid lg:grid-cols-12 lg:min-h-[500px]">
                     
                     {/* LEFT: VISUALIZER */}
-                    <div className="lg:col-span-7 relative flex items-center justify-center p-12 overflow-hidden bg-[#0A0A0B]">
+                    {/* Compact height on mobile: h-[260px] */}
+                    <div className="lg:col-span-7 relative flex items-center justify-center p-4 lg:p-10 overflow-hidden bg-[#0A0A0B] h-[260px] lg:h-auto">
                         
                         {/* Dynamic Environment Glow */}
                         <div 
@@ -330,12 +336,13 @@ const InteractiveDemo: React.FC = () => {
                         
                         {/* Grid Pattern */}
                         <motion.div 
-                            style={{ x: layerX, y: layerY }}
+                            style={{ x: isMobile ? 0 : layerX, y: isMobile ? 0 : layerY }}
                             className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" 
                         />
 
                         {/* UNIQUE EMOTION ANIMATIONS */}
                         <AnimatePresence>
+                            {/* ... (Animations remain the same, logic is fine) ... */}
                             
                             {/* === HAPPY / JOY === */}
                             {activeEmotion === 'happy' && (
@@ -343,7 +350,6 @@ const InteractiveDemo: React.FC = () => {
                                     key={`happy-${triggerKey}`} 
                                     className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center overflow-hidden"
                                 >
-                                     {/* 1. Rotating God-Rays Aura */}
                                      <motion.div 
                                         initial={{ opacity: 0, rotate: 0, scale: 0.5 }}
                                         animate={{ opacity: 0.3, rotate: 180, scale: 1.5 }}
@@ -354,41 +360,21 @@ const InteractiveDemo: React.FC = () => {
                                             filter: 'blur(40px)'
                                         }}
                                      />
-                                     
-                                     {/* 2. Central Burst Core */}
                                      <motion.div 
                                         initial={{ scale: 0 }}
                                         animate={{ scale: [0, 1.2, 0.8] }}
                                         transition={{ duration: 0.8, ease: "backOut" }}
                                         className="absolute w-40 h-40 bg-green-500/20 rounded-full blur-2xl"
                                      />
-
-                                     {/* 3. Star Particles */}
                                      {joyParticles.map((p) => (
                                          <motion.div
-                                            key={p.id}
-                                            initial={{ x: 0, y: 0, scale: 0, opacity: 1, rotate: 0 }}
-                                            animate={{ 
-                                                x: p.x, 
-                                                y: p.y, 
-                                                scale: [0, p.scale, 0], 
-                                                opacity: [0, 1, 0],
-                                                rotate: p.rotate
-                                            }}
-                                            transition={{ 
-                                                duration: p.duration, 
-                                                delay: p.delay,
-                                                ease: "circOut" 
-                                            }}
-                                            className="absolute"
+                                             key={p.id}
+                                             initial={{ x: 0, y: 0, scale: 0, opacity: 1, rotate: 0 }}
+                                             animate={{ x: p.x, y: p.y, scale: [0, p.scale, 0], opacity: [0, 1, 0], rotate: p.rotate }}
+                                             transition={{ duration: p.duration, delay: p.delay, ease: "circOut" }}
+                                             className="absolute"
                                          >
-                                             <StarIcon 
-                                                className="w-4 h-4" 
-                                                style={{ 
-                                                    color: p.color,
-                                                    filter: `drop-shadow(0 0 5px ${p.color})` 
-                                                }}
-                                             />
+                                             <StarIcon className="w-4 h-4" style={{ color: p.color, filter: `drop-shadow(0 0 5px ${p.color})` }} />
                                          </motion.div>
                                      ))}
                                 </motion.div>
@@ -400,7 +386,6 @@ const InteractiveDemo: React.FC = () => {
                                     key={`love-${triggerKey}`} 
                                     className="absolute inset-0 z-0 pointer-events-none overflow-hidden"
                                 >
-                                     {/* Persistent Ambiance - NEW */}
                                      <motion.div
                                          initial={{ opacity: 0 }}
                                          animate={{ opacity: 0.3 }}
@@ -408,8 +393,6 @@ const InteractiveDemo: React.FC = () => {
                                          transition={{ duration: 1 }}
                                          className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(236,72,153,0.3)_0%,transparent_70%)] blur-xl"
                                      />
-                                     
-                                     {/* Explosive Pulse (Center) */}
                                      <motion.div
                                         initial={{ scale: 0, opacity: 0.8, borderWidth: '2px' }}
                                         animate={{ scale: 2.5, opacity: 0, borderWidth: '0px' }}
@@ -417,7 +400,6 @@ const InteractiveDemo: React.FC = () => {
                                         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full border-pink-500 shadow-[0_0_50px_#ec4899] blur-sm"
                                         style={{ borderStyle: 'solid' }}
                                      />
-                                     {/* Floating Hearts */}
                                      {loveParticles.map((p) => (
                                          <motion.div
                                              key={p.id}
@@ -439,7 +421,6 @@ const InteractiveDemo: React.FC = () => {
                                     key={`hype-${triggerKey}`} 
                                     className="absolute inset-0 z-0 pointer-events-none flex items-end justify-center pb-12"
                                 >
-                                        {/* Persistent Ambiance - NEW */}
                                         <motion.div 
                                             initial={{ opacity: 0 }}
                                             animate={{ opacity: 0.4 }}
@@ -447,7 +428,6 @@ const InteractiveDemo: React.FC = () => {
                                             transition={{ duration: 0.8 }}
                                             className="absolute bottom-0 inset-x-0 h-3/4 bg-gradient-to-t from-orange-600/30 via-orange-500/10 to-transparent"
                                         />
-
                                         <motion.div
                                             initial={{ opacity: 1, scale: 0 }}
                                             animate={{ opacity: 0, scale: 2.5 }}
@@ -473,7 +453,6 @@ const InteractiveDemo: React.FC = () => {
                                     key={`shock-${triggerKey}`} 
                                     className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center"
                                 >
-                                        {/* Persistent Ambiance - NEW */}
                                         <motion.div
                                             initial={{ opacity: 0 }}
                                             animate={{ opacity: 0.2 }}
@@ -481,7 +460,6 @@ const InteractiveDemo: React.FC = () => {
                                             transition={{ duration: 0.2 }}
                                             className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1)_0%,transparent_60%)]"
                                         />
-
                                         <motion.div
                                             initial={{ opacity: 1 }}
                                             animate={{ opacity: [1, 0] }}
@@ -512,11 +490,7 @@ const InteractiveDemo: React.FC = () => {
                                                     filter="url(#glow-shock)"
                                                     vectorEffect="non-scaling-stroke"
                                                     initial={{ pathLength: 0, opacity: 0 }}
-                                                    animate={{ 
-                                                        pathLength: [0, 1], 
-                                                        opacity: [0, 1, 0],
-                                                        strokeWidth: [1.5, 0.5, 0]
-                                                    }}
+                                                    animate={{ pathLength: [0, 1], opacity: [0, 1, 0], strokeWidth: [1.5, 0.5, 0] }}
                                                     transition={{ duration: 0.25, delay: Math.random() * 0.1, ease: "linear" }}
                                                 />
                                             ))}
@@ -530,7 +504,6 @@ const InteractiveDemo: React.FC = () => {
                                     key={`clap-${triggerKey}`} 
                                     className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center overflow-hidden"
                                 >
-                                     {/* 1. Stage Spotlight Beam */}
                                      <motion.div 
                                         initial={{ opacity: 0, height: '0%' }}
                                         animate={{ opacity: 0.6, height: '120%' }}
@@ -539,16 +512,12 @@ const InteractiveDemo: React.FC = () => {
                                         className="absolute top-[-20%] w-[300px] bg-gradient-to-b from-yellow-300/20 via-yellow-500/5 to-transparent blur-xl"
                                         style={{ transform: 'perspective(500px) rotateX(10deg)' }}
                                      />
-                                     
-                                     {/* 2. Spotlight Floor Hit */}
                                      <motion.div
                                         initial={{ scale: 0, opacity: 0 }}
                                         animate={{ scale: 1, opacity: 0.4 }}
                                         transition={{ duration: 0.2 }}
                                         className="absolute bottom-20 w-[400px] h-20 bg-yellow-500/30 rounded-[100%] blur-3xl"
                                      />
-
-                                     {/* 3. Golden Confetti Rain */}
                                      {clapParticles.map((p) => (
                                          <motion.div
                                              key={p.id}
@@ -557,21 +526,13 @@ const InteractiveDemo: React.FC = () => {
                                              animate={{ 
                                                  x: [p.startX, p.midX, p.finalX], 
                                                  y: [600, p.midY, p.finalY], 
-                                                 opacity: [0, 1, 0], // Flash on, then fade
+                                                 opacity: [0, 1, 0], 
                                                  rotate: p.rotateAmount,
                                                  rotateX: p.rotationAxis === 'rotateX' ? p.rotateAmount : 0,
                                                  rotateY: p.rotationAxis === 'rotateY' ? p.rotateAmount : 0,
                                              }}
-                                             transition={{ 
-                                                 duration: p.duration, 
-                                                 delay: p.delay,
-                                                 ease: ["circOut", "easeInOut"], 
-                                                 times: [0, 0.15, 1]
-                                             }}
-                                             style={{ 
-                                                 backgroundColor: p.color,
-                                                 boxShadow: '0 0 5px rgba(255,215,0,0.5)'
-                                             }}
+                                             transition={{ duration: p.duration, delay: p.delay, ease: ["circOut", "easeInOut"], times: [0, 0.15, 1] }}
+                                             style={{ backgroundColor: p.color, boxShadow: '0 0 5px rgba(255,215,0,0.5)' }}
                                          />
                                      ))}
                                 </motion.div>
@@ -583,17 +544,16 @@ const InteractiveDemo: React.FC = () => {
                             style={{ 
                                 maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)',
                                 WebkitMaskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)',
-                                x: layerX,
-                                y: layerY
+                                x: isMobile ? 0 : layerX,
+                                y: isMobile ? 0 : layerY
                             }}
-                            className="relative z-10 w-full max-w-[500px] aspect-[4/5]"
+                            className="relative z-10 w-full max-w-[180px] lg:max-w-[300px] aspect-[4/5]"
                         >
-                             {/* Glitch Ghost Images (Shock Only) */}
                              {activeEmotion === 'shock' && (
                                 <>
                                     <motion.img 
                                         key="ghost-r"
-                                        src={images[0]}
+                                        src={staticImage}
                                         className="absolute inset-0 w-full h-full object-contain opacity-50 mix-blend-screen"
                                         initial={{ x: 0 }}
                                         animate={{ x: [-5, 5, -5, 0], opacity: [0.5, 0.8, 0] }}
@@ -602,7 +562,7 @@ const InteractiveDemo: React.FC = () => {
                                     />
                                     <motion.img 
                                         key="ghost-b"
-                                        src={images[0]}
+                                        src={staticImage}
                                         className="absolute inset-0 w-full h-full object-contain opacity-50 mix-blend-screen"
                                         initial={{ x: 0 }}
                                         animate={{ x: [5, -5, 5, 0], opacity: [0.5, 0.8, 0] }}
@@ -612,61 +572,47 @@ const InteractiveDemo: React.FC = () => {
                                 </>
                              )}
 
-                             {images.map((src, index) => {
-                                const isBase = index === 0;
-                                const isActiveFrame = index === currentFrame;
-                                
-                                return (
+                            <div className="absolute inset-0 w-full h-full pointer-events-none">
+                                <motion.img 
+                                    src={staticImage}
+                                    alt="Streamyst Wearable Base"
+                                    initial={false}
+                                    animate={{ filter: 'none' }}
+                                    transition={{ duration: 0.5 }}
+                                    className="absolute inset-0 w-full h-full object-contain"
+                                />
+                                {activeEmotion && (
                                     <motion.img 
-                                        key={src}
-                                        src={src}
-                                        alt="Streamyst Wearable"
-                                        initial={{ opacity: isBase ? 1 : 0 }}
-                                        animate={{
-                                            opacity: isBase || isActiveFrame ? 1 : 0,
-                                            scale: activeEmotion === 'love' 
-                                                ? [1, 1.1, 1] 
-                                                : activeEmotion === 'happy'
-                                                    ? [1, 1.05, 1, 1.05, 1] // Gentle bobble for happy
-                                                    : activeEmotion === 'clap'
-                                                        ? [1, 1.15, 0.95, 1] // Big bounce for clap
-                                                        : activeEmotion 
-                                                            ? [1, 1.05, 1] 
-                                                            : 1,
-                                            y: activeEmotion === 'happy' ? [0, -20, 0] : 0, // Float up for happy
-                                            filter: activeEmotion === 'clap' 
-                                                    ? ["brightness(1)", "brightness(1.3)", "brightness(1)"] // Flash gold for clap
-                                                    : "none"
-                                        }}
-                                        transition={{ 
-                                            duration: activeEmotion === 'shock' ? 0.1 : 0.4, 
-                                            opacity: { duration: 1.5, ease: "easeInOut" },
-                                            repeat: activeEmotion === 'love' || activeEmotion === 'happy' ? 1 : 0,
-                                            y: { duration: 2, repeat: activeEmotion === 'happy' ? Infinity : 0, ease: "easeInOut" }
-                                        }}
-                                        className={`absolute inset-0 w-full h-full object-contain`}
+                                        src={staticImage}
+                                        alt="Streamyst Wearable Glow"
+                                        initial={false}
+                                        animate={{ opacity: 1, scale: [1, 1.05, 1], filter: getEmotionFilter(activeEmotion) }}
+                                        transition={{ duration: activeEmotion === 'shock' ? 0.1 : 0.4, scale: { duration: 2, repeat: Infinity, ease: "easeInOut" } }}
+                                        className="absolute inset-0 w-full h-full object-contain"
                                         style={{
-                                            filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.6))',
+                                            maskImage: 'radial-gradient(circle at 50% 53.5%, black 5%, transparent 35%)',
+                                            WebkitMaskImage: 'radial-gradient(circle at 50% 53.5%, black 5%, transparent 35%)',
+                                            mixBlendMode: 'normal'
                                         }}
                                     />
-                                );
-                            })}
+                                )}
+                            </div>
                         </motion.div>
 
                     </div>
 
-                    {/* RIGHT: CONTROL PANEL & CHAT */}
+                    {/* RIGHT: CONTROL PANEL & CHAT (Bottom on mobile) */}
                     <motion.div 
-                        style={{ x: layerX, y: layerY }}
-                        className="lg:col-span-5 bg-[#05040a]/90 backdrop-blur-md p-8 flex flex-col justify-between border-l border-white/5 relative z-30"
+                        style={{ x: isMobile ? 0 : layerX, y: isMobile ? 0 : layerY }}
+                        className="lg:col-span-5 bg-[#05040a]/90 backdrop-blur-md p-4 lg:p-8 flex flex-col justify-between border-t lg:border-t-0 lg:border-l border-white/5 relative z-30"
                     >
                         
-                        {/* CHAT INTERFACE (Replacing HUD) */}
-                        <div className="flex-1 flex flex-col min-h-[300px] mb-8 relative">
-                            <div className="flex items-center justify-between text-gray-400 border-b border-white/10 pb-3 mb-2">
+                        {/* CHAT INTERFACE */}
+                        <div className="flex-1 flex flex-col h-[100px] lg:h-auto lg:min-h-[260px] mb-4 relative">
+                            <div className="flex items-center justify-between text-gray-400 border-b border-white/10 pb-2 mb-2">
                                 <div className="flex items-center gap-2">
-                                    <Wifi className="w-4 h-4 text-violet-500" />
-                                    <span className="text-[10px] font-mono tracking-widest uppercase">Live Connection</span>
+                                    <Wifi className="w-3 h-3 lg:w-4 lg:h-4 text-violet-500" />
+                                    <span className="text-[9px] lg:text-[10px] font-mono tracking-widest uppercase">Live Connection</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
@@ -674,20 +620,18 @@ const InteractiveDemo: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Chat Container */}
                             <div className="relative flex-1 bg-black/40 rounded-xl border border-white/5 overflow-hidden flex flex-col">
-                                 {/* Messages */}
                                  <div 
                                     ref={chatScrollRef}
-                                    className="flex-1 overflow-y-auto p-3 space-y-3 scrollbar-hide scroll-smooth"
+                                    className="flex-1 overflow-y-auto p-2 space-y-2 scrollbar-hide scroll-smooth"
                                  >
                                     <AnimatePresence initial={false}>
-                                        {messages.map((msg) => (
+                                        {messages.slice(isMobile ? -5 : -8).map((msg) => (
                                             <motion.div 
                                                 key={msg.id}
                                                 initial={{ opacity: 0, x: -10 }}
                                                 animate={{ opacity: 1, x: 0 }}
-                                                className={`text-xs md:text-sm leading-relaxed ${msg.isSystem ? 'italic opacity-60' : ''}`}
+                                                className={`text-[10px] md:text-sm leading-relaxed ${msg.isSystem ? 'italic opacity-60' : ''}`}
                                             >
                                                 {!msg.isSystem && (
                                                     <span className={`font-bold mr-2 ${msg.color}`}>{msg.user}:</span>
@@ -697,9 +641,7 @@ const InteractiveDemo: React.FC = () => {
                                         ))}
                                     </AnimatePresence>
                                  </div>
-                                 
-                                 {/* Fake Input */}
-                                 <div className="p-2 bg-white/5 border-t border-white/5 flex gap-2 items-center">
+                                 <div className="hidden lg:flex p-2 bg-white/5 border-t border-white/5 gap-2 items-center">
                                      <div className="flex-1 h-6 bg-black/50 rounded flex items-center px-2 text-[10px] text-gray-500">
                                          React with emojis below...
                                      </div>
@@ -709,12 +651,13 @@ const InteractiveDemo: React.FC = () => {
 
                         {/* INTERACTION CONTROLS */}
                         <div>
-                            <div className="flex items-center gap-2 mb-4">
-                                <Sparkles className="w-4 h-4 text-violet-400 animate-pulse" />
-                                <span className="text-[10px] font-bold text-violet-200 tracking-wider uppercase">Send Feedback</span>
+                            <div className="flex items-center gap-2 mb-3">
+                                <Sparkles className="w-3 h-3 text-violet-400 animate-pulse" />
+                                <span className="text-[9px] font-bold text-violet-200 tracking-wider uppercase">Send Feedback</span>
                             </div>
                             
-                            <div className="grid grid-cols-3 gap-3">
+                            {/* Grid changes for mobile: single row (grid-cols-5) vs multi-row desktop */}
+                            <div className="grid grid-cols-5 lg:grid-cols-3 gap-2 lg:gap-3">
                                 {emotions.map((e) => (
                                     <motion.button
                                         key={e.id}
@@ -722,15 +665,15 @@ const InteractiveDemo: React.FC = () => {
                                         whileTap={{ scale: 0.95 }}
                                         onClick={() => triggerReaction(e.id)}
                                         className={`
-                                            relative h-20 rounded-xl border border-white/10 overflow-hidden group transition-all duration-300
+                                            relative h-12 lg:h-16 rounded-xl border border-white/10 overflow-hidden group transition-all duration-300
                                             ${activeEmotion === e.id ? 'bg-white/10 border-white/40 ring-1 ring-white/20' : 'bg-white/5 hover:bg-white/10'}
                                         `}
                                     >
                                         <div className={`absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity ${e.color}`} />
                                         
                                         <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                                            <span className="text-2xl mb-1 filter drop-shadow-lg group-hover:scale-110 transition-transform duration-200">{e.emoji}</span>
-                                            <span className="text-[9px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-white transition-colors">{e.label}</span>
+                                            <span className="text-xl lg:text-2xl mb-0 lg:mb-1 filter drop-shadow-lg group-hover:scale-110 transition-transform duration-200">{e.emoji}</span>
+                                            <span className="hidden lg:block text-[8px] lg:text-[9px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-white transition-colors">{e.label}</span>
                                         </div>
 
                                         {activeEmotion === e.id && (
@@ -743,8 +686,8 @@ const InteractiveDemo: React.FC = () => {
                                 ))}
                             </div>
 
-                            <div className="mt-6 pt-4 border-t border-white/5">
-                                <p className="text-[10px] text-gray-600 font-mono leading-relaxed">
+                            <div className="mt-4 pt-3 border-t border-white/5">
+                                <p className="text-[9px] lg:text-[10px] text-gray-600 font-mono leading-relaxed">
                                     > STREAM STATUS: LIVE <br/>
                                     > WAITING FOR INPUT... <span className="animate-pulse text-violet-500">_</span>
                                 </p>

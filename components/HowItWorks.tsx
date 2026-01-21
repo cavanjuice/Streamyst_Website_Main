@@ -1,5 +1,5 @@
 
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { MessageSquare, Zap, Activity } from 'lucide-react';
 
@@ -7,144 +7,143 @@ const steps = [
   {
     id: "01",
     title: "Audience Reacts",
-    desc: "Viewers send reactions and messages naturally in the chat. No new apps or tools needed.",
-    icon: <MessageSquare className="w-6 h-6" />,
+    desc: "Viewers use chat naturally. Our system detects sentiment spikes and energy shifts in real-time.",
+    icon: MessageSquare,
+    gradient: "from-amber-400/20 via-orange-500/20 to-red-500/20",
+    highlight: "bg-orange-500",
+    glow: "group-hover:shadow-orange-500/20"
   },
   {
     id: "02",
     title: "Instant Translation",
-    desc: "Our engine processes sentiment instantly, converting collective energy into data.",
-    icon: <Activity className="w-6 h-6" />,
+    desc: "AI processes collective emotion into haptic signals. Chaos becomes a pulse. Love becomes warmth.",
+    icon: Activity,
+    gradient: "from-blue-400/20 via-indigo-500/20 to-violet-500/20",
+    highlight: "bg-indigo-500",
+    glow: "group-hover:shadow-indigo-500/20"
   },
   {
     id: "03",
     title: "Streamer Feels",
-    desc: "The Vybe device delivers precise haptic feedback, bridging the physical gap.",
-    icon: <Zap className="w-6 h-6" />,
+    desc: "The wearable activates. You feel the crowd's energy physically, creating an instant feedback loop.",
+    icon: Zap,
+    gradient: "from-pink-400/20 via-rose-500/20 to-fuchsia-600/20",
+    highlight: "bg-pink-500",
+    glow: "group-hover:shadow-pink-500/20"
   }
 ];
 
-const SpotlightCard: React.FC<{ children: React.ReactNode; index: number }> = ({ children, index }) => {
-  const divRef = useRef<HTMLDivElement>(null);
-  const [isFocused, setIsFocused] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [opacity, setOpacity] = useState(0);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!divRef.current) return;
-
-    const div = divRef.current;
-    const rect = div.getBoundingClientRect();
-
-    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-  };
-
-  const handleFocus = () => {
-    setIsFocused(true);
-    setOpacity(1);
-  };
-
-  const handleBlur = () => {
-    setIsFocused(false);
-    setOpacity(0);
-  };
-
-  const handleMouseEnter = () => {
-    setOpacity(1);
-  };
-
-  const handleMouseLeave = () => {
-    setOpacity(0);
-  };
-
+const PremiumCard: React.FC<{ step: typeof steps[0]; index: number }> = ({ step, index }) => {
   return (
     <motion.div
-      ref={divRef}
-      onMouseMove={handleMouseMove}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.1, duration: 0.5 }}
-      className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/50 px-8 py-10"
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ delay: index * 0.15, duration: 0.6, ease: "easeOut" }}
+      className={`group relative flex flex-col justify-between h-full min-h-[320px] w-[85vw] md:w-auto md:h-[380px] rounded-[2rem] bg-[#0A0A0B] border border-white/5 overflow-hidden transition-all duration-500 hover:border-white/10 ${step.glow} hover:shadow-2xl snap-center shrink-0`}
     >
-      <div
-        className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
-        style={{
-          opacity,
-          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(255,255,255,0.06), transparent 40%)`,
-        }}
-      />
-      <div className="relative flex flex-col h-full">{children}</div>
+      {/* 1. Ambient Background Layer */}
+      <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-[#0A0A0B]" />
+          {/* Subtle Noise Texture */}
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay" />
+          
+          {/* Active Gradient Orb (Expands on Hover) */}
+          <div className={`absolute -top-[20%] -right-[20%] w-[80%] h-[80%] bg-gradient-to-br ${step.gradient} blur-[80px] rounded-full opacity-40 group-hover:opacity-60 group-hover:scale-125 transition-all duration-700 ease-in-out`} />
+          
+          {/* Secondary Ambient Light (Bottom Left) */}
+          <div className="absolute -bottom-[20%] -left-[10%] w-[60%] h-[60%] bg-white/5 blur-[100px] rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-700" />
+      </div>
+
+      {/* 2. Content Layer */}
+      <div className="relative z-10 p-8 md:p-10 flex flex-col h-full justify-between">
+        
+        {/* Header */}
+        <div className="flex justify-between items-start">
+            <div className="relative">
+                <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-md shadow-lg group-hover:scale-110 transition-transform duration-500 overflow-hidden">
+                     <div className={`absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500 ${step.highlight}`} />
+                     <step.icon className="w-6 h-6 text-white relative z-10" />
+                </div>
+            </div>
+            
+            <div className="flex items-center gap-2">
+                 <span className="font-mono text-[10px] font-bold text-gray-500 bg-white/5 px-3 py-1.5 rounded-full border border-white/5 tracking-widest uppercase group-hover:text-gray-300 transition-colors">
+                    Step {step.id}
+                 </span>
+            </div>
+        </div>
+
+        {/* Text Content */}
+        <div>
+            <h3 className="text-2xl md:text-3xl font-display font-bold text-white mb-4 group-hover:translate-x-1 transition-transform duration-300">
+                {step.title}
+            </h3>
+            <p className="text-gray-400 text-sm md:text-base leading-relaxed font-light opacity-80 group-hover:opacity-100 transition-opacity duration-300">
+                {step.desc}
+            </p>
+        </div>
+
+        {/* Bottom Decoration line */}
+        <div className="relative h-1 w-full bg-white/5 rounded-full overflow-hidden mt-8">
+            <div className={`absolute top-0 left-0 h-full w-0 ${step.highlight} group-hover:w-full transition-all duration-1000 ease-out`} />
+        </div>
+
+      </div>
     </motion.div>
   );
 };
 
 const HowItWorks: React.FC = () => {
   return (
-    <section id="how-it-works" className="py-32 relative z-10 bg-[#030205]">
-      <div className="container mx-auto px-6 max-w-7xl">
+    <section id="how-it-works" className="relative z-10 bg-[#030205] overflow-hidden min-h-screen flex flex-col justify-center py-24 lg:py-0">
+      
+      {/* Section Background Subtle Glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full pointer-events-none">
+           <div className="absolute top-[20%] left-0 w-[500px] h-[500px] bg-violet-900/5 blur-[120px] rounded-full" />
+           <div className="absolute bottom-[20%] right-0 w-[500px] h-[500px] bg-blue-900/5 blur-[120px] rounded-full" />
+      </div>
+
+      <div className="container mx-auto px-6 relative z-10">
         
-        {/* Header - Clean & Minimal */}
-        <div className="mb-20 max-w-2xl">
+        {/* Reverted Header Style - Centered & Colorful */}
+        <div className="text-center mb-16 lg:mb-24 max-w-4xl mx-auto">
+          {/* Badge Removed Here */}
+          
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="font-display font-medium text-4xl md:text-5xl text-white mb-6 tracking-tight"
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ delay: 0.1 }}
+            className="font-display font-bold text-4xl md:text-6xl lg:text-7xl text-white mb-6 tracking-tight"
           >
-            Seamless Integration.
+            Zero Latency. <br className="hidden md:block" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-500">
+              Maximum Immersion.
+            </span>
           </motion.h2>
+          
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-xl text-zinc-400 font-light leading-relaxed"
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ delay: 0.2 }}
+            className="text-lg md:text-xl text-gray-400 font-light leading-relaxed max-w-2xl mx-auto"
           >
-            We've removed the friction. No plugins to install, no complex setups. It just works.
+            A seamless bridge between digital chatrooms and physical sensation, designed for the modern streaming workflow.
           </motion.p>
         </div>
 
-        {/* Grid - Apple Style Bento */}
-        <div className="grid md:grid-cols-3 gap-6">
+        {/* Grid / Horizontal Scroll */}
+        <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-12 md:grid md:grid-cols-3 md:gap-8 md:pb-0 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0">
           {steps.map((step, i) => (
-            <SpotlightCard key={i} index={i}>
-              {/* Step Number - Subtle Watermark */}
-              <div className="mb-8 flex items-center justify-between">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-800/50 border border-white/5 text-white shadow-inner">
-                  {step.icon}
-                </div>
-                <span className="font-mono text-xs font-medium text-zinc-600 tracking-widest">
-                  STEP {step.id}
-                </span>
-              </div>
-
-              <div className="mt-auto">
-                <h3 className="font-display font-semibold text-2xl text-zinc-100 mb-3">
-                  {step.title}
-                </h3>
-                <p className="text-zinc-400 leading-relaxed font-light text-base">
-                  {step.desc}
-                </p>
-              </div>
-
-              {/* Subtle Progress Bar element at bottom of card */}
-              <div className="mt-8 h-1 w-full bg-zinc-800 rounded-full overflow-hidden">
-                <motion.div 
-                  initial={{ width: 0 }}
-                  whileInView={{ width: "100%" }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.5 + (i * 0.2), duration: 1.5, ease: "circOut" }}
-                  className="h-full bg-zinc-600 rounded-full opacity-50"
-                />
-              </div>
-            </SpotlightCard>
+            <PremiumCard key={i} step={step} index={i} />
           ))}
+          
+          {/* Spacer for mobile scroll */}
+          <div className="w-4 shrink-0 md:hidden" />
         </div>
+
       </div>
     </section>
   );
