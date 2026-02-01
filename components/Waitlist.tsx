@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Loader2, ChevronRight, ClipboardList } from 'lucide-react';
+import { Check, Loader2, ChevronRight, ClipboardList, AlertCircle } from 'lucide-react';
 import { saveEmailToWaitlist } from '../utils/supabaseClient';
 
 interface WaitlistProps {
@@ -15,20 +15,19 @@ const Waitlist: React.FC<WaitlistProps> = ({ onJoinSurvey }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
+    
     setStatus('loading');
     
-    // Save to Database
+    // Save to Database and wait for result
     const { error } = await saveEmailToWaitlist(email);
     
     if (error) {
-        console.error("Failed to save email", error);
-        // We still show success to the user in this demo context to avoid friction, 
-        // but in prod you might want to show an error state.
+        setStatus('error');
+        // Log is already handled in client, UI stays in error state
+        return;
     }
 
-    setTimeout(() => {
-      setStatus('success');
-    }, 800);
+    setStatus('success');
   };
 
   return (
@@ -64,6 +63,7 @@ const Waitlist: React.FC<WaitlistProps> = ({ onJoinSurvey }) => {
                  <AnimatePresence mode='wait'>
                     {status === 'success' ? (
                         <motion.div
+                            key="success"
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             className="flex flex-col items-center text-center justify-center h-full w-full py-8"
@@ -98,6 +98,7 @@ const Waitlist: React.FC<WaitlistProps> = ({ onJoinSurvey }) => {
                         </motion.div>
                     ) : (
                         <motion.div
+                            key="form"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
@@ -122,11 +123,21 @@ const Waitlist: React.FC<WaitlistProps> = ({ onJoinSurvey }) => {
                                         type="email" 
                                         required
                                         value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
+                                        onChange={(e) => {
+                                            setEmail(e.target.value);
+                                            if (status === 'error') setStatus('idle');
+                                        }}
                                         placeholder="ENTER EMAIL ADDRESS"
                                         className="w-full bg-[#13131F] border border-white/5 rounded-xl px-5 py-3.5 text-white text-xs placeholder-gray-700 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/30 transition-all font-mono tracking-widest uppercase"
                                     />
                                 </div>
+
+                                {status === 'error' && (
+                                    <div className="flex items-center gap-2 text-red-400 text-xs">
+                                        <AlertCircle size={14} />
+                                        <span>Connection failed. Please check your internet or try again.</span>
+                                    </div>
+                                )}
 
                                 <button
                                     type="submit"
