@@ -1,70 +1,103 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-// NOTE: You need to set these environment variables in your Vercel project settings
-// VITE_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_URL
-// VITE_SUPABASE_ANON_KEY or NEXT_PUBLIC_SUPABASE_ANON_KEY
+// --- CONFIGURATION ---
+// Safely access environment variables. 
+// In some environments, import.meta.env might be undefined during initialization.
+const env = (import.meta as any).env || {};
 
-// Helper to find env vars across different build tools (Vite/Next/CRA)
-const getEnv = (key: string) => {
-  // @ts-ignore
-  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[key]) {
-    // @ts-ignore
-    return import.meta.env[key];
-  }
-  // @ts-ignore
-  if (typeof process !== 'undefined' && process.env && process.env[key]) {
-    // @ts-ignore
-    return process.env[key];
-  }
-  return '';
-};
+// We use the provided credentials as a fallback if environment variables are not set.
+// Ideally, these should be in a .env file (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY).
+const supabaseUrl = env.VITE_SUPABASE_URL || "https://ssdjhkdkoqgmysgncfqa.supabase.co";
+const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzZGpoa2Rrb3FnbXlzZ25jZnFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5NTUwMzEsImV4cCI6MjA4NDUzMTAzMX0.zmuTUQ92kGOTBtXTu0GrqzctdRYgVZ4jn0D_ruzBmcM";
 
-const supabaseUrl = getEnv('VITE_SUPABASE_URL') || getEnv('NEXT_PUBLIC_SUPABASE_URL') || getEnv('REACT_APP_SUPABASE_URL');
-const supabaseAnonKey = getEnv('VITE_SUPABASE_ANON_KEY') || getEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY') || getEnv('REACT_APP_SUPABASE_ANON_KEY');
+// Initialize Client
+// We export 'null' if keys are missing so the app doesn't crash in development without keys.
+export const supabase = (supabaseUrl && supabaseAnonKey) 
+  ? createClient(supabaseUrl, supabaseAnonKey) 
+  : null;
 
-let supabase: any = null;
-
-if (supabaseUrl && supabaseAnonKey) {
-  supabase = createClient(supabaseUrl, supabaseAnonKey);
-} else {
-  console.warn("Streamyst: Supabase keys missing. Data will be logged to console only.");
+// --- TYPES ---
+export interface SurveyResponse {
+  userType?: string | null;
+  email?: string;
+  [key: string]: any; // Allow flexible survey data
 }
 
+// --- FUNCTIONS ---
+
+/**
+ * Saves an email to the 'waitlist' table.
+ */
 export const saveEmailToWaitlist = async (email: string) => {
   if (!supabase) {
-    console.log('[MOCK DB] Saving email to waitlist:', email);
-    return { error: null };
+    console.warn('[MOCK DB] Keys missing. Mocking save for:', email);
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    return { error: null, data: { id: 'mock-id' } };
   }
 
   try {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('waitlist')
-      .insert([{ email }]);
-    return { error };
-  } catch (err) {
-    console.error('Supabase error:', err);
+      .insert([{ email }])
+      .select();
+
+    if (error) {
+      // Handle unique constraint (duplicate email) gracefully
+      if (error.code === '23505') {
+        console.log('Email already registered');
+        return { error: null, data }; // Treat as success for UX
+      }
+      throw error;
+    }
+
+    return { data, error: null };
+  } catch (err: any) {
+    console.error('Supabase Waitlist Error:', err.message);
     return { error: err };
   }
 };
 
-export const saveSurveyResponse = async (data: any) => {
+/**
+ * Saves full survey JSON to the 'surveys' table.
+ */
+export const saveSurveyResponse = async (surveyData: SurveyResponse) => {
   if (!supabase) {
-    console.log('[MOCK DB] Saving survey response:', data);
+    console.warn('[MOCK DB] Keys missing. Mocking survey save:', surveyData);
+    await new Promise(resolve => setTimeout(resolve, 800));
     return { error: null };
   }
 
   try {
-    const { error } = await supabase
+    // We map the camelCase frontend data to snake_case DB columns if needed,
+    // or store the whole object in a 'response_data' JSONB column.
+    const payload = {
+      user_type: surveyData.userType,
+      email: surveyData.email, // Can be null/empty
+      response_data: surveyData // Store full object for flexibility
+    };
+
+    const { data, error } = await supabase
       .from('surveys')
-      .insert([{ 
-        user_type: data.userType,
-        email: data.email,
-        response_data: data 
-      }]);
-    return { error };
-  } catch (err) {
-    console.error('Supabase error:', err);
+      .insert([payload])
+      .select();
+
+    if (error) throw error;
+
+    return { data, error: null };
+  } catch (err: any) {
+    console.error('Supabase Survey Error:', err.message);
     return { error: err };
   }
+};
+
+/**
+ * Helper to construct public URL for images stored in Supabase Storage.
+ * Usage: <img src={getStorageUrl('assets', 'hero-image.png')} />
+ * Ensure you have a public bucket named 'assets' created in your Supabase project.
+ */
+export const getStorageUrl = (bucket: string, path: string) => {
+  if (!supabaseUrl) return ''; 
+  return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`;
 };

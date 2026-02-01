@@ -11,6 +11,11 @@ import {
 } from 'lucide-react';
 import { saveSurveyResponse } from '../utils/supabaseClient';
 
+// --- ASSETS ---
+const MASCOT_1 = "https://raw.githubusercontent.com/cavanjuice/assets/main/mascot1.PNG";
+const MASCOT_2 = "https://raw.githubusercontent.com/cavanjuice/assets/main/mascot2.PNG";
+const MASCOT_3 = "https://raw.githubusercontent.com/cavanjuice/assets/main/mascot3.PNG";
+
 // --- TYPES ---
 
 type UserType = 'streamer' | 'viewer' | 'other' | null;
@@ -296,6 +301,17 @@ const Card: React.FC<CardProps> = ({
     </motion.div>
 );
 
+const Mascot = ({ src, className, delay = 0.5 }: { src: string, className: string, delay?: number }) => (
+    <motion.img 
+        src={src}
+        initial={{ opacity: 0, y: 30, scale: 0.8 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.8 }}
+        transition={{ delay, duration: 0.6, ease: "backOut" }}
+        className={`absolute pointer-events-none z-0 hidden lg:block ${className}`}
+    />
+);
+
 const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ onExit, initialEmail }) => {
     const [step, setStep] = useState(0);
     const [data, setData] = useState<Partial<SurveyData>>({
@@ -472,11 +488,13 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
         // --- SHARED STEPS ---
         if (step === 0) { // ENTRY HOOK
              return (
-                <div className="text-center max-w-2xl mx-auto pt-10">
+                <div className="text-center max-w-2xl mx-auto pt-10 relative">
+                    <Mascot src={MASCOT_3} className="-right-32 bottom-20 w-56 opacity-80" delay={0.6} />
                     <motion.div
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 0.8 }}
+                        className="relative z-10"
                     >
                         <h1 className="font-display font-bold text-5xl md:text-7xl mb-8 leading-tight">
                             Help Us Build The <br/>
@@ -828,15 +846,18 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 const problemOptions = isViewer ? VIEWER_PROBLEM_OPTIONS : STREAMER_PROBLEM_OPTIONS;
 
                 return (
-                    <div className="max-w-4xl mx-auto">
-                        <div className="text-center mb-8">
+                    <div className="max-w-4xl mx-auto relative">
+                        {/* Mascot Peek */}
+                        <Mascot src={MASCOT_1} className="-top-24 right-10 w-40" delay={0.3} />
+                        
+                        <div className="text-center mb-8 relative z-10">
                             <h2 className="text-3xl font-display font-bold mb-2">
                                 {isViewer ? "What frustrates you most as a viewer?" : "Rank your TOP 3 streaming challenges"}
                             </h2>
                             <p className="text-gray-400">Drag items from the list below into your top 3 slots.</p>
                         </div>
 
-                        <div className="flex flex-col md:flex-row gap-8">
+                        <div className="flex flex-col md:flex-row gap-8 relative z-10">
                             {/* Selected Slots */}
                             <div className="md:w-1/2 space-y-4">
                                 <h3 className="text-xs font-bold uppercase tracking-widest text-violet-400 mb-4">Your Top 3 Priorities</h3>
@@ -897,7 +918,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                             </div>
                         </div>
 
-                        <div className="mt-8 flex justify-end">
+                        <div className="mt-8 flex justify-end relative z-10">
                             <button 
                                 onClick={nextStep}
                                 disabled={(data.problemRank?.length || 0) !== 3}
@@ -914,13 +935,16 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 const problemLabel = currentProblemList.find(p => p.id === (data.problemRank?.[0]))?.label || "Your top challenge";
 
                 return (
-                    <div className="max-w-2xl mx-auto text-center">
-                        <h2 className="text-3xl font-display font-bold mb-4">How painful is your #1 challenge?</h2>
-                        <div className="bg-white/5 p-4 rounded-xl inline-block mb-12 text-violet-300">
-                            {problemLabel}
+                    <div className="max-w-2xl mx-auto text-center relative">
+                        <Mascot src={MASCOT_2} className="-left-32 bottom-0 w-48 opacity-60" delay={0.4} />
+                        <div className="relative z-10">
+                            <h2 className="text-3xl font-display font-bold mb-4">How painful is your #1 challenge?</h2>
+                            <div className="bg-white/5 p-4 rounded-xl inline-block mb-12 text-violet-300">
+                                {problemLabel}
+                            </div>
+                            {renderScale(data.painIntensity || 5, (n) => updateData('painIntensity', n), "Minor Annoyance", "Considering Quitting")}
+                            {renderContinue()}
                         </div>
-                        {renderScale(data.painIntensity || 5, (n) => updateData('painIntensity', n), "Minor Annoyance", "Considering Quitting")}
-                        {renderContinue()}
                     </div>
                 );
 
@@ -1031,13 +1055,13 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                       ];
 
                 return (
-                    <div className="max-w-3xl mx-auto">
-                        <div className="text-center mb-12">
+                    <div className="max-w-3xl mx-auto relative">
+                        <div className="text-center mb-12 relative z-10">
                             <h2 className="text-3xl font-display font-bold mb-2">Which features excite you most?</h2>
                             <p className="text-violet-400 font-bold uppercase tracking-widest text-sm">Pick your top 2</p>
                         </div>
                         
-                        <div className="grid md:grid-cols-2 gap-4">
+                        <div className="grid md:grid-cols-2 gap-4 relative z-10">
                             {featureOptions.map((feat) => (
                                 <div 
                                     key={feat}
@@ -1058,7 +1082,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                                 </div>
                             ))}
                         </div>
-                        <div className="mt-12 flex justify-end">
+                        <div className="mt-12 flex justify-end relative z-10">
                             <button 
                                 onClick={nextStep}
                                 disabled={(data.desiredFeatures?.length || 0) !== 2}
@@ -1072,29 +1096,32 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
 
             case 9: // PURCHASE INTENT
                 return (
-                    <div className="max-w-xl mx-auto text-center">
-                        <h2 className="text-3xl font-display font-bold mb-12">How interested are you in Streamyst?</h2>
-                        
-                        <div className="space-y-4">
-                            {[
-                                { id: 'take_money', label: "🔥 TAKE MY MONEY", sub: "I'd pre-order today if I could", glow: "shadow-[0_0_30px_rgba(139,92,246,0.4)] border-violet-500" },
-                                { id: 'very_interested', label: "✋ VERY INTERESTED", sub: "Definitely want early access", glow: "shadow-[0_0_20px_rgba(99,102,241,0.3)] border-indigo-500" },
-                                { id: 'curious', label: "👀 CURIOUS", sub: "Sounds interesting, want to learn more", glow: "border-violet-500/50" },
-                                { id: 'neutral', label: "😐 NEUTRAL", sub: "Not sure yet", glow: "border-white/20" },
-                                { id: 'not_for_me', label: "👎 NOT FOR ME", sub: "Doesn't solve my problem", glow: "border-gray-700 opacity-60" }
-                            ].map((opt) => (
-                                <button
-                                    key={opt.id}
-                                    onClick={() => {
-                                        updateData('purchaseIntent', opt.id);
-                                        setTimeout(nextStep, 300);
-                                    }}
-                                    className={`w-full p-4 rounded-xl border bg-white/5 hover:bg-white/10 transition-all flex flex-col items-center ${opt.glow} hover:scale-102`}
-                                >
-                                    <span className="font-bold text-lg mb-1">{opt.label}</span>
-                                    <span className="text-xs text-gray-400 uppercase tracking-widest">{opt.sub}</span>
-                                </button>
-                            ))}
+                    <div className="max-w-xl mx-auto text-center relative">
+                        <Mascot src={MASCOT_2} className="-right-24 bottom-10 w-40 opacity-80" delay={0.4} />
+                        <div className="relative z-10">
+                            <h2 className="text-3xl font-display font-bold mb-12">How interested are you in Streamyst?</h2>
+                            
+                            <div className="space-y-4">
+                                {[
+                                    { id: 'take_money', label: "🔥 TAKE MY MONEY", sub: "I'd pre-order today if I could", glow: "shadow-[0_0_30px_rgba(139,92,246,0.4)] border-violet-500" },
+                                    { id: 'very_interested', label: "✋ VERY INTERESTED", sub: "Definitely want early access", glow: "shadow-[0_0_20px_rgba(99,102,241,0.3)] border-indigo-500" },
+                                    { id: 'curious', label: "👀 CURIOUS", sub: "Sounds interesting, want to learn more", glow: "border-violet-500/50" },
+                                    { id: 'neutral', label: "😐 NEUTRAL", sub: "Not sure yet", glow: "border-white/20" },
+                                    { id: 'not_for_me', label: "👎 NOT FOR ME", sub: "Doesn't solve my problem", glow: "border-gray-700 opacity-60" }
+                                ].map((opt) => (
+                                    <button
+                                        key={opt.id}
+                                        onClick={() => {
+                                            updateData('purchaseIntent', opt.id);
+                                            setTimeout(nextStep, 300);
+                                        }}
+                                        className={`w-full p-4 rounded-xl border bg-white/5 hover:bg-white/10 transition-all flex flex-col items-center ${opt.glow} hover:scale-102`}
+                                    >
+                                        <span className="font-bold text-lg mb-1">{opt.label}</span>
+                                        <span className="text-xs text-gray-400 uppercase tracking-widest">{opt.sub}</span>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 );
@@ -1211,12 +1238,15 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
     };
 
     const renderExit = () => (
-        <div className="max-w-2xl mx-auto text-center pt-10">
+        <div className="max-w-2xl mx-auto text-center pt-10 relative">
+                <Mascot src={MASCOT_2} className="-left-40 bottom-20 w-56 opacity-80" delay={0.3} />
+                <Mascot src={MASCOT_3} className="-right-40 bottom-20 w-56 opacity-80" delay={0.6} />
+
                 <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.5 }}
-                className="mb-8 relative"
+                className="mb-8 relative z-10"
                 >
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-violet-500/20 rounded-full blur-[80px]" />
                 <div className="w-24 h-24 bg-gradient-to-tr from-violet-400 to-indigo-500 rounded-full mx-auto flex items-center justify-center shadow-[0_0_50px_rgba(139,92,246,0.5)]">
@@ -1224,14 +1254,14 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 </div>
                 </motion.div>
                 
-                <h1 className="font-display font-bold text-5xl mb-6">YOU'RE IN. 🚀</h1>
-                <p className="text-xl text-gray-300 mb-12 leading-relaxed">
+                <h1 className="font-display font-bold text-5xl mb-6 relative z-10">YOU'RE IN. 🚀</h1>
+                <p className="text-xl text-gray-300 mb-12 leading-relaxed relative z-10">
                 Thank you for helping us build the future of streaming.
                 <br/>
                 <span className="text-violet-400 font-bold">You've been added to the priority alpha list.</span>
                 </p>
 
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mb-12">
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mb-12 relative z-10">
                 <h3 className="font-bold text-lg mb-4">What happens next?</h3>
                 <ul className="text-left space-y-4 text-gray-400">
                     <li className="flex items-center gap-3">
@@ -1249,7 +1279,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 </ul>
                 </div>
 
-                <div className="flex flex-col md:flex-row gap-4 justify-center">
+                <div className="flex flex-col md:flex-row gap-4 justify-center relative z-10">
                 <button className="px-8 py-3 bg-[#5865F2] text-white font-bold rounded-full hover:bg-[#4752C4] transition-colors flex items-center justify-center gap-2">
                     <MessageSquare size={20} /> Join Discord
                 </button>

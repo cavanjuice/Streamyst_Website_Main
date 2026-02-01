@@ -19,8 +19,19 @@ import VideoModal from './components/VideoModal';
 import AboutPage from './components/AboutPage'; 
 import SurveyPage from './components/SurveyPage'; // Import Survey Page
 import HowItWorks from './components/HowItWorks';
+import GDPRBanner from './components/GDPRBanner'; // Import GDPR Banner
+
+// Legal Pages
+import LegalNotice from './components/LegalNotice';
+import PrivacyPolicy from './components/PrivacyPolicy';
+import TermsOfService from './components/TermsOfService';
+import AccessibilityStatement from './components/AccessibilityStatement';
+
 import { AnimatePresence, motion } from 'framer-motion';
 import { Ghost, Radio } from 'lucide-react';
+
+// Define the View Type including new legal pages
+type ViewState = 'home' | 'about' | 'survey' | 'legal-notice' | 'privacy' | 'terms' | 'accessibility';
 
 const FloatingRoleToggle: React.FC<{ role: 'streamer' | 'viewer', setRole: (r: 'streamer' | 'viewer') => void }> = ({ role, setRole }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -107,79 +118,111 @@ const FloatingRoleToggle: React.FC<{ role: 'streamer' | 'viewer', setRole: (r: '
 const App: React.FC = () => {
   const [role, setRole] = useState<'streamer' | 'viewer'>('streamer');
   const [isVideoOpen, setIsVideoOpen] = useState(false);
-  const [currentView, setCurrentView] = useState<'home' | 'about' | 'survey'>('home');
+  const [currentView, setCurrentView] = useState<ViewState>('home');
   const [userEmail, setUserEmail] = useState('');
+  const [isCookieBannerOpen, setIsCookieBannerOpen] = useState(false);
 
   // Scroll to top when view changes
   React.useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentView]);
 
+  // Handle View Rendering
+  const renderView = () => {
+    switch(currentView) {
+      case 'about':
+        return (
+          <motion.div key="about" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.5 }}>
+             <AboutPage onBack={() => setCurrentView('home')} />
+          </motion.div>
+        );
+      case 'survey':
+        return (
+          <motion.div key="survey" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} transition={{ duration: 0.5 }} className="min-h-screen z-50 relative">
+             <SurveyPage onExit={() => setCurrentView('home')} initialEmail={userEmail} />
+          </motion.div>
+        );
+      case 'legal-notice':
+        return (
+           <motion.div key="legal" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
+              <LegalNotice onBack={() => setCurrentView('home')} />
+           </motion.div>
+        );
+      case 'privacy':
+        return (
+           <motion.div key="privacy" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
+              <PrivacyPolicy onBack={() => setCurrentView('home')} />
+           </motion.div>
+        );
+      case 'terms':
+        return (
+           <motion.div key="terms" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
+              <TermsOfService onBack={() => setCurrentView('home')} />
+           </motion.div>
+        );
+      case 'accessibility':
+        return (
+           <motion.div key="access" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
+              <AccessibilityStatement onBack={() => setCurrentView('home')} />
+           </motion.div>
+        );
+      case 'home':
+      default:
+        return (
+          <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
+              <Hero onOpenVideo={() => setIsVideoOpen(true)} />
+              <ProblemStatement role={role} />
+              <ExperienceToggle role={role} setRole={setRole} />
+              <FloatingRoleToggle role={role} setRole={setRole} />
+              <ProblemSection role={role} />
+              <SolutionSection role={role} />
+              <HowItWorks />
+              <FeaturesShowcase />
+              <ProductShowcase />
+              <InteractiveDemo />
+              <SingleStatShowcase />
+              <Waitlist onJoinSurvey={(email) => { if (email) setUserEmail(email); setCurrentView('survey'); }} />
+          </motion.div>
+        );
+    }
+  };
+
   return (
     <div className="relative w-full min-h-screen bg-cosmic-950 text-white selection:bg-cyan-500/30 overflow-x-hidden">
       <ParticleBackground />
-      {/* Hide Navbar on survey page to reduce distraction, or keep it. Keeping it for navigation continuity but simplified. */}
-      {currentView !== 'survey' && <Navbar currentView={currentView} onNavigate={setCurrentView} />}
+      <GDPRBanner 
+        forceOpen={isCookieBannerOpen} 
+        onCloseForce={() => setIsCookieBannerOpen(false)} 
+      />
+      
+      {/* Hide Navbar on special pages if desired, but kept for consistency mostly. */}
+      {currentView === 'home' && (
+        <Navbar 
+          currentView='home' 
+          onNavigate={(view) => setCurrentView(view as any)} 
+        />
+      )}
+      {currentView === 'about' && (
+        <Navbar 
+          currentView='about' 
+          onNavigate={(view) => setCurrentView(view as any)} 
+        />
+      )}
       
       <main className="flex-grow">
         <AnimatePresence mode="wait">
-          {currentView === 'home' ? (
-            <motion.div
-                key="home"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
-            >
-                <Hero onOpenVideo={() => setIsVideoOpen(true)} />
-                <ProblemStatement role={role} />
-                <ExperienceToggle role={role} setRole={setRole} />
-                
-                {/* Floating Toggle appears between ExperienceToggle and HowItWorks */}
-                <FloatingRoleToggle role={role} setRole={setRole} />
-
-                <ProblemSection role={role} />
-                <SolutionSection role={role} />
-                <HowItWorks />
-                <FeaturesShowcase />
-                <ProductShowcase />
-                <InteractiveDemo />
-                {/* <DataStats /> */}
-                <SingleStatShowcase />
-                {/* <Testimonials /> */}
-                <Waitlist onJoinSurvey={(email) => { 
-                    if (email) setUserEmail(email);
-                    setCurrentView('survey'); 
-                }} />
-            </motion.div>
-          ) : currentView === 'about' ? (
-            <motion.div
-                key="about"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.5 }}
-            >
-                <AboutPage onBack={() => setCurrentView('home')} />
-            </motion.div>
-          ) : (
-            <motion.div
-                key="survey"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.05 }}
-                transition={{ duration: 0.5 }}
-                className="min-h-screen z-50 relative"
-            >
-                <SurveyPage onExit={() => setCurrentView('home')} initialEmail={userEmail} />
-            </motion.div>
-          )}
+          {renderView()}
         </AnimatePresence>
       </main>
 
-      {currentView !== 'survey' && <Footer onNavigate={setCurrentView} />}
+      {/* Show Footer only on Home/About/Legal pages, generally hidden on full-screen flows like Survey */}
+      {currentView !== 'survey' && (
+        <Footer 
+            onNavigate={(view) => setCurrentView(view)} 
+            onOpenCookieSettings={() => setIsCookieBannerOpen(true)}
+        />
+      )}
       
-      {/* Global Modals */}
       <VideoModal isOpen={isVideoOpen} onClose={() => setIsVideoOpen(false)} />
     </div>
   );
