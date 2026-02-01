@@ -10,7 +10,7 @@ const ProblemStatement: React.FC<ProblemStatementProps> = ({ role }) => {
   const content = {
     streamer: {
       title: "Streaming feels lonely.",
-      description: "Whether you have 1 viewer or 100,000, you're pouring your energy into a camera lens. The digital barrier blocks the real human connection you crave."
+      description: "Whether you have 1 viewer or 1000, you're pouring your energy into a camera lens. The digital barrier blocks the real human connection you crave."
     },
     viewer: {
       title: "Watching feels passive.",
@@ -39,7 +39,7 @@ const ProblemStatement: React.FC<ProblemStatementProps> = ({ role }) => {
       y: 0, 
       transition: { 
         duration: 0.8, 
-        ease: [0.22, 1, 0.36, 1] 
+        ease: [0.22, 1, 0.36, 1] as const
       } 
     }
   };

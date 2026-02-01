@@ -20,6 +20,89 @@ import AboutPage from './components/AboutPage';
 import SurveyPage from './components/SurveyPage'; // Import Survey Page
 import HowItWorks from './components/HowItWorks';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Ghost, Radio } from 'lucide-react';
+
+const FloatingRoleToggle: React.FC<{ role: 'streamer' | 'viewer', setRole: (r: 'streamer' | 'viewer') => void }> = ({ role, setRole }) => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const toggleSection = document.getElementById('choose-player');
+      const endSection = document.getElementById('how-it-works');
+
+      if (!toggleSection || !endSection) return;
+
+      const toggleRect = toggleSection.getBoundingClientRect();
+      const endRect = endSection.getBoundingClientRect();
+
+      // Show when the bottom of the main toggle section leaves the viewport (scrolled past)
+      // And hide when the top of How It Works enters the viewport (arrived at static content)
+      const scrolledPastToggle = toggleRect.bottom < 0;
+      const reachedEnd = endRect.top < window.innerHeight;
+
+      setIsVisible(scrolledPastToggle && !reachedEnd);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Check initial state
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 50 }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          // Mobile: Right side flush (right-0), thinner padding, tab shape. 
+          // Desktop: Left side floating (left-6), full padding, pill shape.
+          className="fixed right-0 md:right-auto md:left-6 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center p-1 md:p-1.5 rounded-l-2xl rounded-r-none md:rounded-full bg-[#0A0A0B]/80 backdrop-blur-xl border-y border-l border-white/10 md:border shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)]"
+        >
+           {/* Active Pill Background */}
+           <motion.div
+              className={`absolute left-1 right-0 md:left-1.5 md:right-1.5 rounded-l-xl rounded-r-none md:rounded-full z-0 ${role === 'streamer' ? 'bg-violet-600' : 'bg-orange-500'}`}
+              initial={false}
+              animate={{
+                y: role === 'streamer' ? 0 : '100%',
+                height: 'calc(50% - 4px)' 
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              style={{ top: 2 }} // Tighter offset for thinner look
+           />
+
+           <button 
+              onClick={() => setRole('streamer')}
+              className={`relative z-10 w-7 md:w-10 py-4 md:py-6 rounded-l-xl rounded-r-none md:rounded-full flex flex-col items-center justify-center gap-2 transition-colors duration-300 ${role === 'streamer' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
+              title="Streamer Mode"
+           >
+              <Radio size={14} className={`md:w-4 md:h-4 ${role === 'streamer' ? 'animate-pulse' : ''}`} />
+              {/* Vertical Text - Centered properly */}
+              <div className="hidden md:flex items-center justify-center h-20 w-4">
+                  <span className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap origin-center" style={{ transform: 'rotate(-90deg)' }}>
+                    Streamer
+                  </span>
+              </div>
+           </button>
+
+           <button 
+              onClick={() => setRole('viewer')}
+              className={`relative z-10 w-7 md:w-10 py-4 md:py-6 rounded-l-xl rounded-r-none md:rounded-full flex flex-col items-center justify-center gap-2 transition-colors duration-300 ${role === 'viewer' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
+              title="Viewer Mode"
+           >
+              <div className="hidden md:flex items-center justify-center h-20 w-4">
+                  <span className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap origin-center" style={{ transform: 'rotate(-90deg)' }}>
+                    Viewer
+                  </span>
+              </div>
+              <Ghost size={14} className="md:w-4 md:h-4" />
+           </button>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
 
 const App: React.FC = () => {
   const [role, setRole] = useState<'streamer' | 'viewer'>('streamer');
@@ -51,6 +134,10 @@ const App: React.FC = () => {
                 <Hero onOpenVideo={() => setIsVideoOpen(true)} />
                 <ProblemStatement role={role} />
                 <ExperienceToggle role={role} setRole={setRole} />
+                
+                {/* Floating Toggle appears between ExperienceToggle and HowItWorks */}
+                <FloatingRoleToggle role={role} setRole={setRole} />
+
                 <ProblemSection role={role} />
                 <SolutionSection role={role} />
                 <HowItWorks />

@@ -1,18 +1,9 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useMotionTemplate } from 'framer-motion';
 import { Sparkles, Wifi } from 'lucide-react';
 
-type Emotion = 'happy' | 'love' | 'hype' | 'shock' | 'clap';
-
-const emotions: { id: Emotion; emoji: string; label: string; color: string; hex: string }[] = [
-  { id: 'happy', emoji: '😊', label: 'Joy', color: 'bg-green-500', hex: '#22c55e' },
-  { id: 'love', emoji: '❤️', label: 'Love', color: 'bg-pink-500', hex: '#ec4899' },
-  { id: 'hype', emoji: '🔥', label: 'Hype', color: 'bg-orange-500', hex: '#f97316' },
-  { id: 'shock', emoji: '⚡', label: 'Shock', color: 'bg-zinc-200', hex: '#e4e4e7' },
-  { id: 'clap', emoji: '👏', label: 'Support', color: 'bg-yellow-400', hex: '#facc15' },
-];
-
+// Custom Icons from Old Code to ensure exact animation match
 const HeartIcon = ({ className, style }: { className?: string, style?: React.CSSProperties }) => (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className} style={style}>
         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
@@ -25,39 +16,80 @@ const StarIcon = ({ className, style }: { className?: string, style?: React.CSSP
     </svg>
 );
 
+type Emotion = 'happy' | 'love' | 'hype' | 'shock' | 'clap';
+
+interface EmotionData {
+  id: Emotion;
+  label: string;
+  emoji: string;
+  color: string;
+  hex: string;
+}
+
+const emotions: EmotionData[] = [
+  { id: 'happy', label: "Joy", emoji: "😊", color: "text-green-400", hex: "#4ade80" },
+  { id: 'love', label: "Love", emoji: "😍", color: "text-pink-500", hex: "#ec4899" },
+  { id: 'hype', label: "Fyre", emoji: "🔥", color: "text-orange-500", hex: "#f97316" },
+  { id: 'shock', label: "Shock", emoji: "⚡", color: "text-white", hex: "#ffffff" },
+  { id: 'clap', label: "Support", emoji: "👏", color: "text-yellow-400", hex: "#facc15" }
+];
+
+const staticImage = "https://raw.githubusercontent.com/cavanjuice/assets/main/originalcharacter.png";
+
+const emotionImages: Record<Emotion, string> = {
+  happy: "https://raw.githubusercontent.com/cavanjuice/assets/main/joy2.png",
+  love: "https://raw.githubusercontent.com/cavanjuice/assets/main/love2.png",
+  hype: "https://raw.githubusercontent.com/cavanjuice/assets/main/hype2.png",
+  shock: "https://raw.githubusercontent.com/cavanjuice/assets/main/shock2.png",
+  clap: "https://raw.githubusercontent.com/cavanjuice/assets/main/support2.png"
+};
+
+// Sentiment Analysis Simulation Data
+const SENTIMENT_MESSAGES: Record<Emotion, string[]> = {
+    happy: [
+        "This is amazing! 😊", "So wholesome <3", "Best stream ever!", 
+        "Love the vibes today", "Smiling so hard rn", "Positivity 100%"
+    ],
+    love: [
+        "I love this community 😍", "Marry me!!", "ALL THE LOVE", 
+        "<3 <3 <3", "My heart is full", "You're the best streamer!"
+    ],
+    hype: [
+        "LETS GOOOO 🔥", "THIS IS INSANE", "HYPE HYPE HYPE", 
+        "FIRE IN THE CHAT", "ABSOLUTE CINEMA", "CANT BELIEVE IT"
+    ],
+    shock: [
+        "WHAT???", "NO WAY ⚡", "DID YOU SEE THAT??", 
+        "Wait what just happened", "IM SHOOK", "Unreal..."
+    ],
+    clap: [
+        "Well played 👏", "GG", "Amazing performance", 
+        "You deserve it!", "Respect +1", "Keep it up!"
+    ]
+};
+
+const USERNAMES = ["PixelFan", "NeonRider", "StreamLover", "GlitchWizard", "VibeCheck", "RetroGamer"];
+
 interface ChatMessage {
-    id: number;
-    user: string;
-    text: string;
-    color: string;
-    isSystem?: boolean;
+  id: number;
+  user: string;
+  text: string;
+  color: string;
+  isSystem?: boolean;
 }
 
 const InteractiveDemo: React.FC = () => {
   const [activeEmotion, setActiveEmotion] = useState<Emotion | null>(null);
-  const [triggerKey, setTriggerKey] = useState(0); // Forces re-render on same-click
+  const [triggerKey, setTriggerKey] = useState(0);
   const [shake, setShake] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
-
-  // Chat State
   const [messages, setMessages] = useState<ChatMessage[]>([
-      { id: 1, user: 'StreamBot', text: 'Connected to Streamyst Live.', color: 'text-violet-400', isSystem: true },
-      { id: 2, user: 'PixelRogue', text: 'Waiting for the drop...', color: 'text-blue-400' },
-      { id: 3, user: 'NeonNinja', text: 'Is this real-time?', color: 'text-green-400' },
+    { id: 1, user: "System", text: "Connected to Streamyst server...", color: "text-gray-500", isSystem: true },
+    { id: 2, user: "System", text: "Waiting for input...", color: "text-gray-500", isSystem: true }
   ]);
+  const [isMobile, setIsMobile] = useState(false);
   const chatScrollRef = useRef<HTMLDivElement>(null);
 
-  // Check for mobile to disable tilt
-  useEffect(() => {
-      const checkMobile = () => {
-          setIsMobile(window.innerWidth < 1024);
-      };
-      checkMobile();
-      window.addEventListener('resize', checkMobile);
-      return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  // Mouse Tilt Logic
+  // --- 3D TILT LOGIC (Restored from Old Code) ---
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   
@@ -72,18 +104,34 @@ const InteractiveDemo: React.FC = () => {
   
   const glareX = useTransform(springX, [-0.5, 0.5], [0, 100]);
   const glareY = useTransform(springY, [-0.5, 0.5], [0, 100]);
+  const glareBackground = useMotionTemplate`radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.15), transparent 60%)`;
 
   const layerX = useTransform(springX, [-0.5, 0.5], [-15, 15]);
   const layerY = useTransform(springY, [-0.5, 0.5], [-15, 15]);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isMobile) return;
-    const { clientX, clientY, currentTarget } = e;
-    const { left, top, width, height } = currentTarget.getBoundingClientRect();
-    const x = (clientX - left) / width - 0.5;
-    const y = (clientY - top) / height - 0.5;
-    mouseX.set(x);
-    mouseY.set(y);
+    
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    
+    const mouseXPos = e.clientX - rect.left;
+    const mouseYPos = e.clientY - rect.top;
+    
+    // Calculate percentages -0.5 to 0.5
+    const xPct = (mouseXPos / width) - 0.5;
+    const yPct = (mouseYPos / height) - 0.5;
+
+    mouseX.set(xPct);
+    mouseY.set(yPct);
   };
 
   const handleMouseLeave = () => {
@@ -91,71 +139,47 @@ const InteractiveDemo: React.FC = () => {
     mouseY.set(0);
   };
 
-  // The static image to display (The last one from the original sequence)
-  const staticImage = "https://raw.githubusercontent.com/cavanjuice/assets/main/wearable_1.png";
+  const triggerReaction = (emotionId: Emotion) => {
+    setActiveEmotion(emotionId);
+    setTriggerKey(prev => prev + 1);
+    
+    // Shake effect based on emotion intensity
+    if (emotionId === 'hype' || emotionId === 'shock') {
+        setShake(5);
+        setTimeout(() => setShake(0), 500);
+    }
 
-  // Chat Auto-scroll
+    // Add Simulated Sentiment Analysis Chat Message
+    const potentialMessages = SENTIMENT_MESSAGES[emotionId];
+    const randomMsg = potentialMessages[Math.floor(Math.random() * potentialMessages.length)];
+    const randomUser = USERNAMES[Math.floor(Math.random() * USERNAMES.length)];
+    const emotionColor = emotions.find(e => e.id === emotionId)?.color || "text-white";
+
+    const newMessage: ChatMessage = {
+      id: Date.now(),
+      user: randomUser,
+      text: randomMsg,
+      color: emotionColor
+    };
+    
+    setMessages(prev => {
+        const updated = [...prev, newMessage];
+        return updated.slice(-10); // Keep last 10
+    });
+  };
+
+  // Scroll chat when messages update
   useEffect(() => {
-      if (chatScrollRef.current) {
-          chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
-      }
+    if (chatScrollRef.current) {
+        chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
+    }
   }, [messages]);
 
-  const triggerReaction = (e: Emotion) => {
-    setActiveEmotion(e);
-    setTriggerKey(prev => prev + 1);
-    setShake(e === 'shock' ? 20 : 5); 
-    setTimeout(() => setShake(0), e === 'shock' ? 500 : 200);
+  const activeEmotionData = emotions.find(e => e.id === activeEmotion);
 
-    // Add Chat Reaction
-    const userNames = ['CyberSamurai', 'GlitchGamer', 'VaporWave', 'RetroRider', 'TechnoTitan', 'Lurker_007', 'NoobMaster'];
-    const userColors = ['text-red-400', 'text-blue-400', 'text-green-400', 'text-yellow-400', 'text-pink-400', 'text-orange-400'];
-    
-    const reactionTexts: Record<Emotion, string[]> = {
-        happy: ["So wholesome! 😊", "Good vibes only", "Love this energy", "😊😊😊", "Made my day"],
-        love: ["❤️❤️❤️", "Sending love!", "Heartbeat sync engaged", "So much love", "<3"],
-        hype: ["LETS GOOO 🔥", "HYPE TRAIN", "INSANE ENERGY", "🔥🔥🔥🔥🔥", "W Stream"],
-        shock: ["WHAT???", "No way!", "Did that just happen??", "⚡⚡⚡", "MIND BLOWN 🤯"],
-        clap: ["GG WP", "Well played 👏", "👏 👏 👏", "Bravo!", "Legendary"]
-    };
+  // --- RESTORED ANIMATION LOGIC FROM OLD CODE ---
 
-    const randomText = reactionTexts[e][Math.floor(Math.random() * reactionTexts[e].length)];
-    const randomUser = userNames[Math.floor(Math.random() * userNames.length)];
-    const randomColor = userColors[Math.floor(Math.random() * userColors.length)];
-
-    const maxMessages = isMobile ? 5 : 8;
-
-    setMessages(prev => [
-        ...prev.slice(-(maxMessages - 1)), // Keep limited messages
-        { 
-            id: Date.now(), 
-            user: randomUser, 
-            text: randomText, 
-            color: randomColor 
-        }
-    ]);
-  };
-
-  const getEmotionFilter = (emotion: Emotion | null) => {
-      if (!emotion) return 'none';
-
-      switch (emotion) {
-          case 'happy': // Target Green - Sepia base avoids white core
-              return 'sepia(100%) hue-rotate(80deg) saturate(250%) brightness(0.9) drop-shadow(0 0 15px rgba(34,197,94,0.6))';
-          case 'love': // Target Pink
-              return 'sepia(100%) hue-rotate(290deg) saturate(250%) brightness(0.9) drop-shadow(0 0 15px rgba(236,72,153,0.6))';
-          case 'hype': // Target Orange
-              return 'sepia(100%) hue-rotate(-10deg) saturate(300%) brightness(0.9) drop-shadow(0 0 15px rgba(249,115,22,0.6))';
-          case 'shock': // Target Bright White/Blueish - Keep as is for effect
-              return 'drop-shadow(0 0 40px rgba(255,255,255,0.5)) grayscale(100%) brightness(1.5) contrast(1.1)';
-          case 'clap': // Target Yellow
-              return 'sepia(100%) hue-rotate(15deg) saturate(300%) brightness(1.0) drop-shadow(0 0 15px rgba(250,204,21,0.6))';
-          default:
-              return 'none';
-      }
-  };
-
-  // --- PARTICLE SYSTEMS ---
+  // Lightning Paths (Calculated dynamically as in old code)
   const lightningPaths = useMemo(() => {
     return Array.from({ length: 8 }).map((_, i) => {
         const angle = (i / 8) * Math.PI * 2;
@@ -173,6 +197,7 @@ const InteractiveDemo: React.FC = () => {
     });
   }, [triggerKey]);
 
+  // Love Particles (Old Code Version)
   const loveParticles = useMemo(() => {
     return Array.from({ length: 30 }).map((_, i) => {
         const angle = Math.random() * Math.PI * 2;
@@ -202,6 +227,7 @@ const InteractiveDemo: React.FC = () => {
     });
   }, [triggerKey]);
 
+  // Joy Particles (Old Code Version)
   const joyParticles = useMemo(() => {
     return Array.from({ length: 40 }).map((_, i) => {
         const angle = (i / 40) * Math.PI * 2 + (Math.random() - 0.5); 
@@ -220,6 +246,7 @@ const InteractiveDemo: React.FC = () => {
     });
   }, [triggerKey]);
 
+  // Clap Particles (Exact Logic from Old Code)
   const clapParticles = useMemo(() => {
     return Array.from({ length: 60 }).map((_, i) => {
         const startX = (Math.random() - 0.5) * 400; 
@@ -247,10 +274,9 @@ const InteractiveDemo: React.FC = () => {
   }, [triggerKey]);
 
   return (
-    // Changed: Significantly reduced mobile padding to py-6
     <section 
         id="demo" 
-        className="py-24 lg:py-48 relative z-10 overflow-hidden bg-cosmic-950 perspective-1000"
+        className="py-24 lg:py-48 relative z-10 overflow-hidden bg-[#030205] perspective-1000"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
     >
@@ -304,6 +330,7 @@ const InteractiveDemo: React.FC = () => {
                 style={{ 
                     rotateX: isMobile ? 0 : rotateX, 
                     rotateY: isMobile ? 0 : rotateY,
+                    transformStyle: 'preserve-3d',
                 }}
                 animate={{
                     x: shake > 0 ? [0, -shake, shake, -shake, shake, 0] : 0 
@@ -312,17 +339,16 @@ const InteractiveDemo: React.FC = () => {
             >
                 {/* Dynamic Glare Reflection */}
                 <motion.div 
-                    className="absolute inset-0 z-20 pointer-events-none opacity-30 mix-blend-overlay bg-gradient-to-tr from-transparent via-white to-transparent"
+                    className="absolute inset-0 z-20 pointer-events-none opacity-30 mix-blend-overlay transition-all duration-75"
                     style={{
-                        background: isMobile ? 'none' : `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.15), transparent 60%)`
+                        background: isMobile ? 'none' : glareBackground
                     }}
                 />
 
                 <div className="grid lg:grid-cols-12 lg:min-h-[500px]">
                     
                     {/* LEFT: VISUALIZER */}
-                    {/* Compact height on mobile: h-[260px] */}
-                    <div className="lg:col-span-7 relative flex items-center justify-center p-4 lg:p-10 overflow-hidden bg-[#0A0A0B] h-[260px] lg:h-auto">
+                    <div className="lg:col-span-7 relative flex items-center justify-center p-4 lg:p-10 overflow-hidden bg-[#0A0A0B] h-[400px] lg:h-auto">
                         
                         {/* Dynamic Environment Glow */}
                         <div 
@@ -334,16 +360,14 @@ const InteractiveDemo: React.FC = () => {
                             }} 
                         />
                         
-                        {/* Grid Pattern */}
+                        {/* Grid Pattern with Parallax */}
                         <motion.div 
                             style={{ x: isMobile ? 0 : layerX, y: isMobile ? 0 : layerY }}
-                            className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" 
+                            className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"
                         />
 
-                        {/* UNIQUE EMOTION ANIMATIONS */}
+                        {/* UNIQUE EMOTION ANIMATIONS (RESTORED FROM OLD CODE) */}
                         <AnimatePresence>
-                            {/* ... (Animations remain the same, logic is fine) ... */}
-                            
                             {/* === HAPPY / JOY === */}
                             {activeEmotion === 'happy' && (
                                 <motion.div 
@@ -498,7 +522,7 @@ const InteractiveDemo: React.FC = () => {
                                 </motion.div>
                             )}
 
-                            {/* === CLAP / SUPPORT === */}
+                            {/* === CLAP / SUPPORT (EXACT CONFETTI BLAST) === */}
                             {activeEmotion === 'clap' && (
                                 <motion.div 
                                     key={`clap-${triggerKey}`} 
@@ -539,7 +563,7 @@ const InteractiveDemo: React.FC = () => {
                             )}
                         </AnimatePresence>
 
-                        {/* Device Image Stack */}
+                        {/* Device Image Stack (PRESERVED NEW STRUCTURE & PADDING) */}
                         <motion.div 
                             style={{ 
                                 maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)',
@@ -547,14 +571,14 @@ const InteractiveDemo: React.FC = () => {
                                 x: isMobile ? 0 : layerX,
                                 y: isMobile ? 0 : layerY
                             }}
-                            className="relative z-10 w-full max-w-[180px] lg:max-w-[300px] aspect-[4/5]"
+                            className="relative z-10 w-full max-w-[280px] lg:max-w-[500px] aspect-[4/5]"
                         >
                              {activeEmotion === 'shock' && (
                                 <>
                                     <motion.img 
                                         key="ghost-r"
-                                        src={staticImage}
-                                        className="absolute inset-0 w-full h-full object-contain opacity-50 mix-blend-screen"
+                                        src={emotionImages['shock']}
+                                        className="absolute inset-0 w-full h-full object-contain opacity-50 mix-blend-screen p-4 md:p-6"
                                         initial={{ x: 0 }}
                                         animate={{ x: [-5, 5, -5, 0], opacity: [0.5, 0.8, 0] }}
                                         transition={{ duration: 0.3 }}
@@ -562,8 +586,8 @@ const InteractiveDemo: React.FC = () => {
                                     />
                                     <motion.img 
                                         key="ghost-b"
-                                        src={staticImage}
-                                        className="absolute inset-0 w-full h-full object-contain opacity-50 mix-blend-screen"
+                                        src={emotionImages['shock']}
+                                        className="absolute inset-0 w-full h-full object-contain opacity-50 mix-blend-screen p-4 md:p-6"
                                         initial={{ x: 0 }}
                                         animate={{ x: [5, -5, 5, 0], opacity: [0.5, 0.8, 0] }}
                                         transition={{ duration: 0.3 }}
@@ -573,40 +597,45 @@ const InteractiveDemo: React.FC = () => {
                              )}
 
                             <div className="absolute inset-0 w-full h-full pointer-events-none">
+                                {/* Base Image */}
                                 <motion.img 
                                     src={staticImage}
                                     alt="Streamyst Wearable Base"
                                     initial={false}
                                     animate={{ filter: 'none' }}
                                     transition={{ duration: 0.5 }}
-                                    className="absolute inset-0 w-full h-full object-contain"
+                                    className="absolute inset-0 w-full h-full object-contain p-4 md:p-6"
                                 />
-                                {activeEmotion && (
-                                    <motion.img 
-                                        src={staticImage}
-                                        alt="Streamyst Wearable Glow"
-                                        initial={false}
-                                        animate={{ opacity: 1, scale: [1, 1.05, 1], filter: getEmotionFilter(activeEmotion) }}
-                                        transition={{ duration: activeEmotion === 'shock' ? 0.1 : 0.4, scale: { duration: 2, repeat: Infinity, ease: "easeInOut" } }}
-                                        className="absolute inset-0 w-full h-full object-contain"
-                                        style={{
-                                            maskImage: 'radial-gradient(circle at 50% 53.5%, black 5%, transparent 35%)',
-                                            WebkitMaskImage: 'radial-gradient(circle at 50% 53.5%, black 5%, transparent 35%)',
-                                            mixBlendMode: 'normal'
-                                        }}
-                                    />
-                                )}
+                                <AnimatePresence>
+                                    {activeEmotion && emotionImages[activeEmotion] !== staticImage && (
+                                        <motion.img 
+                                            key={activeEmotion}
+                                            src={emotionImages[activeEmotion]}
+                                            alt="Streamyst Wearable Active"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ 
+                                                opacity: 1, 
+                                                filter: `drop-shadow(0 0 20px ${activeEmotionData?.hex || 'white'})`
+                                            }}
+                                            exit={{ opacity: 0 }}
+                                            transition={{ duration: 0.4 }}
+                                            className="absolute inset-0 w-full h-full object-contain z-20 p-4 md:p-6"
+                                        />
+                                    )}
+                                </AnimatePresence>
                             </div>
                         </motion.div>
 
                     </div>
 
-                    {/* RIGHT: CONTROL PANEL & CHAT (Bottom on mobile) */}
+                    {/* RIGHT COLUMN: CONTROL PANEL */}
                     <motion.div 
-                        style={{ x: isMobile ? 0 : layerX, y: isMobile ? 0 : layerY }}
-                        className="lg:col-span-5 bg-[#05040a]/90 backdrop-blur-md p-4 lg:p-8 flex flex-col justify-between border-t lg:border-t-0 lg:border-l border-white/5 relative z-30"
+                        className="lg:col-span-5 bg-[#05040a]/90 backdrop-blur-md p-4 lg:p-8 flex flex-col justify-between border-t lg:border-t-0 lg:border-l border-white/5 relative z-30 transition-transform duration-100"
+                        style={{
+                            x: isMobile ? 0 : layerX, 
+                            y: isMobile ? 0 : layerY
+                        }}
                     >
-                        
                         {/* CHAT INTERFACE */}
                         <div className="flex-1 flex flex-col h-[100px] lg:h-auto lg:min-h-[260px] mb-4 relative">
                             <div className="flex items-center justify-between text-gray-400 border-b border-white/10 pb-2 mb-2">

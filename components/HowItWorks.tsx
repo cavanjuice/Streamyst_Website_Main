@@ -7,7 +7,7 @@ const steps = [
   {
     id: "01",
     title: "Audience Reacts",
-    desc: "Viewers use chat naturally. Our system detects sentiment spikes and energy shifts in real-time.",
+    desc: "Viewers chat naturally or support their streamer. Our system detects sentiment spikes and energy shifts in real-time.",
     icon: MessageSquare,
     gradient: "from-amber-400/20 via-orange-500/20 to-red-500/20",
     highlight: "bg-orange-500",
@@ -16,7 +16,7 @@ const steps = [
   {
     id: "02",
     title: "Instant Translation",
-    desc: "AI processes collective emotion into haptic signals. Chaos becomes a pulse. Love becomes warmth.",
+    desc: "Our custom software processes collective emotion into physical and digital feedback. Chaos becomes a pulse. Love becomes warmth.",
     icon: Activity,
     gradient: "from-blue-400/20 via-indigo-500/20 to-violet-500/20",
     highlight: "bg-indigo-500",
@@ -25,7 +25,7 @@ const steps = [
   {
     id: "03",
     title: "Streamer Feels",
-    desc: "The wearable activates. You feel the crowd's energy physically, creating an instant feedback loop.",
+    desc: "The wearable activates and digital expressions react. You feel the crowd's energy physically, creating an instant feedback loop.",
     icon: Zap,
     gradient: "from-pink-400/20 via-rose-500/20 to-fuchsia-600/20",
     highlight: "bg-pink-500",
@@ -130,7 +130,7 @@ const HowItWorks: React.FC = () => {
             transition={{ delay: 0.2 }}
             className="text-lg md:text-xl text-gray-400 font-light leading-relaxed max-w-2xl mx-auto"
           >
-            A seamless bridge between digital chatrooms and physical sensation, designed for the modern streaming workflow.
+            A seamless bridge between digital chatrooms and physical sensation, designed for the current streaming workflow.
           </motion.p>
         </div>
 

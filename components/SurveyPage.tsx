@@ -7,7 +7,7 @@ import {
     Activity, DollarSign, Lightbulb, Wifi, Shield, 
     Cpu, Zap, GripVertical, AlertCircle, PlayCircle,
     Ghost, Crown, Heart, Briefcase, Globe, Layers, 
-    PenTool, Share2, HelpCircle
+    PenTool, Share2, HelpCircle, MousePointer2
 } from 'lucide-react';
 import { saveSurveyResponse } from '../utils/supabaseClient';
 
@@ -58,6 +58,7 @@ interface SurveyData {
 
 const STREAMER_PROBLEM_OPTIONS = [
     { id: 'engagement', label: 'Audience engagement / connection', icon: <Users size={18} /> },
+    { id: 'interaction_limits', label: 'Limited interaction possibilities', icon: <MousePointer2 size={18} /> },
     { id: 'monetization', label: 'Monetization / income', icon: <DollarSign size={18} /> },
     { id: 'creativity', label: 'Content ideas / creativity', icon: <Lightbulb size={18} /> },
     { id: 'tech_quality', label: 'Technical quality', icon: <Wifi size={18} /> },
@@ -71,6 +72,7 @@ const STREAMER_PROBLEM_OPTIONS = [
 
 const VIEWER_PROBLEM_OPTIONS = [
     { id: 'ignored', label: 'Feeling ignored / invisible', icon: <Ghost size={18} /> },
+    { id: 'interaction_limits', label: 'Limited interaction possibilities', icon: <MousePointer2 size={18} /> },
     { id: 'ads', label: 'Too many ads / interruptions', icon: <X size={18} /> },
     { id: 'toxic', label: 'Toxic chat / community', icon: <Shield size={18} /> },
     { id: 'impact', label: 'My interactions feel meaningless', icon: <Activity size={18} /> },
@@ -132,81 +134,119 @@ const VIEWER_FRICTION_OPTIONS = [
     "I already support enough"
 ];
 
-const STREAMER_PRICING_MODELS = [
+// --- PRICING MODELS CATEGORIZED ---
+
+const STREAMER_PRICING_GROUPS = [
     {
-        id: 'free_start',
-        title: 'Free-to-Start',
-        desc: 'I want to try Streamyst for free and unlock more as my channel grows.',
-        features: ['Free core features', 'Paid visual and experience upgrades (€9,99–14,99 / month)']
+        title: "Flexible / No Upfront Cost",
+        description: "Start using Streamyst features without buying hardware immediately.",
+        options: [
+            {
+                id: 'free_start',
+                title: 'Free-to-Start',
+                desc: 'I want to try Streamyst for free and unlock more as my channel grows.',
+                features: ['Free core features', 'Paid visual upgrades (€9,99–14,99 / month)']
+            },
+            {
+                id: 'brand_supported',
+                title: 'Brand Supported',
+                desc: 'I want features for free, supported by occasional branded watermarks/ads.',
+                features: ['Free interactive experience', 'Branded ads woven into overlays']
+            },
+            {
+                id: 'community_growth',
+                title: 'Community-Supported',
+                desc: 'I want my community to help unlock Streamyst features together.',
+                features: ['Free base experience', 'Monthly goal-based upgrades']
+            }
+        ]
     },
     {
-        id: 'brand_supported',
-        title: 'Brand Supported',
-        desc: 'I want me and my audiences to use the features of streamyst for free, but it will be watermarked with brands every so often.',
-        features: ['Free interactive experience with branded ads woven into', 'Create branded overlay presets']
+        title: "Subscription Based",
+        description: "Access powerful digital tools with a simple monthly plan.",
+        options: [
+             {
+                id: 'creator_sub',
+                title: 'Creator Subscription',
+                desc: 'Full access to overlays, customization, and updates. No hardware required.',
+                features: ['Customizable overlays', '€14,99 / month']
+            }
+        ]
     },
     {
-        id: 'creator_sub',
-        title: 'Creator Subscription',
-        desc: 'I want full access to all digital overlays, customization, and updates, no hardware required.',
-        features: ['Customizable overlays and experiences', '€14,99 / month']
-    },
-    {
-        id: 'community_growth',
-        title: 'Community-Supported Growth',
-        desc: 'I want my community to help unlock Streamyst features together.',
-        features: ['Free base experience', 'Monthly goal-based upgrades (hardware/software)']
-    },
-    {
-        id: 'hardware_first',
-        title: 'Hardware-First Creator',
-        desc: 'I want to feel the digital experience myself, for better immersion, interaction with my audience and makes me emotionally more connected!',
-        features: ['€150 device + free core features', '€9,99 / month digital custom service']
-    },
-    {
-        id: 'affiliate_hardware',
-        title: 'Affiliate Hardware Program',
-        desc: 'I like earning hardware through engagement rather than paying upfront',
-        features: ['Reach +/- 500 unique extention interactions through digital overlays', 'Device discounted at €50 instead of €150']
-    },
-    {
-        id: 'all_in',
-        title: 'All-In Creator',
-        desc: 'I want to own Streamyst outright with no monthly fees.',
-        features: ['€349 one-time for both hardware and service', 'Lifetime digital overlays + continuous support']
+        title: "Hardware Ownership",
+        description: "Get the physical Vybe device for maximum immersion and connection.",
+        options: [
+            {
+                id: 'hardware_first',
+                title: 'Hardware-First',
+                desc: 'I want the physical device for better immersion and emotional connection.',
+                features: ['€150 device + free core features', '€9,99/mo service']
+            },
+            {
+                id: 'affiliate_hardware',
+                title: 'Affiliate Program',
+                desc: 'I want to earn the hardware through engagement stats.',
+                features: ['Discounted device (€50) at 500+ interactions', 'Performance based']
+            },
+            {
+                id: 'all_in',
+                title: 'All-In Lifetime',
+                desc: 'I want to own everything outright with no monthly fees.',
+                features: ['€349 one-time payment', 'Lifetime overlays + support']
+            }
+        ]
     }
 ];
 
-const VIEWER_PRICING_MODELS = [
+const VIEWER_PRICING_GROUPS = [
     {
-        id: 'community_goal',
-        title: 'Community Goal Contributions',
-        desc: 'I like contributing small amounts together with others to unlock Streamyst features.',
-        features: ['€1–€3 micro-contributions', 'Visible collective achievement']
+        title: "Community & Collective",
+        description: "Join forces with other viewers to unlock features.",
+        options: [
+            {
+                id: 'community_goal',
+                title: 'Community Goals',
+                desc: 'Contributing small amounts together to unlock features.',
+                features: ['€1–€3 micro-contributions', 'Collective achievement']
+            },
+            {
+                id: 'hardware_unlock',
+                title: 'Hardware Unlock',
+                desc: 'Helping save up to unlock the physical device for a streamer.',
+                features: ['Donations towards hardware', 'Community milestones']
+            }
+        ]
     },
     {
-        id: 'interaction_boosts',
-        title: 'Interaction Boosts',
-        desc: 'I’d pay occasionally to trigger special interactions or effects during streams.',
-        features: ['One-time boosts (Similar to bits)', 'Visual + physical responses']
+        title: "Direct & Personal",
+        description: "Enhance your own personal impact on the stream.",
+        options: [
+             {
+                id: 'interaction_boosts',
+                title: 'Interaction Boosts',
+                desc: 'Paying occasionally to trigger special effects.',
+                features: ['One-time boosts (like Bits)', 'Visual + physical response']
+            },
+            {
+                id: 'monthly_supporter',
+                title: 'Monthly Supporter',
+                desc: 'Supporting the service as part of a monthly sub.',
+                features: ['€3–€5 / month', 'Exclusive interactions']
+            }
+        ]
     },
     {
-        id: 'monthly_supporter',
-        title: 'Monthly Supporter Tier',
-        desc: 'I’d support Streamyst’s service as part of my monthly support for a streamer.',
-        features: ['€3–€5 / month (to let streamer use streamyst)', 'Receive exclusive interactions with streamer overlays']
-    },
-    {
-        id: 'hardware_unlock',
-        title: 'Hardware Unlock Campaign',
-        desc: 'I’d help save up to unlock the physical Streamyst device for a streamer I love.',
-        features: ['Small donations throughout streams', 'Community milestones!']
-    },
-    {
-        id: 'no_pay',
-        title: 'I wouldn’t pay for this',
-        desc: 'I prefer watching without spending money.',
-        features: []
+        title: "Passive",
+        description: "Prefer to watch without financial involvement.",
+        options: [
+            {
+                id: 'no_pay',
+                title: 'I wouldn’t pay',
+                desc: 'I prefer watching without spending money.',
+                features: []
+            }
+        ]
     }
 ];
 
@@ -814,11 +854,11 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                                                 <div className="flex items-center justify-between w-full pl-8">
                                                     <div className="flex items-center gap-3">
                                                         {itemDetails.icon}
-                                                        <span className="font-bold">{itemDetails.label}</span>
+                                                        <span className="font-bold text-sm leading-tight">{itemDetails.label}</span>
                                                     </div>
                                                     <button 
                                                         onClick={() => updateData('problemRank', data.problemRank?.filter(id => id !== item))}
-                                                        className="p-1 hover:bg-white/10 rounded-full"
+                                                        className="p-1 hover:bg-white/10 rounded-full shrink-0"
                                                     >
                                                         <X size={16} />
                                                     </button>
@@ -1097,45 +1137,52 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                     </div>
                 );
 
-            case 11: // PAYMENT MODEL - REVISED
-                const pricingOptions = isViewer ? VIEWER_PRICING_MODELS : STREAMER_PRICING_MODELS;
+            case 11: // PAYMENT MODEL - REVISED & CATEGORIZED
+                const pricingGroups = isViewer ? VIEWER_PRICING_GROUPS : STREAMER_PRICING_GROUPS;
                 const question = isViewer 
                     ? "If Streamyst launches to make your favorite streamer’s content more interactive and meaningful, how would you prefer to support it?"
                     : "If Streamyst becomes part of your regular stream. Which way would you most want to access it?";
 
                 return (
-                    <div className="max-w-6xl mx-auto">
-                        <div className="text-center mb-12 max-w-4xl mx-auto">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="text-center mb-10 max-w-4xl mx-auto">
                             <h2 className="text-2xl md:text-3xl font-display font-bold mb-4">{question}</h2>
                             <p className="text-gray-400">Select the model that fits you best.</p>
                         </div>
                         
-                        <div className={`grid gap-6 ${isViewer ? 'md:grid-cols-2 lg:grid-cols-3' : 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
-                            {pricingOptions.map((opt) => (
-                                <Card
-                                    key={opt.id}
-                                    selected={data.pricingModel === opt.id}
-                                    onClick={() => {
-                                        updateData('pricingModel', opt.id);
-                                        // Auto advance on selection or keep manual? 
-                                        // Manual is safer for complex choices.
-                                    }}
-                                    className="flex flex-col text-left h-full"
-                                >
-                                    <h3 className="text-lg font-bold text-white mb-3 leading-tight">{opt.title}</h3>
-                                    <p className="text-xs text-gray-400 mb-6 leading-relaxed flex-grow">{opt.desc}</p>
+                        <div className="space-y-10">
+                            {pricingGroups.map((group, groupIdx) => (
+                                <div key={groupIdx}>
+                                    <div className="flex items-center gap-4 mb-6">
+                                        <h3 className="text-lg font-bold text-violet-300 uppercase tracking-widest whitespace-nowrap">{group.title}</h3>
+                                        <div className="h-px bg-white/10 w-full" />
+                                    </div>
                                     
-                                    {opt.features.length > 0 && (
-                                        <ul className="space-y-3 mt-auto border-t border-white/5 pt-4">
-                                            {opt.features.map((feat, i) => (
-                                                <li key={i} className="text-[11px] text-violet-200 flex items-start gap-2 leading-snug">
-                                                    <span className="mt-1 w-1 h-1 rounded-full bg-violet-500 shrink-0" />
-                                                    {feat}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
-                                </Card>
+                                    <div className={`grid gap-6 ${isViewer ? 'md:grid-cols-2 lg:grid-cols-3' : 'md:grid-cols-2 lg:grid-cols-3'}`}>
+                                        {group.options.map((opt) => (
+                                            <Card
+                                                key={opt.id}
+                                                selected={data.pricingModel === opt.id}
+                                                onClick={() => updateData('pricingModel', opt.id)}
+                                                className="flex flex-col text-left h-full"
+                                            >
+                                                <h4 className="text-lg font-bold text-white mb-2 leading-tight">{opt.title}</h4>
+                                                <p className="text-xs text-gray-400 mb-6 leading-relaxed flex-grow">{opt.desc}</p>
+                                                
+                                                {opt.features.length > 0 && (
+                                                    <ul className="space-y-3 mt-auto border-t border-white/5 pt-4">
+                                                        {opt.features.map((feat, i) => (
+                                                            <li key={i} className="text-[11px] text-violet-200 flex items-start gap-2 leading-snug">
+                                                                <span className="mt-1 w-1 h-1 rounded-full bg-violet-500 shrink-0" />
+                                                                {feat}
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                )}
+                                            </Card>
+                                        ))}
+                                    </div>
+                                </div>
                             ))}
                         </div>
                         

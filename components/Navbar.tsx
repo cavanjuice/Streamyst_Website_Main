@@ -50,7 +50,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView = 'home', onNavigate }) => 
 
   const navItemVariants = {
       hidden: { opacity: 0, y: -10 },
-      visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "circOut" } }
+      visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "circOut" as const } }
   };
 
   return (
@@ -136,7 +136,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView = 'home', onNavigate }) => 
                   onClick={() => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })}
                   className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-full font-bold transition-all duration-500 shadow-lg shadow-violet-900/20 hover:shadow-violet-600/40 hover:-translate-y-0.5 whitespace-nowrap px-7 py-3 text-base"
                 >
-                  I WANT THIS
+                  Join Alpha
                 </motion.button>
             </div>
 
@@ -149,7 +149,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView = 'home', onNavigate }) => 
                     onClick={() => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })}
                     className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-full font-bold text-xs px-4 py-2 shadow-lg shadow-violet-900/20"
                 >
-                    GET ACCESS
+                    JOIN ALPHA
                 </motion.button>
                 <motion.button 
                     initial={{ opacity: 0, x: 10 }}
@@ -226,4 +226,3 @@ const Navbar: React.FC<NavbarProps> = ({ currentView = 'home', onNavigate }) => 
 };
 
 export default Navbar;
-    

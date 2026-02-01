@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useScroll } from 'framer-motion';
 import { Activity, DollarSign, Users, Heart, ArrowUp, Eye, Crown, Signal, Zap, Wifi, Lock } from 'lucide-react';
 
 interface SolutionSectionProps {
@@ -11,8 +11,26 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
   const [leveledUp, setLeveledUp] = useState(false);
   const [currentFrame, setCurrentFrame] = useState(0);
   
-  // 3D Tilt Logic
-  const ref = useRef<HTMLDivElement>(null);
+  // Section Scroll Logic for Auto-Level Up
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"]
+  });
+
+  useEffect(() => {
+    const unsubscribe = scrollYProgress.on("change", (latest) => {
+      // If we scroll past 65% of the section lifecycle and haven't leveled up, do it automatically
+      // This ensures the user sees the transformation before the section leaves the viewport
+      if (latest > 0.65 && !leveledUp) {
+        setLeveledUp(true);
+      }
+    });
+    return () => unsubscribe();
+  }, [scrollYProgress, leveledUp]);
+
+  // 3D Tilt Logic for Card
+  const cardRef = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -26,8 +44,8 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
   const shineY = useTransform(mouseY, [-0.5, 0.5], [0, 100]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
     const width = rect.width;
     const height = rect.height;
     const mouseXVal = e.clientX - rect.left;
@@ -141,7 +159,7 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
   const isStreamer = role === 'streamer';
 
   return (
-    <section className="py-24 lg:py-48 relative z-10 overflow-hidden flex flex-col justify-center min-h-[90vh]">
+    <section ref={sectionRef} className="py-24 lg:py-48 relative z-10 overflow-hidden flex flex-col justify-center min-h-[90vh]">
       {/* Background Atmosphere */}
       <div 
         className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[600px] rounded-full blur-[100px] pointer-events-none mix-blend-screen transition-all duration-1000 ${
@@ -192,7 +210,7 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
         {/* 3D EVOLUTION CARD */}
         <div className="max-w-5xl mx-auto relative perspective-1000">
              <motion.div 
-                ref={ref}
+                ref={cardRef}
                 initial={{ opacity: 0, scale: 0.9, rotateX: 10 }}
                 whileInView={{ opacity: 1, scale: 1, rotateX: 0 }}
                 viewport={{ once: true, margin: "-50px" }}

@@ -93,7 +93,7 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
     },
     viewer: {
         title: "THE AUDIENCE",
-        desc: "Lost in the noise. You want to participate, but you're just watching a video feed.",
+        desc: "Lost in the noise. You want to participate but you don't feel like you can connect to your favourite creator.",
         bars: [
             { label: "INFLUENCE", value: 15 },
             { label: "VISIBILITY", value: 10 },
@@ -130,15 +130,10 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
         }
 
         // Calculate Target: Next card position
-        // We assume cards are full width (min-w-full) + gap
-        // Using offsetLeft of children is most reliable
         let nextTarget = currentScroll;
         const children = Array.from(container.children) as HTMLElement[];
         
         // Find the first child that is fully to the right of current scroll
-        // A simple heuristic: center point of child > center point of view + small offset
-        const viewCenter = currentScroll + (container.clientWidth / 2);
-        
         for (let child of children) {
             if (child.offsetLeft > currentScroll + 10) {
                 nextTarget = child.offsetLeft;
@@ -146,22 +141,18 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
             }
         }
         
-        // If no target found or target is same, force a step (fallback)
         if (nextTarget <= currentScroll) {
              nextTarget = currentScroll + container.clientWidth; 
         }
-
-        // Ensure we don't overshoot max
         if (nextTarget > maxScroll) nextTarget = maxScroll;
 
 
         // ANIMATION LOOP
         const startScroll = currentScroll;
         const distance = nextTarget - startScroll;
-        const duration = 1500; // 1.5 seconds (Updated from 2000)
+        const duration = 1500;
         const startTime = performance.now();
 
-        // Temporarily disable scroll snap to allow smooth JS animation
         container.style.scrollSnapType = 'none';
 
         const animate = (currentTime: number) => {
@@ -169,7 +160,6 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
             
             if (elapsed < duration) {
                 const progress = elapsed / duration;
-                // EaseInOutQuad for gentle start and end
                 const ease = progress < 0.5 
                     ? 2 * progress * progress 
                     : 1 - Math.pow(-2 * progress + 2, 2) / 2;
@@ -178,14 +168,13 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
                 requestAnimationFrame(animate);
             } else {
                 container.scrollLeft = nextTarget;
-                // Re-enable scroll snap for manual interaction
                 container.style.scrollSnapType = 'x mandatory';
             }
         };
         
         requestAnimationFrame(animate);
 
-    }, 5000); // Wait 5 seconds between scrolls
+    }, 5000);
 
     return () => {
         if (intervalRef.current) clearInterval(intervalRef.current);
@@ -227,7 +216,6 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: role === 'streamer' ? 20 : -20 }}
                     transition={{ duration: 0.4 }}
-                    // Desktop: Grid | Mobile: Flex Row centered
                     className="flex flex-row items-center justify-center gap-6 md:grid md:grid-cols-2 md:gap-16 lg:gap-20"
                 >
                     {/* LEFT: CHARACTER IMAGE */}
@@ -276,38 +264,70 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
             </AnimatePresence>
         </div>
 
-        {/* 2. TOGGLE BUTTON - Sleeker Mobile */}
+        {/* 2. TOGGLE BUTTON - REFINED GHOST ANIMATION */}
         <div className="flex justify-center mb-10 md:mb-16 relative z-20">
-             <div className="relative inline-flex bg-white/5 p-1 rounded-full border border-white/10 backdrop-blur-md shadow-2xl overflow-hidden origin-center">
+             {/* Container: Tighter inline-flex for specific sizing */}
+             <div className="relative inline-flex p-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
+                 
+                 {/* GHOST PILL (The Hint) - Animates on the INACTIVE side */}
                  <motion.div 
-                   className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-gradient-to-r rounded-full z-0`}
-                   layout
+                   className="absolute top-1 bottom-1 rounded-full border border-white/10 bg-white/5 pointer-events-none z-0"
+                   initial={false}
                    animate={{ 
-                       left: role === 'streamer' ? 4 : 'calc(50% + 0px)',
-                       backgroundImage: role === 'streamer' ? 'linear-gradient(to right, #8b5cf6, #4f46e5)' : 'linear-gradient(to right, #f97316, #dc2626)',
-                       boxShadow: role === 'streamer' 
-                        ? "0 0 20px rgba(139,92,246,0.5)" 
-                        : "0 0 20px rgba(249,115,22,0.5)"
+                       left: role === 'streamer' ? 'calc(100% - 4px)' : '4px',
+                       x: role === 'streamer' ? '-100%' : '0%',
+                       opacity: [0, 0.4, 0], 
+                       scale: [0.95, 1.02, 0.95]
                    }}
-                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                   transition={{ 
+                       left: { type: "spring", stiffness: 300, damping: 30 },
+                       x: { type: "spring", stiffness: 300, damping: 30 },
+                       opacity: { duration: 3, repeat: Infinity, repeatDelay: 1.5, ease: "easeInOut" },
+                       scale: { duration: 3, repeat: Infinity, repeatDelay: 1.5, ease: "easeInOut" }
+                   }}
+                   style={{ 
+                       width: 'calc(50% - 4px)'
+                   }}
+                 />
+
+                 {/* ACTIVE PILL (Background) */}
+                 <motion.div 
+                   className="absolute top-1 bottom-1 left-1 rounded-full z-0"
+                   layout
+                   initial={false}
+                   animate={{ 
+                       x: role === 'streamer' ? '0%' : '100%',
+                       background: role === 'streamer' 
+                        ? 'linear-gradient(to right, #8b5cf6, #4f46e5)' 
+                        : 'linear-gradient(to right, #f97316, #dc2626)',
+                   }}
+                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                   style={{ 
+                       width: 'calc(50% - 4px)',
+                       // Centered, Even Glow
+                       boxShadow: role === 'streamer' 
+                        ? '0 0 30px 2px rgba(139, 92, 246, 0.4)' 
+                        : '0 0 30px 2px rgba(249, 115, 22, 0.4)' 
+                   }}
                  />
                  
+                 {/* BUTTONS (Foreground) - RESTORED ORIGINAL SIZE */}
                  <button
                    onClick={() => setRole('streamer')}
-                   className={`relative z-10 px-4 py-2 md:px-6 md:py-3.5 rounded-full font-bold font-display tracking-[0.1em] transition-colors duration-300 w-32 md:w-48 text-[10px] md:text-xs ${role === 'streamer' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
+                   className={`relative z-10 w-32 md:w-48 py-2 md:py-3 rounded-full font-bold font-display tracking-widest text-[10px] md:text-xs transition-colors duration-200 ${role === 'streamer' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
                  >
                    STREAMER
                  </button>
                  <button
                    onClick={() => setRole('viewer')}
-                   className={`relative z-10 px-4 py-2 md:px-6 md:py-3.5 rounded-full font-bold font-display tracking-[0.1em] transition-colors duration-300 w-32 md:w-48 text-[10px] md:text-xs ${role === 'viewer' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
+                   className={`relative z-10 w-32 md:w-48 py-2 md:py-3 rounded-full font-bold font-display tracking-widest text-[10px] md:text-xs transition-colors duration-200 ${role === 'viewer' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
                  >
                    VIEWER
                  </button>
              </div>
         </div>
 
-        {/* 3. PROBLEM CARDS - Horizontal Scroll on Mobile, Grid on Desktop */}
+        {/* 3. PROBLEM CARDS */}
         <div className="relative max-w-6xl mx-auto w-full">
              <AnimatePresence mode="wait">
                 <motion.div 
@@ -317,18 +337,12 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.5, ease: "circOut" }}
                 >
-                    {/* 
-                        Mobile Layout: Flex row, snap scroll, hidden scrollbar
-                        Desktop Layout: Grid
-                        NOTE: scrollSnapType is managed dynamically by the useEffect for animation smoothness
-                    */}
                     <div 
                         ref={scrollRef}
                         className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 md:grid md:grid-cols-2 md:gap-6 lg:grid-cols-4 scrollbar-hide"
                         style={{ scrollSnapType: 'x mandatory' }} 
                     >
                         {currentProblem.items.map((item, i) => (
-                            // Min-width 100% on mobile ensures "1 at a time"
                             <div key={i} className="min-w-full md:min-w-0 snap-center flex h-full">
                                 <SpotlightCard 
                                     index={i} 
@@ -347,7 +361,7 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
                         ))}
                     </div>
                     
-                    {/* Mobile Navigation Hint (Dots) */}
+                    {/* Mobile Navigation Hint */}
                     <div className="flex md:hidden justify-center gap-2 mt-2">
                         {currentProblem.items.map((_, i) => (
                              <div key={i} className="w-1.5 h-1.5 rounded-full bg-white/20" />
@@ -363,4 +377,3 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
 };
 
 export default ExperienceToggle;
-    

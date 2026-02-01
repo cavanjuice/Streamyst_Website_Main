@@ -5,7 +5,7 @@ import { ArrowRight, Twitter, Linkedin, Github, MessageSquare, Zap, Globe, Users
 
 // --- ASSETS & CONSTANTS ---
 
-const FOUNDER_1_IMG = "https://raw.githubusercontent.com/cavanjuice/assets/main/DSC00257da.png"; // Robbe
+const FOUNDER_1_IMG = "https://raw.githubusercontent.com/cavanjuice/assets/main/robbe.png"; // Robbe
 const FOUNDER_2_IMG = "https://raw.githubusercontent.com/cavanjuice/assets/main/%C2%A9HF_Justin%20313.jpg"; // Justin
 
 // --- DOM SUB-COMPONENTS ---
@@ -237,7 +237,7 @@ const AboutPage = ({ onBack }: { onBack: () => void }) => {
                                 XR & AI Lead at PLAYAR, building immersive experiences for Apple, Dior, and Samsung.
                             </p>
                             <p>
-                                He wasn't just Robbe's thesis mentor—he was the bridge between academic theory and real-world magic.
+                                He wasn't just Robbe's thesis mentor, he was the bridge between academic theory and real-world magic.
                                 But it wasn't being used to its full potential.
                             </p>
                         </TimelineNode>
@@ -270,7 +270,7 @@ const AboutPage = ({ onBack }: { onBack: () => void }) => {
 
                     <div className="grid md:grid-cols-3 gap-8">
                         {[
-                            { title: "For Streamers", desc: "Superhuman Perception. Feel 10,000 viewers the way you feel 10 friends.", icon: <Zap className="w-8 h-8 text-yellow-400"/>, color: "border-yellow-500/30" },
+                            { title: "For Streamers", desc: "Superhuman Perception. Interact with 10,000 viewers the way you talk to 10 friends.", icon: <Zap className="w-8 h-8 text-yellow-400"/>, color: "border-yellow-500/30" },
                             { title: "For Audiences", desc: "Meaningful Impact. Your energy becomes visible. You aren't just watching; you're influencing.", icon: <Users className="w-8 h-8 text-orange-400"/>, color: "border-orange-500/30" },
                             { title: "For Everyone", desc: "Connection That Scales. Ambient emotional intelligence as standard as a microphone.", icon: <Globe className="w-8 h-8 text-violet-400"/>, color: "border-violet-500/30" }
                         ].map((card, i) => (
@@ -295,7 +295,7 @@ const AboutPage = ({ onBack }: { onBack: () => void }) => {
                     <div className="mt-32 text-center">
                         <div className="font-mono text-xs text-gray-500 uppercase tracking-widest mb-4">The Mission</div>
                         <h3 className="font-display font-bold text-3xl md:text-5xl max-w-4xl mx-auto leading-tight">
-                            "By 2030, emotional intelligence will be as standard in streaming as HD video."
+                            "Transform digital spaces to spark meaningful creation and collaboration"
                         </h3>
                     </div>
                 </div>
@@ -320,7 +320,7 @@ const AboutPage = ({ onBack }: { onBack: () => void }) => {
                             img={FOUNDER_1_IMG} 
                             name="Robbe De Block" 
                             role="Co-Founder & CEO" 
-                            quote="Technology is only useful when it disappears, leaving only the human connection behind."
+                            quote="Interaction has to be felt and cherished, we are driven to always make it meaningful"
                             delay={0}
                         />
 
@@ -357,16 +357,37 @@ const AboutPage = ({ onBack }: { onBack: () => void }) => {
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-fuchsia-400 to-purple-600 animate-pulse-slow">Being Built.</span>
                             </h2>
                             <p className="text-xl md:text-2xl text-gray-400 font-light mb-8 max-w-2xl mx-auto">
-                                Streaming is broken. We're fixing it with humanity. <br/>
+                                Streaming is meant to be more meaningful. We're on a mission to fix this with human connection. <br/>
                                 Choose your path.
                             </p>
                         </motion.div>
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto mb-24">
-                        <PortalPath title="Creators" desc="Join the waitlist for superhuman connection." cta="Join Waitlist" color="violet" delay={0} />
-                        <PortalPath title="Audiences" desc="Help us shape the future of interaction." cta="Join Discord" color="orange" delay={0.1} />
-                        <PortalPath title="Builders" desc="Engineers, designers, believers." cta="View Careers" color="pink" delay={0.2} />
+                        <PortalPath 
+                            title="Creators" 
+                            desc="Join the waitlist for superhuman connection." 
+                            cta="Join Waitlist" 
+                            color="violet" 
+                            delay={0} 
+                            image="https://raw.githubusercontent.com/cavanjuice/assets/main/mascot3.PNG"
+                        />
+                        <PortalPath 
+                            title="Audiences" 
+                            desc="Help us shape the future of interaction." 
+                            cta="Join Discord" 
+                            color="orange" 
+                            delay={0.1} 
+                            image="https://raw.githubusercontent.com/cavanjuice/assets/main/mascot2.PNG"
+                        />
+                        <PortalPath 
+                            title="Builders" 
+                            desc="Engineers, designers, believers." 
+                            cta="View Careers" 
+                            color="pink" 
+                            delay={0.2} 
+                            image="https://raw.githubusercontent.com/cavanjuice/assets/main/mascot1.PNG"
+                        />
                     </div>
 
                     <div className="text-center">
@@ -395,7 +416,7 @@ const QuoteBlock = ({ children }: { children?: React.ReactNode }) => (
     </div>
 );
 
-const PortalPath = ({ title, desc, cta, color, delay }: { title: string, desc: string, cta: string, color: string, delay: number }) => {
+const PortalPath = ({ title, desc, cta, color, delay, image }: { title: string, desc: string, cta: string, color: string, delay: number, image: string }) => {
     
     const colorClasses = {
         violet: { border: 'border-violet-500/30', bg: 'bg-violet-500', text: 'text-violet-400' },
@@ -409,23 +430,37 @@ const PortalPath = ({ title, desc, cta, color, delay }: { title: string, desc: s
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay, duration: 0.5 }}
-            className={`group relative p-8 h-[360px] flex flex-col justify-between bg-[#0A0A0B] border border-white/10 rounded-3xl`}
+            className="group relative h-[380px] w-full"
         >
-             <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-3xl pointer-events-none">
-                 <div className={`absolute -top-1/2 -right-1/2 w-full h-full ${colorClasses.bg} opacity-0 blur-[80px] transition-opacity duration-700`} />
+             {/* Background Container - CLIPS CONTENT */}
+             <div className="absolute inset-0 rounded-3xl bg-[#0A0A0B] border border-white/10 overflow-hidden group-hover:border-white/20 transition-colors z-0">
+                 {/* Background Blob */}
+                 <div className={`absolute -top-1/2 -right-1/2 w-full h-full ${colorClasses.bg} opacity-0 blur-[80px] group-hover:opacity-20 transition-opacity duration-700`} />
              </div>
 
-             <div>
-                 <div className="flex justify-between items-start mb-6">
-                    <div className={`w-12 h-1 ${colorClasses.bg} rounded-full`} />
-                    <ArrowRight className={`w-6 h-6 text-gray-600`} />
+             {/* Mascot Image - UNCLIPPED (Higher Z-Index, Outside Overflow Container) */}
+             <div className="absolute bottom-[-24px] right-[-24px] w-56 h-56 z-20 pointer-events-none">
+                 <img 
+                    src={image} 
+                    alt={title}
+                    className="w-full h-full object-contain object-bottom-right opacity-50 grayscale group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 ease-out translate-y-4 translate-x-4"
+                 />
+             </div>
+
+             {/* Content Layer */}
+             <div className="relative z-10 p-8 h-full flex flex-col justify-between">
+                 <div>
+                     <div className="flex justify-between items-start mb-6">
+                        <div className={`w-12 h-1 ${colorClasses.bg} rounded-full`} />
+                        <ArrowRight className={`w-6 h-6 text-gray-600 group-hover:text-white transition-colors`} />
+                     </div>
+                     <h3 className="font-display font-bold text-3xl text-white mb-4">{title}</h3>
+                     <p className="text-gray-400 font-light leading-relaxed max-w-[85%]">{desc}</p>
                  </div>
-                 <h3 className="font-display font-bold text-3xl text-white mb-4">{title}</h3>
-                 <p className="text-gray-400 font-light leading-relaxed">{desc}</p>
-             </div>
 
-             <div className="pt-8 border-t border-white/5">
-                 <span className={`text-xs font-mono uppercase tracking-widest text-gray-500 ${colorClasses.text} transition-colors duration-300`}>{cta}</span>
+                 <div className="pt-8 border-t border-white/5">
+                     <span className={`text-xs font-mono uppercase tracking-widest text-gray-500 ${colorClasses.text} transition-colors duration-300 group-hover:text-white`}>{cta}</span>
+                 </div>
              </div>
         </motion.div>
     );

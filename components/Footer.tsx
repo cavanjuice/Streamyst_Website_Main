@@ -21,7 +21,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
 
   const itemVariants = {
       hidden: { opacity: 0, y: 20 },
-      visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "circOut" } }
+      visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "circOut" as const } }
   };
 
   return (
@@ -43,8 +43,8 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                 />
              </div>
              <p className="text-gray-500 max-w-xs text-sm">
-                The next evolution of livestreaming connection. <br />
-                Don't just watch. Feel.
+                Connecting Streamers with Audiences through Interactive XR. <br />
+                Don't just watch. Experience.
              </p>
           </motion.div>
 
@@ -94,4 +94,3 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
 };
 
 export default Footer;
-    
