@@ -318,9 +318,9 @@ const InteractiveDemo: React.FC = () => {
            </motion.h2>
         </div>
 
-        {/* 3D TILT CONTAINER - Scaled Down from max-w-4xl to max-w-[50rem] (~10% decrease) */}
+        {/* 3D TILT CONTAINER - SCALED DOWN FURTHER TO max-w-[45rem] (~720px) */}
         <div 
-            className="relative max-w-[50rem] mx-auto flex justify-center perspective-1000"
+            className="relative max-w-[45rem] mx-auto flex justify-center perspective-1000"
             style={{ perspective: 1000 }}
         >
             <motion.div
@@ -336,7 +336,7 @@ const InteractiveDemo: React.FC = () => {
                 animate={{
                     x: shake > 0 ? [0, -shake, shake, -shake, shake, 0] : 0 
                 }}
-                className="relative w-full max-w-[50rem] bg-black/60 backdrop-blur-2xl border border-white/10 rounded-[1.5rem] lg:rounded-[2rem] shadow-[0_50px_100px_rgba(0,0,0,0.8)] overflow-hidden transform-style-3d"
+                className="relative w-full max-w-[45rem] bg-black/60 backdrop-blur-2xl border border-white/10 rounded-[1.5rem] lg:rounded-[2rem] shadow-[0_50px_100px_rgba(0,0,0,0.8)] overflow-hidden transform-style-3d"
             >
                 {/* Dynamic Glare Reflection */}
                 <motion.div 

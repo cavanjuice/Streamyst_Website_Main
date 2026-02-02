@@ -208,8 +208,8 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
           </AnimatePresence>
         </div>
 
-        {/* 3D EVOLUTION CARD - Scaled down by changing max-w-4xl to max-w-3xl */}
-        <div className="max-w-3xl mx-auto relative perspective-1000">
+        {/* 3D EVOLUTION CARD - Scaled down FURTHER to max-w-2xl (was max-w-3xl) */}
+        <div className="max-w-2xl mx-auto relative perspective-1000">
              <motion.div 
                 ref={cardRef}
                 initial={{ opacity: 0, scale: 0.9, rotateX: 10 }}

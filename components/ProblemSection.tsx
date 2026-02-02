@@ -166,13 +166,13 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
         </div>
 
         {/* --- MAIN INTERFACE (VIDEO LEFT, CHAT RIGHT) --- */}
-        {/* SCALED DOWN: max-w-5xl -> max-w-4xl, h-[420px] -> h-[370px] */}
+        {/* SCALED DOWN FURTHER: max-w-4xl -> max-w-3xl */}
         <motion.div 
             initial={{ opacity: 0, scale: 0.95, y: 40 }}
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-4xl mx-auto bg-[#0A0A0B] border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:flex-row h-auto lg:h-[370px] relative group"
+            className="max-w-3xl mx-auto bg-[#0A0A0B] border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:flex-row h-auto lg:h-[370px] relative group"
         >
             
             {/* LEFT: VIDEO PLAYER */}
