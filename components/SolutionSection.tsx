@@ -208,8 +208,8 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
           </AnimatePresence>
         </div>
 
-        {/* 3D EVOLUTION CARD - Using inline styles for reliable max-width */}
-        <div className="w-full mx-auto relative perspective-1000" style={{ maxWidth: '700px' }}>
+        {/* 3D EVOLUTION CARD - ENFORCED MAX-WIDTH to max-w-2xl (approx 672px) */}
+        <div className="w-full max-w-2xl mx-auto relative perspective-1000">
              <motion.div 
                 ref={cardRef}
                 initial={{ opacity: 0, scale: 0.9, rotateX: 10 }}
@@ -249,7 +249,8 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                 </div>
 
                 {/* --- CONTENT LAYER --- */}
-                <div className="grid lg:grid-cols-2 relative z-20 pointer-events-none min-h-[280px] lg:min-h-[360px]">
+                {/* Reduced min-heights: min-h-[280px] -> min-h-[260px], lg:min-h-[360px] -> lg:min-h-[300px] */}
+                <div className="grid lg:grid-cols-2 relative z-20 pointer-events-none min-h-[260px] lg:min-h-[300px]">
                     
                     {/* LEFT: CHARACTER VISUAL (BREAKS OUT) */}
                     <div className="relative h-[180px] lg:h-auto w-full flex items-end justify-center lg:justify-start order-1 lg:order-none pointer-events-none">
@@ -259,7 +260,7 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                            The image itself animates scale/y but stays within this centered wrapper. 
                            Scaled down wrapper width: max-w-[200px] on mobile (was 240)
                         */}
-                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 lg:left-0 lg:translate-x-0 lg:-ml-8 w-full max-w-[200px] lg:max-w-none h-[130%] lg:h-[145%] z-20">
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 lg:left-0 lg:translate-x-0 lg:-ml-8 w-full max-w-[180px] lg:max-w-none h-[130%] lg:h-[145%] z-20">
                             {leveledUp && isStreamer ? (
                                 streamerImages.map((src, index) => (
                                     <motion.img 
@@ -331,7 +332,7 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                     </div>
 
                     {/* RIGHT: STATS & CONTROLS - Tighter padding: lg:px-8 lg:py-8 */}
-                    <div className="pt-0 pb-4 px-5 lg:px-8 lg:py-8 flex flex-col justify-center relative order-2 lg:order-none h-full pointer-events-none">
+                    <div className="pt-0 pb-4 px-5 lg:px-8 lg:py-6 flex flex-col justify-center relative order-2 lg:order-none h-full pointer-events-none">
                         
                         <div className="mb-4 lg:mb-4 pointer-events-auto">
                             <motion.div 

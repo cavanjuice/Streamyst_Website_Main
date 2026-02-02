@@ -318,10 +318,10 @@ const InteractiveDemo: React.FC = () => {
            </motion.h2>
         </div>
 
-        {/* 3D TILT CONTAINER - ENFORCED MAX-WIDTH VIA STYLE */}
+        {/* 3D TILT CONTAINER - ENFORCED SMALLER MAX-WIDTH (max-w-3xl is ~768px) */}
         <div 
-            className="relative w-full mx-auto flex justify-center perspective-1000"
-            style={{ perspective: 1000, maxWidth: '780px' }}
+            className="relative w-full max-w-3xl mx-auto flex justify-center perspective-1000"
+            style={{ perspective: 1000 }}
         >
             <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 50 }}
@@ -346,12 +346,12 @@ const InteractiveDemo: React.FC = () => {
                     }}
                 />
 
-                {/* Reduced height from min-h-[420px] to min-h-[380px] */}
-                <div className="grid lg:grid-cols-12 lg:min-h-[380px]">
+                {/* Reduced height from min-h-[380px] to min-h-[320px] */}
+                <div className="grid lg:grid-cols-12 lg:min-h-[320px]">
                     
                     {/* LEFT: VISUALIZER */}
-                    {/* Reduced height from h-[360px] to h-[320px], Padding p-8 to p-6 */}
-                    <div className="lg:col-span-7 relative flex items-center justify-center p-4 lg:p-6 overflow-hidden bg-[#0A0A0B] h-[320px] lg:h-auto">
+                    {/* Reduced height from h-[320px] to h-[280px], Padding p-6 to p-4 */}
+                    <div className="lg:col-span-7 relative flex items-center justify-center p-4 overflow-hidden bg-[#0A0A0B] h-[280px] lg:h-auto">
                         
                         {/* Dynamic Environment Glow */}
                         <div 
@@ -371,7 +371,7 @@ const InteractiveDemo: React.FC = () => {
 
                         {/* UNIQUE EMOTION ANIMATIONS (RESTORED FROM OLD CODE) */}
                         <AnimatePresence>
-                            {/* === HAPPY / JOY === */}
+                            {/* ... Animations preserved ... */}
                             {activeEmotion === 'happy' && (
                                 <motion.div 
                                     key={`happy-${triggerKey}`} 
@@ -566,7 +566,7 @@ const InteractiveDemo: React.FC = () => {
                             )}
                         </AnimatePresence>
 
-                        {/* Device Image Stack (PRESERVED NEW STRUCTURE & PADDING) */}
+                        {/* Device Image Stack */}
                         <motion.div 
                             style={{ 
                                 maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)',
@@ -574,8 +574,9 @@ const InteractiveDemo: React.FC = () => {
                                 x: isMobile ? 0 : layerX,
                                 y: isMobile ? 0 : layerY
                             }}
-                            className="relative z-10 w-full max-w-[250px] lg:max-w-[360px] aspect-[4/5]"
+                            className="relative z-10 w-full max-w-[220px] lg:max-w-[320px] aspect-[4/5]"
                         >
+                             {/* ... images ... */}
                              {activeEmotion === 'shock' && (
                                 <>
                                     <motion.img 
@@ -633,14 +634,14 @@ const InteractiveDemo: React.FC = () => {
 
                     {/* RIGHT COLUMN: CONTROL PANEL */}
                     <motion.div 
-                        className="lg:col-span-5 bg-[#05040a]/90 backdrop-blur-md p-4 lg:p-6 flex flex-col justify-between border-t lg:border-t-0 lg:border-l border-white/5 relative z-30 transition-transform duration-100"
+                        className="lg:col-span-5 bg-[#05040a]/90 backdrop-blur-md p-4 lg:p-5 flex flex-col justify-between border-t lg:border-t-0 lg:border-l border-white/5 relative z-30 transition-transform duration-100"
                         style={{
                             x: isMobile ? 0 : layerX, 
                             y: isMobile ? 0 : layerY
                         }}
                     >
                         {/* CHAT INTERFACE */}
-                        <div className="flex-1 flex flex-col h-[100px] lg:h-auto lg:min-h-[200px] mb-4 relative">
+                        <div className="flex-1 flex flex-col h-[100px] lg:h-auto lg:min-h-[180px] mb-3 relative">
                             <div className="flex items-center justify-between text-gray-400 border-b border-white/10 pb-2 mb-2">
                                 <div className="flex items-center gap-2">
                                     <Wifi className="w-3 h-3 lg:w-4 lg:h-4 text-violet-500" />
@@ -663,7 +664,7 @@ const InteractiveDemo: React.FC = () => {
                                                 key={msg.id}
                                                 initial={{ opacity: 0, x: -10 }}
                                                 animate={{ opacity: 1, x: 0 }}
-                                                className={`text-[10px] md:text-xs leading-relaxed ${msg.isSystem ? 'italic opacity-60' : ''}`}
+                                                className={`text-[10px] md:text-[11px] leading-relaxed ${msg.isSystem ? 'italic opacity-60' : ''}`}
                                             >
                                                 {!msg.isSystem && (
                                                     <span className={`font-bold mr-2 ${msg.color}`}>{msg.user}:</span>
@@ -674,7 +675,7 @@ const InteractiveDemo: React.FC = () => {
                                     </AnimatePresence>
                                  </div>
                                  <div className="hidden lg:flex p-2 bg-white/5 border-t border-white/5 gap-2 items-center">
-                                     <div className="flex-1 h-6 bg-black/50 rounded flex items-center px-2 text-[10px] text-gray-500">
+                                     <div className="flex-1 h-5 bg-black/50 rounded flex items-center px-2 text-[9px] text-gray-500">
                                          React with emojis below...
                                      </div>
                                  </div>
@@ -683,13 +684,13 @@ const InteractiveDemo: React.FC = () => {
 
                         {/* INTERACTION CONTROLS */}
                         <div>
-                            <div className="flex items-center gap-2 mb-3">
+                            <div className="flex items-center gap-2 mb-2">
                                 <Sparkles className="w-3 h-3 text-violet-400 animate-pulse" />
                                 <span className="text-[9px] font-bold text-violet-200 tracking-wider uppercase">Send Feedback</span>
                             </div>
                             
                             {/* Grid changes for mobile: single row (grid-cols-5) vs multi-row desktop */}
-                            <div className="grid grid-cols-5 lg:grid-cols-3 gap-2 lg:gap-3">
+                            <div className="grid grid-cols-5 lg:grid-cols-3 gap-2 lg:gap-2">
                                 {emotions.map((e) => (
                                     <motion.button
                                         key={e.id}
@@ -697,7 +698,7 @@ const InteractiveDemo: React.FC = () => {
                                         whileTap={{ scale: 0.95 }}
                                         onClick={() => triggerReaction(e.id)}
                                         className={`
-                                            relative h-10 lg:h-12 rounded-xl border border-white/10 overflow-hidden group transition-all duration-300
+                                            relative h-9 lg:h-10 rounded-xl border border-white/10 overflow-hidden group transition-all duration-300
                                             ${activeEmotion === e.id ? 'bg-white/10 border-white/40 ring-1 ring-white/20' : 'bg-white/5 hover:bg-white/10'}
                                         `}
                                     >
@@ -705,7 +706,7 @@ const InteractiveDemo: React.FC = () => {
                                         
                                         <div className="relative z-10 flex flex-col items-center justify-center h-full">
                                             <span className="text-lg lg:text-xl mb-0 lg:mb-0.5 filter drop-shadow-lg group-hover:scale-110 transition-transform duration-200">{e.emoji}</span>
-                                            <span className="hidden lg:block text-[8px] lg:text-[9px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-white transition-colors">{e.label}</span>
+                                            <span className="hidden lg:block text-[7px] lg:text-[8px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-white transition-colors">{e.label}</span>
                                         </div>
 
                                         {activeEmotion === e.id && (
@@ -718,8 +719,8 @@ const InteractiveDemo: React.FC = () => {
                                 ))}
                             </div>
 
-                            <div className="mt-4 pt-3 border-t border-white/5">
-                                <p className="text-[9px] lg:text-[10px] text-gray-600 font-mono leading-relaxed">
+                            <div className="mt-3 pt-2 border-t border-white/5">
+                                <p className="text-[8px] lg:text-[9px] text-gray-600 font-mono leading-relaxed">
                                     &gt; STREAM STATUS: LIVE <br/>
                                     &gt; WAITING FOR INPUT... <span className="animate-pulse text-violet-500">_</span>
                                 </p>

@@ -166,18 +166,17 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
         </div>
 
         {/* --- MAIN INTERFACE (VIDEO LEFT, CHAT RIGHT) --- */}
-        {/* ENFORCED WIDTH via style to avoid build configuration issues */}
+        {/* ENFORCED SMALLER SIZE: max-w-3xl (768px) and height reductions */}
         <motion.div 
             initial={{ opacity: 0, scale: 0.95, y: 40 }}
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            style={{ maxWidth: '720px' }}
-            className="w-full mx-auto bg-[#0A0A0B] border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:flex-row h-auto lg:h-[370px] relative group"
+            className="w-full max-w-3xl mx-auto bg-[#0A0A0B] border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:flex-row h-auto lg:h-[300px] relative group"
         >
             
             {/* LEFT: VIDEO PLAYER */}
-            <div className="flex-1 relative bg-black overflow-hidden flex flex-col justify-between group/video min-h-[250px] lg:min-h-0">
+            <div className="flex-1 relative bg-black overflow-hidden flex flex-col justify-between group/video min-h-[200px] lg:min-h-0">
                 
                 {/* Video Simulation */}
                 <div className="absolute inset-0 opacity-70">
@@ -213,18 +212,18 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
                 </div>
 
                 {/* CENTER: SIMULATION CONTROLS */}
-                <div className="relative z-30 flex flex-col items-center justify-center space-y-4">
+                <div className="relative z-30 flex flex-col items-center justify-center space-y-3">
                      <div className="bg-black/40 backdrop-blur-md border border-white/10 p-1.5 rounded-full inline-flex items-center gap-1 shadow-2xl">
                           <button 
                             onClick={() => setMode('quiet')}
-                            className={`flex items-center gap-2 px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${mode === 'quiet' ? 'bg-emerald-500 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${mode === 'quiet' ? 'bg-emerald-500 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
                           >
                              <Wind size={12} />
                              Quiet
                           </button>
                           <button 
                             onClick={() => setMode('overload')}
-                            className={`flex items-center gap-2 px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${mode === 'overload' ? 'bg-red-500 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${mode === 'overload' ? 'bg-red-500 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
                           >
                              <Zap size={12} />
                              Overload
@@ -265,10 +264,10 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
 
             </div>
 
-            {/* RIGHT: CHAT VISUALIZER */}
-            <div className="w-full lg:w-72 bg-[#05040a] border-t lg:border-t-0 lg:border-l border-white/10 flex flex-col relative z-20 shrink-0 h-[250px] lg:h-auto">
+            {/* RIGHT: CHAT VISUALIZER - Reduced width from w-72 to w-64 */}
+            <div className="w-full lg:w-64 bg-[#05040a] border-t lg:border-t-0 lg:border-l border-white/10 flex flex-col relative z-20 shrink-0 h-[250px] lg:h-auto">
                 {/* Header Stats */}
-                <div className="h-10 border-b border-white/5 flex items-center justify-center md:justify-between px-4 bg-[#0A0A0B]/90 backdrop-blur-md z-10 sticky top-0">
+                <div className="h-9 border-b border-white/5 flex items-center justify-center md:justify-between px-3 bg-[#0A0A0B]/90 backdrop-blur-md z-10 sticky top-0">
                     <div className="flex items-center gap-2">
                         <MessageSquare className="w-3 h-3 text-gray-500" />
                         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Chat</span>
@@ -288,7 +287,7 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
                     
                     <div 
                         ref={scrollRef}
-                        className="absolute inset-0 overflow-y-auto px-4 py-4 space-y-1.5 scroll-smooth scrollbar-hide"
+                        className="absolute inset-0 overflow-y-auto px-3 py-4 space-y-1.5 scroll-smooth scrollbar-hide"
                     >
                         {messages.map((msg) => (
                             <motion.div 
@@ -327,13 +326,13 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
                             placeholder={mode === 'overload' ? "Good luck being seen..." : "Say something..."}
-                            className="w-full bg-[#1A1830] border border-white/10 rounded-lg py-2 pl-3 pr-10 text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors text-xs"
+                            className="w-full bg-[#1A1830] border border-white/10 rounded-lg py-1.5 pl-3 pr-8 text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors text-xs"
                         />
                         <button 
                             type="submit"
                             className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 bg-violet-600 hover:bg-violet-500 text-white rounded transition-colors"
                         >
-                            <Send size={12} />
+                            <Send size={10} />
                         </button>
                     </div>
                 </form>
