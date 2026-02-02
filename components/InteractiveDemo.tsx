@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useMotionTemplate } from 'framer-motion';
 import { Sparkles, Wifi } from 'lucide-react';
+import { getAssetUrl } from '../utils/supabaseClient';
 
 // Custom Icons from Old Code to ensure exact animation match
 const HeartIcon = ({ className, style }: { className?: string, style?: React.CSSProperties }) => (
@@ -34,14 +35,14 @@ const emotions: EmotionData[] = [
   { id: 'clap', label: "Support", emoji: "👏", color: "text-yellow-400", hex: "#facc15" }
 ];
 
-const staticImage = "https://raw.githubusercontent.com/cavanjuice/assets/main/originalcharacter.png";
+const staticImage = getAssetUrl("originalcharacter.png");
 
 const emotionImages: Record<Emotion, string> = {
-  happy: "https://raw.githubusercontent.com/cavanjuice/assets/main/joy2.png",
-  love: "https://raw.githubusercontent.com/cavanjuice/assets/main/love2.png",
-  hype: "https://raw.githubusercontent.com/cavanjuice/assets/main/hype2.png",
-  shock: "https://raw.githubusercontent.com/cavanjuice/assets/main/shock2.png",
-  clap: "https://raw.githubusercontent.com/cavanjuice/assets/main/support2.png"
+  happy: getAssetUrl("joy2.png"),
+  love: getAssetUrl("love2.png"),
+  hype: getAssetUrl("hype2.png"),
+  shock: getAssetUrl("shock2.png"),
+  clap: getAssetUrl("support2.png")
 };
 
 // Sentiment Analysis Simulation Data

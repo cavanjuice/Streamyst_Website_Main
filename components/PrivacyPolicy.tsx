@@ -38,10 +38,13 @@ const PrivacyPolicy: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
                         <section>
                             <h2 className="text-xl font-bold text-white mb-3">2. Data We Collect</h2>
+                            <p className="mb-2">We collect data to understand the market needs for our hardware and software products. This includes:</p>
                             <ul className="list-disc pl-5 space-y-2 text-gray-400">
-                                <li><strong>Contact Information:</strong> Email address (when you join our waitlist or survey).</li>
-                                <li><strong>Survey Data:</strong> Responses regarding streaming habits, preferences, and hardware interest.</li>
-                                <li><strong>Usage Data:</strong> Anonymous analytics (via cookies) to improve website performance, if consented to.</li>
+                                <li><strong>Identity & Contact Data:</strong> Email address (only if voluntarily provided for the waitlist or beta access).</li>
+                                <li><strong>Profile Data:</strong> Your role (Streamer, Viewer, or Other), streaming frequency, viewer count estimates, and platform usage habits.</li>
+                                <li><strong>Preference & Feedback Data:</strong> Information on your challenges (pain points), desired features, interaction styles, and free-text feedback regarding the livestreaming experience.</li>
+                                <li><strong>Economic Research Data:</strong> Pricing sensitivity data (Van Westendorp price sensitivity meter), preferred business models (subscription vs one-time), and purchase intent levels.</li>
+                                <li><strong>Usage Data:</strong> Anonymous technical data via cookies (if consented) regarding website performance and device type.</li>
                             </ul>
                         </section>
 
@@ -49,16 +52,17 @@ const PrivacyPolicy: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                             <h2 className="text-xl font-bold text-white mb-3">3. Purpose of Processing</h2>
                             <p>We process your data for the following purposes:</p>
                             <ul className="list-disc pl-5 space-y-2 text-gray-400 mt-2">
-                                <li>To manage the alpha/beta access waitlist.</li>
+                                <li>To manage the alpha/beta access waitlist and contact selected participants.</li>
+                                <li>To analyze market pricing tolerance and business model viability.</li>
+                                <li>To prioritize feature development based on user-reported pain points.</li>
                                 <li>To inform you about product launches and updates (based on your consent).</li>
-                                <li>To analyze market needs through survey responses (Legitimate Interest).</li>
                             </ul>
                         </section>
 
                         <section>
                             <h2 className="text-xl font-bold text-white mb-3">4. Third-Party Services</h2>
                             <p>
-                                We use Supabase (hosted in the EU/US with standard contractual clauses) for database management. We do not sell your data to third parties.
+                                We use <strong>Supabase</strong> for secure database management and storage. Supabase is compliant with GDPR standards. We do not sell your data to third-party advertisers.
                             </p>
                         </section>
 
@@ -81,7 +85,7 @@ const PrivacyPolicy: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                         </section>
 
                         <div className="h-px w-full bg-white/10 my-8" />
-                        <p className="text-sm text-gray-500">Last Updated: March 2024</p>
+                        <p className="text-sm text-gray-500">Last Updated: February 2026</p>
                     </div>
                 </motion.div>
             </div>

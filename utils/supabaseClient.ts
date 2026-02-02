@@ -2,9 +2,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 // --- CONFIGURATION ---
-// We are hardcoding these to ensure the connection works immediately without environment variable issues.
 const supabaseUrl = "https://ssdjhkdkoqgmysgncfqa.supabase.co";
-// This is your Anon Key (JWT)
 const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzZGpoa2Rrb3FnbXlzZ25jZnFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5NTUwMzEsImV4cCI6MjA4NDUzMTAzMX0.zmuTUQ92kGOTBtXTu0GrqzctdRYgVZ4jn0D_ruzBmcM";
 
 console.log("Initializing Supabase Client...");
@@ -32,17 +30,14 @@ export const saveEmailToWaitlist = async (email: string) => {
       .select();
 
     if (error) {
-      // Handle unique constraint (duplicate email) gracefully
       if (error.code === '23505') {
         console.log('Email already registered, treating as success.');
         return { error: null, data }; 
       }
-      
       console.error('Supabase Waitlist INSERT Error:', error);
-      alert(`Database Error: ${error.message}`); // Visible alert for debugging
+      alert(`Database Error: ${error.message}`);
       return { error };
     }
-
     console.log('Successfully saved to waitlist:', data);
     return { data, error: null };
   } catch (err: any) {
@@ -58,11 +53,10 @@ export const saveEmailToWaitlist = async (email: string) => {
 export const saveSurveyResponse = async (surveyData: SurveyResponse) => {
   console.log("Attempting to save survey data...", surveyData);
   try {
-    // We map the camelCase frontend data to snake_case DB columns
     const payload = {
       user_type: surveyData.userType,
-      email: surveyData.email, // Can be null/empty
-      response_data: surveyData // Store full object for flexibility
+      email: surveyData.email,
+      response_data: surveyData
     };
 
     const { data, error } = await supabase
@@ -72,10 +66,8 @@ export const saveSurveyResponse = async (surveyData: SurveyResponse) => {
 
     if (error) {
       console.error('Supabase Survey INSERT Error:', error);
-      // alert(`Survey Save Error: ${error.message}`); // Optional alert
       return { error };
     }
-
     console.log('Successfully saved survey:', data);
     return { data, error: null };
   } catch (err: any) {
@@ -85,8 +77,18 @@ export const saveSurveyResponse = async (surveyData: SurveyResponse) => {
 };
 
 /**
- * Helper to construct public URL for images stored in Supabase Storage.
+ * Helper to get the public URL for a file in the 'assets' bucket.
+ * Handles URL encoding automatically.
+ */
+export const getAssetUrl = (filename: string) => {
+  const { data } = supabase.storage.from('assets').getPublicUrl(filename);
+  return data.publicUrl;
+};
+
+/**
+ * Deprecated: Use getAssetUrl for 'assets' bucket items.
  */
 export const getStorageUrl = (bucket: string, path: string) => {
-  return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`;
+  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+  return data.publicUrl;
 };

@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useScroll } from 'framer-motion';
 import { Activity, DollarSign, Users, Heart, ArrowUp, Eye, Crown, Signal, Zap, Wifi, Lock } from 'lucide-react';
+import { getAssetUrl } from '../utils/supabaseClient';
 
 interface SolutionSectionProps {
   role: 'streamer' | 'viewer';
@@ -86,10 +87,10 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
   };
 
   const streamerImages = [
-    "https://raw.githubusercontent.com/cavanjuice/assets/main/wearable_.png",
-    "https://raw.githubusercontent.com/cavanjuice/assets/main/wearable_2.png",
-    "https://raw.githubusercontent.com/cavanjuice/assets/main/wearable_3.png",
-    "https://raw.githubusercontent.com/cavanjuice/assets/main/wearable_1.png"
+    getAssetUrl("wearable_.png"),
+    getAssetUrl("wearable_2.png"),
+    getAssetUrl("wearable_3.png"),
+    getAssetUrl("wearable_1.png")
   ];
 
   const evolutionData = {
@@ -98,7 +99,7 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
         level: 1,
         rank: "Chat Reader",
         desc: "Struggling to keep up with chat scroll. Feeling disconnected.",
-        image: "https://raw.githubusercontent.com/cavanjuice/assets/main/streamersad.png",
+        image: getAssetUrl("streamersad.png"),
         stats: [
           { label: "Connection", value: 30, icon: <Signal size={12} /> },
           { label: "Depth", value: 45, icon: <Activity size={12} /> },
@@ -128,7 +129,7 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
         level: 1,
         rank: "Anonymous Lurker",
         desc: "Just another name in a fast-moving chat. Invisible and passive.",
-        image: "https://raw.githubusercontent.com/cavanjuice/assets/main/viewersad.png",
+        image: getAssetUrl("viewersad.png"),
         stats: [
           { label: "Influence", value: 15, icon: <Users size={12} /> },
           { label: "Visibility", value: 10, icon: <Eye size={12} /> },
@@ -139,7 +140,7 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
         level: 99,
         rank: "Community MVP",
         desc: "Directly impacting the stream. Your presence is felt.",
-        image: "https://raw.githubusercontent.com/cavanjuice/assets/main/viewerhappy.png",
+        image: getAssetUrl("viewerhappy.png"),
         stats: [
           { label: "Influence", value: 85, icon: <Users size={12} /> },
           { label: "Visibility", value: 88, icon: <Eye size={12} /> },

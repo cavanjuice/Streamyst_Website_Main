@@ -2,10 +2,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ClipboardList, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { SupabaseImg } from './SupabaseImg';
 
 interface NavbarProps {
     currentView?: 'home' | 'about' | 'survey';
-    onNavigate?: (view: 'home' | 'about' | 'survey') => void;
+    onNavigate?: (view: 'home' | 'about' | 'survey', id?: string) => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ currentView = 'home', onNavigate }) => {
@@ -38,14 +39,10 @@ const Navbar: React.FC<NavbarProps> = ({ currentView = 'home', onNavigate }) => 
   }, []);
 
   const handleNav = (view: 'home' | 'about' | 'survey', id?: string) => {
-      if (onNavigate) onNavigate(view);
-      setMobileMenuOpen(false);
-      
-      if (view === 'home' && id) {
-          setTimeout(() => {
-              document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-          }, 100);
+      if (onNavigate) {
+          onNavigate(view, id);
       }
+      setMobileMenuOpen(false);
   };
 
   const navItemVariants = {
@@ -88,10 +85,11 @@ const Navbar: React.FC<NavbarProps> = ({ currentView = 'home', onNavigate }) => 
             >
               {/* Logo fills the height of the container - Minimized padding for maximum mobile logo size */}
               <div className="relative h-full transition-transform duration-300 group-hover:scale-105 origin-left py-1 md:py-2">
-                 <img 
-                  src="https://raw.githubusercontent.com/cavanjuice/assets/main/Logo2.png" 
+                 <SupabaseImg 
+                  filename="Logo2.png"
                   alt="Streamyst" 
                   className="h-full w-auto object-contain" 
+                  fallback={<span className="text-xl font-bold font-display tracking-tighter">STREAMYST</span>}
                 />
               </div>
             </motion.div>
@@ -133,7 +131,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView = 'home', onNavigate }) => 
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.4, duration: 0.5, ease: "backOut" }}
-                  onClick={() => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })}
+                  onClick={() => handleNav('home', 'waitlist')}
                   className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-full font-bold transition-all duration-500 shadow-lg shadow-violet-900/20 hover:shadow-violet-600/40 hover:-translate-y-0.5 whitespace-nowrap px-7 py-3 text-base"
                 >
                   Join Alpha
@@ -146,7 +144,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView = 'home', onNavigate }) => 
                     initial={{ opacity: 0, x: 10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2 }}
-                    onClick={() => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })}
+                    onClick={() => handleNav('home', 'waitlist')}
                     className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-full font-bold text-xs px-4 py-2 shadow-lg shadow-violet-900/20"
                 >
                     JOIN ALPHA

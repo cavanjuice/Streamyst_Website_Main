@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Loader2, ChevronRight, ClipboardList, AlertCircle } from 'lucide-react';
 import { saveEmailToWaitlist } from '../utils/supabaseClient';
+import { SupabaseImg } from './SupabaseImg';
 
 interface WaitlistProps {
     onJoinSurvey?: (email: string) => void;
@@ -44,8 +45,8 @@ const Waitlist: React.FC<WaitlistProps> = ({ onJoinSurvey }) => {
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-violet-600/5 rounded-full blur-[100px] pointer-events-none" />
 
             <div className="lg:w-1/2 relative min-h-[250px] lg:min-h-full bg-cosmic-800 overflow-hidden group">
-                <img 
-                    src="https://raw.githubusercontent.com/cavanjuice/assets/main/preview (2).webp" 
+                <SupabaseImg 
+                    filename="preview (2).webp" 
                     alt="Streamers connecting" 
                     className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-[2000ms] ease-out"
                 />

@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { EyeOff, MessageSquare, Settings, Frown, Ghost, Lock, BatteryWarning, MonitorStop } from 'lucide-react';
+import { SupabaseImg } from './SupabaseImg';
 
 type Role = 'streamer' | 'viewer';
 
@@ -74,9 +75,6 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
       ]
     }
   };
-
-  const streamerImage = "https://raw.githubusercontent.com/cavanjuice/assets/main/streamersad.png";
-  const viewerImage = "https://raw.githubusercontent.com/cavanjuice/assets/main/viewersad.png";
 
   const currentProblem = role === 'streamer' ? problems.streamer : problems.viewer;
 
@@ -223,8 +221,8 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
                          {/* Background Glow */}
                          <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] lg:w-[350px] lg:h-[350px] rounded-full blur-[50px] lg:blur-[100px] opacity-40 ${role === 'streamer' ? 'bg-violet-600' : 'bg-orange-600'}`} />
 
-                         <img 
-                             src={role === 'streamer' ? streamerImage : viewerImage}
+                         <SupabaseImg 
+                             filename={role === 'streamer' ? "streamersad.png" : "viewersad.png"}
                              alt={role}
                              className="relative z-10 w-full h-full object-contain drop-shadow-[0_0_25px_rgba(0,0,0,0.6)] grayscale-[20%] contrast-125"
                          />

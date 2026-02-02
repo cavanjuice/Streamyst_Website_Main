@@ -38,35 +38,46 @@ const TermsOfService: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                         </section>
 
                         <section>
-                            <h2 className="text-xl font-bold text-white mb-3">3. Intellectual Property</h2>
+                            <h2 className="text-xl font-bold text-white mb-3">3. Feedback & Survey Submissions</h2>
+                            <p>
+                                We value your input. If you submit feedback, survey responses, ideas, or suggestions ("Feedback") to us through our website:
+                            </p>
+                            <ul className="list-disc pl-5 mt-2 space-y-1">
+                                <li>You agree that such Feedback is non-confidential and becomes the sole property of Streamyst BV.</li>
+                                <li>Streamyst BV shall own exclusive rights, including all intellectual property rights, and shall be entitled to the unrestricted use and dissemination of this Feedback for any purpose (commercial or otherwise) without acknowledgment or compensation to you.</li>
+                            </ul>
+                        </section>
+
+                        <section>
+                            <h2 className="text-xl font-bold text-white mb-3">4. Intellectual Property</h2>
                             <p>
                                 All content on this site (including text, graphics, logos, 3D models, and code) is the property of Streamyst BV and is protected by copyright and intellectual property laws. You may not reproduce or distribute any content without our written permission.
                             </p>
                         </section>
 
                         <section>
-                            <h2 className="text-xl font-bold text-white mb-3">4. Disclaimer of Warranties</h2>
+                            <h2 className="text-xl font-bold text-white mb-3">5. Disclaimer of Warranties</h2>
                             <p>
                                 The website is provided "as is". We make no warranties regarding the accuracy, reliability, or availability of the website. The product concepts shown are subject to change during development.
                             </p>
                         </section>
 
                         <section>
-                            <h2 className="text-xl font-bold text-white mb-3">5. Limitation of Liability</h2>
+                            <h2 className="text-xl font-bold text-white mb-3">6. Limitation of Liability</h2>
                             <p>
                                 Streamyst BV shall not be liable for any indirect, incidental, or consequential damages arising from your use of this website.
                             </p>
                         </section>
 
                         <section>
-                            <h2 className="text-xl font-bold text-white mb-3">6. Governing Law</h2>
+                            <h2 className="text-xl font-bold text-white mb-3">7. Governing Law</h2>
                             <p>
                                 These terms are governed by the laws of Belgium. Any disputes shall be subject to the exclusive jurisdiction of the courts of Antwerp.
                             </p>
                         </section>
 
                         <div className="h-px w-full bg-white/10 my-8" />
-                        <p className="text-sm text-gray-500">Last Updated: March 2024</p>
+                        <p className="text-sm text-gray-500">Last Updated: February 2026</p>
                     </div>
                 </motion.div>
             </div>

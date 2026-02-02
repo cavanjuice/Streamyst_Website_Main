@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import ExperienceToggle from './components/ExperienceToggle';
@@ -119,12 +119,53 @@ const App: React.FC = () => {
   const [role, setRole] = useState<'streamer' | 'viewer'>('streamer');
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [currentView, setCurrentView] = useState<ViewState>('home');
+  // Use a ref instead of state to avoid re-render loops and stale closures during effects
+  const pendingScrollRef = useRef<string | null>(null);
   const [userEmail, setUserEmail] = useState('');
   const [isCookieBannerOpen, setIsCookieBannerOpen] = useState(false);
 
-  // Scroll to top when view changes
-  React.useEffect(() => {
-    window.scrollTo(0, 0);
+  // Consolidated Navigation Handler
+  const handleNavigation = (view: ViewState, id?: string) => {
+      // Case 1: Already on the view, just scroll to ID
+      if (currentView === view) {
+          if (id) {
+              const element = document.getElementById(id);
+              if (element) element.scrollIntoView({ behavior: 'smooth' });
+          } else {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+      } 
+      // Case 2: Changing view
+      else {
+          if (id) {
+              pendingScrollRef.current = id; // Set intent
+          }
+          setCurrentView(view); // Trigger view change
+      }
+  };
+
+  // Effect to handle scrolling logic after view changes
+  useEffect(() => {
+      // Check if we have a pending scroll target from the navigation action
+      const scrollTargetId = pendingScrollRef.current;
+      
+      if (scrollTargetId) {
+          // Clear the ref immediately so future renders don't use it
+          pendingScrollRef.current = null;
+
+          // WAIT for AnimatePresence to finish exiting the old view (duration is ~0.5s)
+          // We set 600ms to be safe, ensuring the new DOM is mounted.
+          const timer = setTimeout(() => {
+              const element = document.getElementById(scrollTargetId);
+              if (element) {
+                  element.scrollIntoView({ behavior: 'smooth' });
+              }
+          }, 600); 
+          return () => clearTimeout(timer);
+      } else {
+          // Standard page transition - scroll to top
+          window.scrollTo(0, 0);
+      }
   }, [currentView]);
 
   // Handle View Rendering
@@ -133,7 +174,10 @@ const App: React.FC = () => {
       case 'about':
         return (
           <motion.div key="about" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.5 }}>
-             <AboutPage onBack={() => setCurrentView('home')} />
+             <AboutPage 
+                onBack={() => setCurrentView('home')} 
+                onNavigate={(view, id) => handleNavigation(view, id)}
+             />
           </motion.div>
         );
       case 'survey':
@@ -195,17 +239,11 @@ const App: React.FC = () => {
         onCloseForce={() => setIsCookieBannerOpen(false)} 
       />
       
-      {/* Hide Navbar on special pages if desired, but kept for consistency mostly. */}
-      {currentView === 'home' && (
+      {/* Navbar Logic - Using handleNavigation for consistent behavior */}
+      {(currentView === 'home' || currentView === 'about') && (
         <Navbar 
-          currentView='home' 
-          onNavigate={(view) => setCurrentView(view as any)} 
-        />
-      )}
-      {currentView === 'about' && (
-        <Navbar 
-          currentView='about' 
-          onNavigate={(view) => setCurrentView(view as any)} 
+          currentView={currentView}
+          onNavigate={(view, id) => handleNavigation(view as any, id)} 
         />
       )}
       

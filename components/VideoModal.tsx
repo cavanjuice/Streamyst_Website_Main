@@ -2,6 +2,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Play } from 'lucide-react';
+import { getAssetUrl } from '../utils/supabaseClient';
 
 interface VideoModalProps {
   isOpen: boolean;
@@ -72,34 +73,19 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose }) => {
                             <X size={24} />
                         </button>
 
-                         {/* Placeholder Video / Embed */}
-                         <div className="w-full h-full bg-cosmic-900 flex items-center justify-center relative overflow-hidden">
-                            {/* Animated Background for placeholder */}
-                             <div className="absolute inset-0 bg-gradient-to-br from-violet-900/20 via-black to-orange-900/20" />
-                             <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
-                             
-                             <div className="text-center relative z-10">
-                                 <motion.div 
-                                    initial={{ scale: 0.8, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    transition={{ delay: 1.2 }}
-                                    className="w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6 backdrop-blur-sm"
-                                >
-                                    <Play className="w-10 h-10 text-white fill-white ml-1 opacity-80" />
-                                 </motion.div>
-                                 <h3 className="font-display font-bold text-2xl mb-2 tracking-widest uppercase">Streamyst Demo</h3>
-                                 <p className="text-gray-500 font-mono text-xs">Video Source Placeholder</p>
-                             </div>
-
-                             {/* Simulate Video UI */}
-                             <div className="absolute bottom-0 left-0 w-full h-1 bg-white/10">
-                                 <motion.div 
-                                    initial={{ width: 0 }}
-                                    animate={{ width: "100%" }}
-                                    transition={{ duration: 30, ease: "linear" }}
-                                    className="h-full bg-gradient-to-r from-orange-500 to-violet-500"
-                                 />
-                             </div>
+                         {/* Actual Video Player Sourced from Supabase */}
+                         <div className="w-full h-full bg-black flex items-center justify-center relative overflow-hidden">
+                             <video 
+                                src={getAssetUrl('videonotext.mp4')}
+                                autoPlay
+                                controls
+                                className="w-full h-full object-contain"
+                             >
+                                <div className="text-center text-white">
+                                    <p className="mb-2">Your browser does not support the video tag.</p>
+                                    <a href={getAssetUrl('videonotext.mp4')} className="text-violet-400 hover:underline">Download Video</a>
+                                </div>
+                             </video>
                          </div>
                     </motion.div>
 

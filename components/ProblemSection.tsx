@@ -189,8 +189,8 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
                      >
                         <source 
                             src={role === 'streamer' 
-                                ? "https://raw.githubusercontent.com/cavanjuice/assets/main/streamersad.mp4" 
-                                : "https://raw.githubusercontent.com/cavanjuice/assets/main/viewersad.mp4"
+                                ? "https://ssdjhkdkoqgmysgncfqa.supabase.co/storage/v1/object/public/assets/streamersad.mp4" 
+                                : "https://ssdjhkdkoqgmysgncfqa.supabase.co/storage/v1/object/public/assets/viewersad.mp4"
                             } 
                             type="video/mp4" 
                         />

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Sparkles, Play, ChevronRight } from 'lucide-react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { SupabaseImg } from './SupabaseImg';
 
 // --- SHADERS ---
 
@@ -199,8 +200,8 @@ const Hero: React.FC<HeroProps> = ({ onOpenVideo }) => {
                                 </Canvas>
                              </div>
 
-                             <img 
-                               src="https://raw.githubusercontent.com/cavanjuice/assets/main/DSC006262.png"
+                             <SupabaseImg 
+                               filename="DSC006262.png"
                                alt="Streamyst Wearable Tech"
                                className="relative z-10 h-full w-auto object-contain lg:w-full lg:h-auto animate-float"
                              />

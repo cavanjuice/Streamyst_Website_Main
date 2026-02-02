@@ -1,12 +1,36 @@
 
 // @ts-nocheck
-import React, { useState, Suspense, useMemo, useRef } from 'react';
+import React, { useState, Suspense, useMemo, useRef, Component, ReactNode, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Canvas, useLoader, useFrame } from '@react-three/fiber';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { OrbitControls, Center, Resize, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 import { Loader2, Eye, Zap, Sun } from 'lucide-react';
+import { supabase } from '../utils/supabaseClient';
+
+// --- Error Boundary for 3D Model ---
+class ModelErrorBoundary extends Component<{ children: ReactNode, fallback: ReactNode }, { hasError: boolean }> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    console.warn("3D Model failed to load. Switching to fallback.", error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
 
 const MovingHighlight = ({ color }: { color: string | null }) => {
   const lightRef = useRef<THREE.SpotLight>(null);
@@ -52,9 +76,8 @@ const SentimentLights = () => {
   });
 
   // Positioned tightly around a size-4 model
-  // Colors mapped to emotions: JOY (Yellow), LOVY (Pink), Fyre (Orange), Vybe (Indigo)
   const lights = [
-      { color: "#facc15", position: [2.5, 2, 2.5] },    // Yellow (JOY) - Replaced Green
+      { color: "#facc15", position: [2.5, 2, 2.5] },    // Yellow (JOY)
       { color: "#ec4899", position: [-2.5, 2, 2.5] },   // Pink (LOVY)
       { color: "#f97316", position: [2.5, -2, 2.5] },   // Orange (Fyre)
       { color: "#6366f1", position: [-2.5, -2, 2.5] }   // Indigo (Vybe)
@@ -64,7 +87,6 @@ const SentimentLights = () => {
     <group ref={groupRef}>
         {lights.map((l, i) => (
             <group key={i} position={l.position as any}>
-                {/* Visual Orbs removed so only the light effect remains */}
                 <pointLight 
                     color={l.color} 
                     intensity={1500} 
@@ -110,7 +132,6 @@ const PulseRing = ({ delay, color }: { delay: number, color: string }) => {
 
   return (
     <mesh ref={ref}>
-        {/* Finer ring: Thinner geometry for refined look (thickness ~0.015) */}
         <ringGeometry args={[2.3, 2.315, 128]} /> 
         <meshBasicMaterial color={color} transparent side={THREE.DoubleSide} toneMapped={false} depthWrite={false} />
     </mesh>
@@ -128,11 +149,42 @@ const HapticRings = () => {
     )
 }
 
-const VybeModel = ({ activeFeature }: { activeFeature: number | null }) => {
-  const obj = useLoader(OBJLoader, 'https://raw.githubusercontent.com/cavanjuice/assets/main/Assembly%20vybe%203.obj');
+// Fallback component if model fails to load
+const FallbackModel = ({ activeFeature }: { activeFeature: number | null }) => {
+    const meshRef = useRef<THREE.Mesh>(null);
+    useFrame((state) => {
+        if(meshRef.current) {
+            meshRef.current.rotation.y = state.clock.elapsedTime * 0.2;
+            meshRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.5) * 0.1;
+        }
+    });
+
+    return (
+        <group>
+            <Center>
+                <mesh ref={meshRef}>
+                    <capsuleGeometry args={[1, 3, 4, 16]} />
+                    <meshStandardMaterial 
+                        color="#1a1a1a" 
+                        roughness={0.2} 
+                        metalness={0.9} 
+                        emissive={activeFeature === 1 ? "#fbbf24" : "#000000"}
+                        emissiveIntensity={activeFeature === 1 ? 0.5 : 0}
+                    />
+                </mesh>
+            </Center>
+            {activeFeature === 0 && <SentimentLights />}
+            {activeFeature === 2 && <HapticRings />}
+            {activeFeature !== 0 && <MovingHighlight color={null} />}
+        </group>
+    )
+}
+
+// Inner Component that actually loads the model using Suspense
+const LoadedVybeModel = ({ url, activeFeature }: { url: string, activeFeature: number | null }) => {
+  const obj = useLoader(OBJLoader, url);
   const meshRef = useRef<THREE.Group>(null);
   
-  // Store references to materials mapped by object name for O(1) access
   const materialsMap = useRef<Map<string, THREE.MeshPhysicalMaterial>>(new Map());
 
   useMemo(() => {
@@ -141,7 +193,6 @@ const VybeModel = ({ activeFeature }: { activeFeature: number | null }) => {
     obj.traverse((child) => {
       if (child instanceof THREE.Mesh) {
          // High quality dark metallic material
-         // Extremely low roughness for mirror-like reflections of the colored lights
          const mat = new THREE.MeshPhysicalMaterial({
              color: '#1a1a1a', 
              metalness: 0.95,
@@ -156,13 +207,11 @@ const VybeModel = ({ activeFeature }: { activeFeature: number | null }) => {
          mat.onBeforeCompile = (shader) => {
             shader.uniforms.uTime = { value: 0 };
             shader.uniforms.uGradientStrength = { value: 0 };
-            shader.uniforms.uEmissiveIntensity = { value: 0 }; // Explicitly pass intensity
+            shader.uniforms.uEmissiveIntensity = { value: 0 }; 
             
-            // Store shader reference on the material userData for easy access in useFrame
             mat.userData.shader = shader;
-            mat.userData.gradientStrength = 0; // Initialize state
+            mat.userData.gradientStrength = 0;
 
-            // 1. Pass World Position to Fragment Shader
             shader.vertexShader = `
                 varying vec3 vWorldPos;
                 ${shader.vertexShader}
@@ -172,7 +221,6 @@ const VybeModel = ({ activeFeature }: { activeFeature: number | null }) => {
                  vWorldPos = (modelMatrix * vec4(position, 1.0)).xyz;`
             );
 
-            // 2. Implement Gradient Logic in Fragment Shader
             shader.fragmentShader = `
                 uniform float uTime;
                 uniform float uGradientStrength;
@@ -183,23 +231,12 @@ const VybeModel = ({ activeFeature }: { activeFeature: number | null }) => {
                 '#include <emissivemap_fragment>',
                 `
                 #include <emissivemap_fragment>
-
-                // Define 2 DISTINCT Colors (Dark Orange Gradient)
-                vec3 colBot = vec3(0.60, 0.20, 0.07); // Dark Burnt Orange (#9a3412)
-                vec3 colTop = vec3(0.98, 0.75, 0.14); // Vibrant Amber/Gold (#fbbf24)
-                
-                // Calculate height factor (model is roughly -2 to 2 in Y)
-                // We add gentle time movement to make the gradient "breathe" slightly
+                vec3 colBot = vec3(0.60, 0.20, 0.07); // Dark Burnt Orange
+                vec3 colTop = vec3(0.98, 0.75, 0.14); // Vibrant Amber/Gold
                 float h = vWorldPos.y * 0.3 + 0.5 + sin(uTime * 1.0) * 0.05;
-                
-                // Simple 2-color mix
                 vec3 grad = mix(colBot, colTop, smoothstep(0.2, 0.8, h));
 
-                // If uGradientStrength is active (close to 1), we override the emissive color
-                // We use 'uEmissiveIntensity' (which is controlled by JS) to scale the brightness
                 if (uGradientStrength > 0.01) {
-                    // Mix between standard emissive (e.g. Gold for feature 3) and Gradient
-                    // Note: totalEmissiveRadiance is the internal variable in MeshPhysicalMaterial
                     vec3 gradientEmissive = grad * uEmissiveIntensity;
                     totalEmissiveRadiance = mix(totalEmissiveRadiance, gradientEmissive, uGradientStrength);
                 }
@@ -210,8 +247,6 @@ const VybeModel = ({ activeFeature }: { activeFeature: number | null }) => {
          child.material = mat;
          child.castShadow = true;
          child.receiveShadow = true;
-         
-         // Store ref using the object name (e.g. "Object.1")
          materialsMap.current.set(child.name, mat);
       }
     });
@@ -221,12 +256,9 @@ const VybeModel = ({ activeFeature }: { activeFeature: number | null }) => {
     const t = state.clock.elapsedTime;
 
     if (meshRef.current) {
-        // Base Rotation
-        let rotY = Math.sin(t * 0.5) * 0.15; // Idle Sway
+        let rotY = Math.sin(t * 0.5) * 0.15;
         let scale = 1;
 
-        // --- EFFECT 3: TACTILE FEEDBACK (Index 2) ---
-        // Visual "Sonar" Pulse Scale Throb
         if (activeFeature === 2) {
              const pulseSpeed = 15; 
              scale = 1 + Math.max(0, Math.sin(t * pulseSpeed)) * 0.03;
@@ -237,49 +269,30 @@ const VybeModel = ({ activeFeature }: { activeFeature: number | null }) => {
         meshRef.current.position.set(0, 0, 0);
     }
 
-    // Material Effects Loop
     materialsMap.current.forEach((mat) => {
         let targetColor = new THREE.Color(0, 0, 0);
         let targetIntensity = 0;
         let targetGradientStrength = 0;
 
-        // --- EFFECT 2: REACTIVE LUMINANCE (Index 1) ---
         if (activeFeature === 1) {
-            // We use White here as a neutral base for brightness, 
-            // but the SHADER will override the color with the Gradient.
             targetColor = new THREE.Color('#ffffff'); 
-            // "Breathing" intensity
-            // Reduced max intensity and min intensity for a darker look
             targetIntensity = 0.05 + (Math.sin(t * 2.5) + 1) * 0.2; 
-            // Activate the shader gradient
             targetGradientStrength = 1;
         }
 
-        // --- EFFECT 3: TACTILE FEEDBACK (Index 2) ---
-        // Physical only, no color change
-
-        // Apply smooth transition to JS properties
         const lerpSpeed = activeFeature === 2 ? 0.5 : 0.1;
         mat.emissive.lerp(targetColor, lerpSpeed);
         mat.emissiveIntensity = THREE.MathUtils.lerp(mat.emissiveIntensity, targetIntensity, lerpSpeed);
 
-        // Update Shader Uniforms
         if (mat.userData.shader) {
             mat.userData.shader.uniforms.uTime.value = t;
-            
-            // Lerp the gradient strength for smooth transition in/out of gradient mode
-            // We store current strength in userData to persist between frames
             if (typeof mat.userData.gradientStrength === 'undefined') mat.userData.gradientStrength = 0;
-            
             mat.userData.gradientStrength = THREE.MathUtils.lerp(
                 mat.userData.gradientStrength, 
                 targetGradientStrength, 
-                0.1 // Transition speed
+                0.1
             );
-            
             mat.userData.shader.uniforms.uGradientStrength.value = mat.userData.gradientStrength;
-            
-            // Explicitly sync intensity to avoid 'undeclared identifier' shader errors
             mat.userData.shader.uniforms.uEmissiveIntensity.value = mat.emissiveIntensity;
         }
     });
@@ -288,7 +301,6 @@ const VybeModel = ({ activeFeature }: { activeFeature: number | null }) => {
   return (
     <group>
         <Center>
-            {/* Wrap Resize in the manipulated group */}
             <group ref={meshRef}>
                 <Resize scale={4}>
                     <primitive object={obj} rotation={[Math.PI / 2, 0, 0]} />
@@ -296,22 +308,45 @@ const VybeModel = ({ activeFeature }: { activeFeature: number | null }) => {
             </group>
         </Center>
         
-        {/* --- EFFECT 1: SENTIMENT MAPPING (Index 0) --- */}
-        {activeFeature === 0 && (
-            <SentimentLights />
-        )}
-
-        {/* --- EFFECT 3: TACTILE FEEDBACK (Index 2) --- */}
-        {activeFeature === 2 && (
-            <HapticRings />
-        )}
-
-        {/* Standard Light */}
-        {activeFeature !== 0 && (
-             <MovingHighlight color={null} />
-        )}
+        {activeFeature === 0 && <SentimentLights />}
+        {activeFeature === 2 && <HapticRings />}
+        {activeFeature !== 0 && <MovingHighlight color={null} />}
     </group>
   );
+};
+
+// Wrapper that checks URL validity before attempting to load
+const VybeModel = ({ activeFeature }: { activeFeature: number | null }) => {
+    const [modelUrl, setModelUrl] = useState<string | null>(null);
+    const [error, setError] = useState(false);
+
+    useEffect(() => {
+        const { data } = supabase.storage.from('assets').getPublicUrl('Assembly vybe 3.obj');
+        const url = data.publicUrl;
+
+        // Perform a HEAD request to verify existence and avoid "Uncaught Error" from Loader
+        const checkUrl = async () => {
+            try {
+                const res = await fetch(url, { method: 'HEAD' });
+                if (res.ok) {
+                    setModelUrl(url);
+                } else {
+                    console.warn(`Model check failed with status: ${res.status}`);
+                    setError(true);
+                }
+            } catch (err) {
+                console.warn("Model validation error:", err);
+                setError(true);
+            }
+        };
+
+        checkUrl();
+    }, []);
+
+    if (error) return <FallbackModel activeFeature={activeFeature} />;
+    if (!modelUrl) return null; // Wait for check to complete
+
+    return <LoadedVybeModel url={modelUrl} activeFeature={activeFeature} />;
 };
 
 const ProductShowcase: React.FC = () => {
@@ -342,7 +377,6 @@ const ProductShowcase: React.FC = () => {
   ];
 
   const handleToggleFeature = (index: number) => {
-    // If clicking the active feature, deactivate it. Otherwise, activate the new one.
     setActiveFeature(prev => prev === index ? null : index);
   };
 
@@ -350,7 +384,6 @@ const ProductShowcase: React.FC = () => {
     <section id="product" className="relative z-10 min-h-screen flex items-center py-12 lg:py-40 overflow-hidden">
       <div className="container mx-auto px-6 max-w-7xl">
         
-        {/* Unified Title Style */}
         <div className="text-center mb-16 lg:mb-24 max-w-4xl mx-auto">
            <motion.h2 
              initial={{ opacity: 0, y: 20 }}
@@ -372,7 +405,6 @@ const ProductShowcase: React.FC = () => {
 
         <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-16 items-center">
           
-          {/* Product Visual - Compact on Mobile */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.9, y: 30 }}
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
@@ -380,7 +412,6 @@ const ProductShowcase: React.FC = () => {
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             className="relative h-[280px] md:h-[550px] lg:h-[650px] flex items-center justify-center group w-full"
           >
-             {/* Background Atmosphere */}
             <div className="absolute w-[120%] h-[120%] bg-violet-600/5 rounded-full blur-[100px] pointer-events-none" />
             
             <div className="relative z-10 w-full h-full cursor-grab active:cursor-grabbing">
@@ -390,13 +421,12 @@ const ProductShowcase: React.FC = () => {
                         <span className="text-gray-500 text-[10px] font-mono tracking-widest uppercase">SYSCALL: LOADING MODEL</span>
                     </div>
                  }>
-                    {/* Position Camera at a fixed distance that works with Scale=4 */}
                     <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 8], fov: 40 }} gl={{ preserveDrawingBuffer: true, alpha: true }}>
                          <Environment preset="city" />
                          
-                         <VybeModel 
-                            activeFeature={activeFeature}
-                         />
+                         <ModelErrorBoundary fallback={<FallbackModel activeFeature={activeFeature} />}>
+                            <VybeModel activeFeature={activeFeature} />
+                         </ModelErrorBoundary>
                          
                          <OrbitControls 
                             makeDefault 
@@ -416,7 +446,7 @@ const ProductShowcase: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Content - Compact on Mobile */}
+          {/* Content */}
           <motion.div
              initial={{ opacity: 0, x: 40 }}
              whileInView={{ opacity: 1, x: 0 }}

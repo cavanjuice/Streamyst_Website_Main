@@ -2,11 +2,12 @@
 import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, useSpring, useMotionValue, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Twitter, Linkedin, Github, MessageSquare, Zap, Globe, Users, Code, ChevronDown } from 'lucide-react';
+import { getAssetUrl } from '../utils/supabaseClient';
 
 // --- ASSETS & CONSTANTS ---
 
-const FOUNDER_1_IMG = "https://raw.githubusercontent.com/cavanjuice/assets/main/robbe.png"; // Robbe
-const FOUNDER_2_IMG = "https://raw.githubusercontent.com/cavanjuice/assets/main/%C2%A9HF_Justin%20313.jpg"; // Justin
+const FOUNDER_1_IMG = getAssetUrl("robbe.png"); // Robbe
+const FOUNDER_2_IMG = getAssetUrl("HF_Justin 313.jpg"); // Justin - Updated Filename
 
 // --- DOM SUB-COMPONENTS ---
 
@@ -137,7 +138,12 @@ const FounderCard = ({ img, name, role, quote, delay }: { img: string, name: str
 
 // --- MAIN PAGE COMPONENT ---
 
-const AboutPage = ({ onBack }: { onBack: () => void }) => {
+interface AboutPageProps {
+    onBack: () => void;
+    onNavigate?: (view: any, id?: string) => void;
+}
+
+const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
     const { scrollYProgress } = useScroll();
     const springScroll = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
     
@@ -185,7 +191,7 @@ const AboutPage = ({ onBack }: { onBack: () => void }) => {
                              {/* Glow */}
                              <div className="absolute inset-0 bg-violet-500/10 blur-[100px] rounded-full opacity-50 group-hover:opacity-70 transition-opacity duration-700" />
                              <img 
-                                src="https://raw.githubusercontent.com/cavanjuice/assets/main/Founders%20Pic%20Transparent.png"
+                                src={getAssetUrl("Founders Pic Transparent.png")}
                                 alt="Streamyst Founders"
                                 className="relative z-10 w-full h-full object-contain drop-shadow-[0_0_50px_rgba(139,92,246,0.2)]"
                                 style={{
@@ -370,7 +376,8 @@ const AboutPage = ({ onBack }: { onBack: () => void }) => {
                             cta="Join Waitlist" 
                             color="violet" 
                             delay={0} 
-                            image="https://raw.githubusercontent.com/cavanjuice/assets/main/mascot3.PNG"
+                            image={getAssetUrl("mascot3.PNG")}
+                            onClick={() => onNavigate?.('home', 'waitlist')}
                         />
                         <PortalPath 
                             title="Audiences" 
@@ -378,7 +385,8 @@ const AboutPage = ({ onBack }: { onBack: () => void }) => {
                             cta="Join Discord" 
                             color="orange" 
                             delay={0.1} 
-                            image="https://raw.githubusercontent.com/cavanjuice/assets/main/mascot2.PNG"
+                            image={getAssetUrl("mascot2.PNG")}
+                            href="https://discord.gg/streamyst"
                         />
                         <PortalPath 
                             title="Builders" 
@@ -386,7 +394,8 @@ const AboutPage = ({ onBack }: { onBack: () => void }) => {
                             cta="View Careers" 
                             color="pink" 
                             delay={0.2} 
-                            image="https://raw.githubusercontent.com/cavanjuice/assets/main/mascot1.PNG"
+                            image={getAssetUrl("mascot1.PNG")}
+                            href="mailto:jobs@streamyst.com"
                         />
                     </div>
 
@@ -416,7 +425,7 @@ const QuoteBlock = ({ children }: { children?: React.ReactNode }) => (
     </div>
 );
 
-const PortalPath = ({ title, desc, cta, color, delay, image }: { title: string, desc: string, cta: string, color: string, delay: number, image: string }) => {
+const PortalPath = ({ title, desc, cta, color, delay, image, onClick, href }: { title: string, desc: string, cta: string, color: string, delay: number, image: string, onClick?: () => void, href?: string }) => {
     
     const colorClasses = {
         violet: { border: 'border-violet-500/30', bg: 'bg-violet-500', text: 'text-violet-400' },
@@ -424,13 +433,19 @@ const PortalPath = ({ title, desc, cta, color, delay, image }: { title: string, 
         pink: { border: 'border-pink-500/30', bg: 'bg-pink-500', text: 'text-pink-400' }
     }[color as 'violet' | 'orange' | 'pink'];
 
+    // Determine component type based on props
+    const Component = href ? motion.a : (onClick ? motion.button : motion.div);
+    const props = href ? { href, target: "_blank", rel: "noopener noreferrer" } : { onClick };
+
     return (
-        <motion.div 
+        // @ts-ignore - Dynamic component prop typing is tricky with Motion
+        <Component 
+            {...props}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay, duration: 0.5 }}
-            className="group relative h-[380px] w-full"
+            className={`group relative h-[380px] w-full text-left block cursor-pointer transition-transform duration-300 hover:-translate-y-2`}
         >
              {/* Background Container - CLIPS CONTENT */}
              <div className="absolute inset-0 rounded-3xl bg-[#0A0A0B] border border-white/10 overflow-hidden group-hover:border-white/20 transition-colors z-0">
@@ -462,7 +477,7 @@ const PortalPath = ({ title, desc, cta, color, delay, image }: { title: string, 
                      <span className={`text-xs font-mono uppercase tracking-widest text-gray-500 ${colorClasses.text} transition-colors duration-300 group-hover:text-white`}>{cta}</span>
                  </div>
              </div>
-        </motion.div>
+        </Component>
     );
 };
 

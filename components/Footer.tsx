@@ -1,7 +1,8 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Twitter, Youtube, Instagram, Github, Shield } from 'lucide-react';
+import { getAssetUrl } from '../utils/supabaseClient';
 
 interface FooterProps {
     onNavigate?: (view: any) => void;
@@ -38,7 +39,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCookieSettings }) => 
           <motion.div variants={itemVariants} className="mb-8 lg:mb-0 text-center lg:text-left max-w-xs">
              <div className="flex items-center justify-center lg:justify-start mb-4 cursor-pointer" onClick={() => onNavigate?.('home')}>
                 <img 
-                  src="https://raw.githubusercontent.com/cavanjuice/assets/main/logostreamyst.png" 
+                  src={getAssetUrl("logostreamyst.png")} 
                   alt="Streamyst" 
                   className="h-20 w-auto object-contain" 
                 />
