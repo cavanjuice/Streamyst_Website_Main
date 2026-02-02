@@ -208,8 +208,8 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
           </AnimatePresence>
         </div>
 
-        {/* 3D EVOLUTION CARD - Scaled down FURTHER to max-w-2xl (was max-w-3xl) */}
-        <div className="max-w-2xl mx-auto relative perspective-1000">
+        {/* 3D EVOLUTION CARD - Using inline styles for reliable max-width */}
+        <div className="w-full mx-auto relative perspective-1000" style={{ maxWidth: '700px' }}>
              <motion.div 
                 ref={cardRef}
                 initial={{ opacity: 0, scale: 0.9, rotateX: 10 }}
@@ -249,7 +249,6 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                 </div>
 
                 {/* --- CONTENT LAYER --- */}
-                {/* Reduced min-heights: min-h-[320px] -> min-h-[280px], lg:min-h-[420px] -> lg:min-h-[360px] */}
                 <div className="grid lg:grid-cols-2 relative z-20 pointer-events-none min-h-[280px] lg:min-h-[360px]">
                     
                     {/* LEFT: CHARACTER VISUAL (BREAKS OUT) */}

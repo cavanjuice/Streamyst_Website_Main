@@ -166,13 +166,14 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
         </div>
 
         {/* --- MAIN INTERFACE (VIDEO LEFT, CHAT RIGHT) --- */}
-        {/* SCALED DOWN FURTHER: max-w-4xl -> max-w-3xl */}
+        {/* ENFORCED WIDTH via style to avoid build configuration issues */}
         <motion.div 
             initial={{ opacity: 0, scale: 0.95, y: 40 }}
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-3xl mx-auto bg-[#0A0A0B] border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:flex-row h-auto lg:h-[370px] relative group"
+            style={{ maxWidth: '720px' }}
+            className="w-full mx-auto bg-[#0A0A0B] border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:flex-row h-auto lg:h-[370px] relative group"
         >
             
             {/* LEFT: VIDEO PLAYER */}
@@ -265,7 +266,6 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
             </div>
 
             {/* RIGHT: CHAT VISUALIZER */}
-            {/* SCALED DOWN: w-80 -> w-72, h-[280px] -> h-[250px] */}
             <div className="w-full lg:w-72 bg-[#05040a] border-t lg:border-t-0 lg:border-l border-white/10 flex flex-col relative z-20 shrink-0 h-[250px] lg:h-auto">
                 {/* Header Stats */}
                 <div className="h-10 border-b border-white/5 flex items-center justify-center md:justify-between px-4 bg-[#0A0A0B]/90 backdrop-blur-md z-10 sticky top-0">
