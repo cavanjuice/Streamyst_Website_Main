@@ -132,7 +132,7 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
   };
 
   return (
-    <section className="py-24 lg:py-40 relative z-10 overflow-hidden min-h-screen flex flex-col justify-center">
+    <section className="py-20 lg:py-28 relative z-10 overflow-hidden min-h-screen flex flex-col justify-center">
       {/* Background Ambience */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#030205] via-[#0A0A0B] to-[#030205] -z-10" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[60%] bg-violet-900/10 blur-[150px] rounded-full pointer-events-none" />
@@ -140,13 +140,13 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
       <div className="container mx-auto px-6 relative z-10">
         
         {/* Header - Unified Style */}
-        <div className="text-center mb-16 lg:mb-24 max-w-4xl mx-auto">
+        <div className="text-center mb-12 lg:mb-16 max-w-4xl mx-auto">
             <motion.h2 
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ delay: 0.1 }}
-                className="font-display font-bold text-4xl md:text-6xl lg:text-7xl text-white mb-6 tracking-tight"
+                className="font-display font-bold text-4xl md:text-5xl lg:text-6xl text-white mb-6 tracking-tight"
             >
                 The <span className="text-red-500">Visibility</span> Problem.
             </motion.h2>
@@ -171,7 +171,7 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-6xl mx-auto bg-[#0A0A0B] border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:flex-row h-auto lg:h-[480px] relative group"
+            className="max-w-5xl mx-auto bg-[#0A0A0B] border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:flex-row h-auto lg:h-[420px] relative group"
         >
             
             {/* LEFT: VIDEO PLAYER */}
@@ -266,7 +266,7 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
             {/* RIGHT: CHAT VISUALIZER */}
             <div className="w-full lg:w-80 bg-[#05040a] border-t lg:border-t-0 lg:border-l border-white/10 flex flex-col relative z-20 shrink-0 h-[280px] lg:h-auto">
                 {/* Header Stats */}
-                <div className="h-12 border-b border-white/5 flex items-center justify-center md:justify-between px-4 bg-[#0A0A0B]/90 backdrop-blur-md z-10 sticky top-0">
+                <div className="h-10 border-b border-white/5 flex items-center justify-center md:justify-between px-4 bg-[#0A0A0B]/90 backdrop-blur-md z-10 sticky top-0">
                     <div className="flex items-center gap-2">
                         <MessageSquare className="w-3 h-3 text-gray-500" />
                         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Chat</span>

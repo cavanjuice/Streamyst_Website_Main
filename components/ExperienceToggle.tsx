@@ -180,7 +180,7 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
   }, [role]);
 
   return (
-    <section id="choose-player" className="py-12 lg:py-24 relative z-10 overflow-hidden bg-black/20 min-h-[100dvh] flex flex-col justify-center">
+    <section id="choose-player" className="py-12 lg:py-16 relative z-10 overflow-hidden bg-black/20 min-h-[100dvh] flex flex-col justify-center">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_90%)] pointer-events-none" />
       
       {/* SVG Definitions for Gradients */}
@@ -206,7 +206,7 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
       >
         
         {/* 1. HEADER: VISUALS & STATS */}
-        <div className="max-w-6xl mx-auto w-full mb-10 md:mb-16">
+        <div className="max-w-5xl mx-auto w-full mb-10 md:mb-12">
             <AnimatePresence mode="wait">
                 <motion.div 
                     key={role}
@@ -217,9 +217,9 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
                     className="flex flex-row items-center justify-center gap-6 md:grid md:grid-cols-2 md:gap-16 lg:gap-20"
                 >
                     {/* LEFT: CHARACTER IMAGE */}
-                    <div className="relative w-56 h-72 sm:w-64 sm:h-80 md:w-full md:h-[400px] flex items-center justify-center shrink-0 order-1 md:order-none">
+                    <div className="relative w-56 h-72 sm:w-64 sm:h-80 md:w-full md:h-[320px] flex items-center justify-center shrink-0 order-1 md:order-none">
                          {/* Background Glow */}
-                         <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] lg:w-[350px] lg:h-[350px] rounded-full blur-[50px] lg:blur-[100px] opacity-40 ${role === 'streamer' ? 'bg-violet-600' : 'bg-orange-600'}`} />
+                         <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] rounded-full blur-[50px] lg:blur-[80px] opacity-40 ${role === 'streamer' ? 'bg-violet-600' : 'bg-orange-600'}`} />
 
                          <SupabaseImg 
                              filename={role === 'streamer' ? "streamersad.png" : "viewersad.png"}
@@ -230,16 +230,16 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
 
                     {/* RIGHT: STATS & CONTENT */}
                     <div className="relative z-10 order-2 md:order-none flex-1 min-w-0">
-                        <h3 className={`text-2xl sm:text-4xl lg:text-6xl font-display font-bold mb-3 italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r ${role === 'streamer' ? 'from-white via-violet-200 to-indigo-400' : 'from-white via-orange-200 to-red-400'}`}>
+                        <h3 className={`text-2xl sm:text-4xl lg:text-5xl font-display font-bold mb-3 italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r ${role === 'streamer' ? 'from-white via-violet-200 to-indigo-400' : 'from-white via-orange-200 to-red-400'}`}>
                             {activeStats.title}
                         </h3>
 
-                        <p className="text-gray-400 text-xs sm:text-sm lg:text-lg leading-relaxed mb-5 lg:mb-8 max-w-md font-light line-clamp-4 md:line-clamp-none">
+                        <p className="text-gray-400 text-xs sm:text-sm lg:text-base leading-relaxed mb-5 lg:mb-8 max-w-md font-light line-clamp-4 md:line-clamp-none">
                             {activeStats.desc}
                         </p>
 
                         {/* Progress Bars */}
-                        <div className="space-y-3 lg:space-y-5 mb-0 max-w-md">
+                        <div className="space-y-3 lg:space-y-4 mb-0 max-w-sm">
                             {activeStats.bars.map((stat, i) => (
                                 <div key={i}>
                                     <div className="flex justify-between items-end mb-1.5">
@@ -263,7 +263,7 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
         </div>
 
         {/* 2. TOGGLE BUTTON - REFINED GHOST ANIMATION */}
-        <div className="flex justify-center mb-10 md:mb-16 relative z-20">
+        <div className="flex justify-center mb-10 md:mb-12 relative z-20">
              {/* Container: Tighter inline-flex for specific sizing */}
              <div className="relative inline-flex p-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
                  
@@ -337,23 +337,23 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
                 >
                     <div 
                         ref={scrollRef}
-                        className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 md:grid md:grid-cols-2 md:gap-6 lg:grid-cols-4 scrollbar-hide"
+                        className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 md:grid md:grid-cols-2 md:gap-5 lg:grid-cols-4 scrollbar-hide"
                         style={{ scrollSnapType: 'x mandatory' }} 
                     >
                         {currentProblem.items.map((item, i) => (
                             <div key={i} className="min-w-full md:min-w-0 snap-center flex h-full">
                                 <SpotlightCard 
                                     index={i} 
-                                    className="p-6 md:p-6 backdrop-blur-sm bg-white/5 hover:bg-white/10 transition-colors w-full h-full border-white/10 flex flex-col justify-center"
+                                    className="p-5 md:p-5 backdrop-blur-sm bg-white/5 hover:bg-white/10 transition-colors w-full h-full border-white/10 flex flex-col justify-center"
                                 >
-                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${role === 'streamer' ? 'bg-violet-500/10' : 'bg-orange-500/10'}`}>
+                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${role === 'streamer' ? 'bg-violet-500/10' : 'bg-orange-500/10'}`}>
                                         <item.Icon 
-                                            className="w-6 h-6" 
+                                            className="w-5 h-5" 
                                             style={{ stroke: role === 'streamer' ? "url(#grad-streamer)" : "url(#grad-viewer)" }} 
                                         />
                                     </div>
-                                    <h3 className="font-bold text-lg text-white mb-2 leading-tight">{item.title}</h3>
-                                    <p className="text-gray-400 text-sm leading-relaxed">{item.desc}</p>
+                                    <h3 className="font-bold text-base text-white mb-2 leading-tight">{item.title}</h3>
+                                    <p className="text-gray-400 text-xs leading-relaxed">{item.desc}</p>
                                 </SpotlightCard>
                             </div>
                         ))}

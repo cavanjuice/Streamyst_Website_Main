@@ -32,15 +32,15 @@ const Waitlist: React.FC<WaitlistProps> = ({ onJoinSurvey }) => {
   };
 
   return (
-    // Changed: Reduced padding from py-24 to py-12 lg:py-24
-    <section id="waitlist" className="py-24 lg:py-48 relative z-10">
+    // Changed: Reduced padding significantly
+    <section id="waitlist" className="py-16 lg:py-32 relative z-10">
       <div className="container mx-auto px-6">
         <motion.div 
             initial={{ opacity: 0, scale: 0.95, y: 30 }}
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-6xl mx-auto bg-[#0A0A0B] border border-white/10 rounded-[2rem] overflow-hidden shadow-2xl flex flex-col lg:flex-row min-h-[550px] relative"
+            className="max-w-5xl mx-auto bg-[#0A0A0B] border border-white/10 rounded-[2rem] overflow-hidden shadow-2xl flex flex-col lg:flex-row min-h-[450px] relative"
         >
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-violet-600/5 rounded-full blur-[100px] pointer-events-none" />
 
@@ -60,7 +60,7 @@ const Waitlist: React.FC<WaitlistProps> = ({ onJoinSurvey }) => {
                 </div>
             </div>
 
-            <div className="lg:w-1/2 p-8 md:p-14 flex flex-col justify-center relative bg-[#0A0A0B] z-10">
+            <div className="lg:w-1/2 p-8 md:p-12 flex flex-col justify-center relative bg-[#0A0A0B] z-10">
                  <AnimatePresence mode='wait'>
                     {status === 'success' ? (
                         <motion.div

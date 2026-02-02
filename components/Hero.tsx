@@ -170,7 +170,7 @@ const Hero: React.FC<HeroProps> = ({ onOpenVideo }) => {
     <section className="relative h-[100dvh] w-full overflow-hidden flex flex-col">
         {/* Clean background - No Gradients */}
 
-        <div className="container mx-auto px-0 lg:px-6 relative z-10 h-full">
+        <div className="container mx-auto px-0 lg:px-12 relative z-10 h-full max-w-7xl">
             <div className="relative h-full w-full lg:grid lg:grid-cols-2 lg:items-center lg:gap-12">
                 
                 {/* --- IMAGE SECTION --- */}
@@ -179,13 +179,13 @@ const Hero: React.FC<HeroProps> = ({ onOpenVideo }) => {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 1, ease: "circOut" }}
-                    className="absolute top-0 left-0 w-full h-[65%] lg:static lg:h-auto lg:order-2 flex items-center justify-center z-0 lg:z-10 pt-20 lg:pt-32"
+                    className="absolute top-0 left-0 w-full h-[65%] lg:static lg:h-auto lg:order-2 flex items-center justify-center z-0 lg:z-10 pt-20 lg:pt-24"
                 >
                     <div className="relative w-full h-full flex items-center justify-center lg:justify-end">
-                         {/* Asset Wrapper: Reduced max-width on desktop to 480px to decrease scale */}
+                         {/* Asset Wrapper: Reduced max-width on desktop to 400px (was 480px) to decrease scale */}
                          {/* APPLIED MASK TO CONTAINER FOR CLEANER FADE */}
                          <div 
-                             className="relative z-10 w-full h-full max-h-[600px] lg:max-h-[80vh] lg:max-w-[480px] flex items-center justify-center"
+                             className="relative z-10 w-full h-full max-h-[600px] lg:max-h-[75vh] lg:max-w-[400px] flex items-center justify-center"
                              style={{
                                  // Adjusted mask to start fading lower (80%) for smoother blend without cutting body too early
                                  maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)',
@@ -227,7 +227,7 @@ const Hero: React.FC<HeroProps> = ({ onOpenVideo }) => {
                         initial={{ opacity: 0, y: 25 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.2 }}
-                        className="font-display font-bold text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-[1.1] mb-3 lg:mb-6 tracking-tight"
+                        className="font-display font-bold text-4xl sm:text-5xl lg:text-5xl xl:text-6xl leading-[1.1] mb-3 lg:mb-6 tracking-tight"
                     >
                         Connect to your audience. <br className="hidden lg:block" />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-violet-300 to-indigo-400 text-glow">

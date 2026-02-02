@@ -40,7 +40,7 @@ const PremiumCard: React.FC<{ step: typeof steps[0]; index: number }> = ({ step,
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ delay: index * 0.15, duration: 0.6, ease: "easeOut" }}
-      className={`group relative flex flex-col justify-between h-full min-h-[320px] w-[85vw] md:w-auto md:h-[380px] rounded-[2rem] bg-[#0A0A0B] border border-white/5 overflow-hidden transition-all duration-500 hover:border-white/10 ${step.glow} hover:shadow-2xl snap-center shrink-0`}
+      className={`group relative flex flex-col justify-between h-full min-h-[300px] w-[85vw] md:w-auto md:h-[340px] rounded-[2rem] bg-[#0A0A0B] border border-white/5 overflow-hidden transition-all duration-500 hover:border-white/10 ${step.glow} hover:shadow-2xl snap-center shrink-0`}
     >
       {/* 1. Ambient Background Layer */}
       <div className="absolute inset-0 z-0">
@@ -56,14 +56,14 @@ const PremiumCard: React.FC<{ step: typeof steps[0]; index: number }> = ({ step,
       </div>
 
       {/* 2. Content Layer */}
-      <div className="relative z-10 p-8 md:p-10 flex flex-col h-full justify-between">
+      <div className="relative z-10 p-8 md:p-8 flex flex-col h-full justify-between">
         
         {/* Header */}
         <div className="flex justify-between items-start">
             <div className="relative">
-                <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-md shadow-lg group-hover:scale-110 transition-transform duration-500 overflow-hidden">
+                <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-md shadow-lg group-hover:scale-110 transition-transform duration-500 overflow-hidden">
                      <div className={`absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500 ${step.highlight}`} />
-                     <step.icon className="w-6 h-6 text-white relative z-10" />
+                     <step.icon className="w-5 h-5 text-white relative z-10" />
                 </div>
             </div>
             
@@ -76,16 +76,16 @@ const PremiumCard: React.FC<{ step: typeof steps[0]; index: number }> = ({ step,
 
         {/* Text Content */}
         <div>
-            <h3 className="text-2xl md:text-3xl font-display font-bold text-white mb-4 group-hover:translate-x-1 transition-transform duration-300">
+            <h3 className="text-2xl md:text-2xl font-display font-bold text-white mb-3 group-hover:translate-x-1 transition-transform duration-300">
                 {step.title}
             </h3>
-            <p className="text-gray-400 text-sm md:text-base leading-relaxed font-light opacity-80 group-hover:opacity-100 transition-opacity duration-300">
+            <p className="text-gray-400 text-sm md:text-sm leading-relaxed font-light opacity-80 group-hover:opacity-100 transition-opacity duration-300">
                 {step.desc}
             </p>
         </div>
 
         {/* Bottom Decoration line */}
-        <div className="relative h-1 w-full bg-white/5 rounded-full overflow-hidden mt-8">
+        <div className="relative h-1 w-full bg-white/5 rounded-full overflow-hidden mt-6">
             <div className={`absolute top-0 left-0 h-full w-0 ${step.highlight} group-hover:w-full transition-all duration-1000 ease-out`} />
         </div>
 
@@ -107,7 +107,7 @@ const HowItWorks: React.FC = () => {
       <div className="container mx-auto px-6 relative z-10">
         
         {/* Reverted Header Style - Centered & Colorful */}
-        <div className="text-center mb-16 lg:mb-24 max-w-4xl mx-auto">
+        <div className="text-center mb-16 lg:mb-20 max-w-4xl mx-auto">
           {/* Badge Removed Here */}
           
           <motion.h2 
@@ -115,7 +115,7 @@ const HowItWorks: React.FC = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ delay: 0.1 }}
-            className="font-display font-bold text-4xl md:text-6xl lg:text-7xl text-white mb-6 tracking-tight"
+            className="font-display font-bold text-4xl md:text-5xl lg:text-6xl text-white mb-6 tracking-tight"
           >
             Zero Latency. <br className="hidden md:block" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-500">

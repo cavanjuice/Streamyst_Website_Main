@@ -9,28 +9,28 @@ const features = [
     desc: "With XR we're able to create any look that fits your style, making you stand out!",
     image: getAssetUrl("Express.png"),
     delay: 0,
-    sizeClass: "h-[120%] max-h-[300px] md:max-h-[400px]"
+    sizeClass: "h-[120%] max-h-[250px] md:max-h-[320px]"
   },
   {
     title: "Engage audiences",
     desc: "Make use of XR elements to let your viewers become part of the experience",
     image: getAssetUrl("FIRED.png"),
     delay: 0.1,
-    sizeClass: "h-[120%] max-h-[300px] md:max-h-[400px]"
+    sizeClass: "h-[120%] max-h-[250px] md:max-h-[320px]"
   },
   {
     title: "Reflect sentiment",
     desc: "Let the overlay react directly to the input from your viewers, making it reflective of your audience",
     image: getAssetUrl("WATER.png"),
     delay: 0.2,
-    sizeClass: "h-[120%] max-h-[300px] md:max-h-[400px]"
+    sizeClass: "h-[120%] max-h-[250px] md:max-h-[320px]"
   },
   {
     title: "Feel the vybe",
     desc: "Add the Vybe for a more immersive experience, feeling and seeing the digital connection IRL",
     image: getAssetUrl("DSC006262.png"),
     delay: 0.3,
-    sizeClass: "h-[125%] max-h-[350px] md:max-h-[450px] -mb-4"
+    sizeClass: "h-[125%] max-h-[280px] md:max-h-[360px] -mb-4"
   }
 ];
 
@@ -116,20 +116,20 @@ const FeaturesShowcase: React.FC = () => {
   }, []);
 
   return (
-    <section className="py-24 lg:py-48 relative z-10 bg-[#030205] overflow-hidden">
+    <section className="py-24 lg:py-32 relative z-10 bg-[#030205] overflow-hidden">
         {/* Ambient background glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-7xl bg-violet-900/5 blur-[100px] rounded-full pointer-events-none" />
 
       <div className="container mx-auto px-6 relative z-10">
         
         {/* Unified Header Style */}
-        <div className="text-center mb-16 lg:mb-24 max-w-4xl mx-auto">
+        <div className="text-center mb-16 lg:mb-20 max-w-4xl mx-auto">
            <motion.h2 
              initial={{ opacity: 0, y: 20 }}
              whileInView={{ opacity: 1, y: 0 }}
              viewport={{ once: true, margin: "-100px" }}
              transition={{ delay: 0.1 }}
-             className="font-display font-bold text-4xl md:text-6xl lg:text-7xl text-white mb-6 tracking-tight"
+             className="font-display font-bold text-4xl md:text-5xl lg:text-6xl text-white mb-6 tracking-tight"
            >
              SEE IT IN <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-500">ACTION</span>
            </motion.h2>
@@ -158,7 +158,7 @@ const FeaturesShowcase: React.FC = () => {
                 hidden: { opacity: 0 },
                 visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
             }}
-            className="flex overflow-x-auto snap-x snap-mandatory gap-4 pt-12 pb-8 lg:pt-0 lg:grid lg:grid-cols-4 lg:gap-x-6 lg:gap-y-12 lg:overflow-visible scrollbar-hide -mx-6 px-6 lg:mx-0 lg:px-0"
+            className="flex overflow-x-auto snap-x snap-mandatory gap-4 pt-12 pb-8 lg:pt-0 lg:grid lg:grid-cols-4 lg:gap-x-6 lg:gap-y-8 lg:overflow-visible scrollbar-hide -mx-6 px-6 lg:mx-0 lg:px-0"
             style={{ scrollBehavior: 'auto' }} // Ensure instant jumps don't animate
         >
           {extendedFeatures.map((feature, i) => (
@@ -168,7 +168,7 @@ const FeaturesShowcase: React.FC = () => {
                  hidden: { opacity: 0, y: 40 },
                  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
               }}
-              className={`snap-center shrink-0 w-[85vw] sm:w-[400px] lg:w-auto group relative flex flex-col justify-end min-h-[400px] lg:min-h-[480px] hover:-translate-y-2 transition-transform duration-500 ${i >= features.length ? 'lg:hidden' : ''}`}
+              className={`snap-center shrink-0 w-[85vw] sm:w-[350px] lg:w-auto group relative flex flex-col justify-end min-h-[380px] lg:min-h-[420px] hover:-translate-y-2 transition-transform duration-500 ${i >= features.length ? 'lg:hidden' : ''}`}
             >
               {/* 
                   THE CARD BASE 
@@ -211,14 +211,14 @@ const FeaturesShowcase: React.FC = () => {
                   
                   {/* Title Container - Fixed height for alignment */}
                   <div className="h-8 mb-2 flex items-center justify-center shrink-0">
-                    <h3 className="font-display font-bold text-xl text-white group-hover:text-violet-200 transition-colors">
+                    <h3 className="font-display font-bold text-lg md:text-xl text-white group-hover:text-violet-200 transition-colors">
                         {feature.title}
                     </h3>
                   </div>
                   
                   {/* Description Container - Fixed height for alignment */}
                   <div className="h-16 flex items-start justify-center">
-                    <p className="text-gray-400 text-sm leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity line-clamp-3">
+                    <p className="text-gray-400 text-xs md:text-sm leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity line-clamp-3">
                         {feature.desc}
                     </p>
                   </div>

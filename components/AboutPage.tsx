@@ -38,7 +38,7 @@ const TimelineNode = ({ title, date, children, index }: { title: string, date: s
     const lineScale = useTransform(lineProgress, [0, 1], [0, 1]);
 
     return (
-        <div ref={ref} className="relative pl-12 md:pl-24 py-12 group">
+        <div ref={ref} className="relative pl-12 md:pl-24 py-10 group">
             {/* Base Line */}
             <div className="absolute left-0 top-0 bottom-0 w-px bg-white/10" />
             
@@ -93,7 +93,7 @@ const FounderCard = ({ img, name, role, quote, delay }: { img: string, name: str
         >
             <div className="relative rounded-3xl overflow-hidden bg-[#0A0A0B] border border-white/10 shadow-2xl">
                 {/* Image Container with Overflow Hidden */}
-                <div className="relative h-[450px] overflow-hidden">
+                <div className="relative h-[380px] overflow-hidden">
                     <motion.div 
                         style={{ y }} 
                         className="absolute inset-0 h-[130%] -top-[15%] w-full"
@@ -159,15 +159,15 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
             </div>
 
             {/* --- ACT I: THE PARADOX --- */}
-            <section className="relative z-10 min-h-[120vh] flex flex-col items-center justify-center px-6 pt-32 pb-20">
-                <div className="max-w-4xl mx-auto text-center mb-24">
+            <section className="relative z-10 min-h-[100vh] flex flex-col items-center justify-center px-6 pt-32 pb-20">
+                <div className="max-w-4xl mx-auto text-center mb-16">
                     <motion.div 
                         initial={{ opacity: 0 }} 
                         animate={{ opacity: 1 }} 
                         transition={{ duration: 2 }}
                         className="mb-12"
                     >
-                        <h1 className="font-display font-bold text-5xl md:text-7xl lg:text-8xl leading-none tracking-tighter mb-8">
+                        <h1 className="font-display font-bold text-5xl md:text-6xl lg:text-7xl leading-none tracking-tighter mb-8">
                             We believe in a <br/>
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-200 to-white">Simple Truth.</span>
                         </h1>
@@ -187,7 +187,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
                             The Founders
                         </div>
                         
-                        <div className="relative w-full max-w-4xl mx-auto md:h-[500px] flex items-center justify-center group">
+                        <div className="relative w-full max-w-4xl mx-auto md:h-[400px] flex items-center justify-center group">
                              {/* Glow */}
                              <div className="absolute inset-0 bg-violet-500/10 blur-[100px] rounded-full opacity-50 group-hover:opacity-70 transition-opacity duration-700" />
                              <img 
@@ -212,14 +212,14 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
             </section>
 
             {/* --- ACT II: THE SPARK --- */}
-            <section className="relative z-10 py-32 md:py-48 px-6">
+            <section className="relative z-10 py-24 md:py-32 px-6">
                 <div className="max-w-4xl mx-auto">
                     <motion.div 
                         initial={{ opacity: 0 }} 
                         whileInView={{ opacity: 1 }}
-                        className="mb-20 pl-12 md:pl-24"
+                        className="mb-16 pl-12 md:pl-24"
                     >
-                        <h2 className="font-display font-bold text-4xl md:text-6xl mb-4">It Started With A <span className="text-violet-400">Question.</span></h2>
+                        <h2 className="font-display font-bold text-4xl md:text-5xl mb-4">It Started With A <span className="text-violet-400">Question.</span></h2>
                         <div className="h-1 w-20 bg-violet-500 rounded-full" />
                     </motion.div>
 
@@ -264,13 +264,13 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
             </section>
 
             {/* --- ACT III: THE VISION --- */}
-            <section className="relative z-10 py-32 overflow-hidden">
+            <section className="relative z-10 py-24 overflow-hidden">
                 {/* Background wash */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-full bg-gradient-to-b from-transparent via-violet-900/10 to-transparent pointer-events-none blur-3xl" />
 
                 <div className="container mx-auto px-6 relative">
-                    <div className="text-center max-w-3xl mx-auto mb-24">
-                        <h2 className="font-display font-bold text-5xl md:text-7xl mb-6">Not A Gadget. <br/>An <span className="text-violet-400">OS for Emotion.</span></h2>
+                    <div className="text-center max-w-3xl mx-auto mb-16">
+                        <h2 className="font-display font-bold text-5xl md:text-6xl mb-6">Not A Gadget. <br/>An <span className="text-violet-400">OS for Emotion.</span></h2>
                         <p className="text-xl text-gray-400">We're building the emotional infrastructure for the creator economy.</p>
                     </div>
 
@@ -298,9 +298,9 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
                         ))}
                     </div>
 
-                    <div className="mt-32 text-center">
+                    <div className="mt-24 text-center">
                         <div className="font-mono text-xs text-gray-500 uppercase tracking-widest mb-4">The Mission</div>
-                        <h3 className="font-display font-bold text-3xl md:text-5xl max-w-4xl mx-auto leading-tight">
+                        <h3 className="font-display font-bold text-3xl md:text-4xl max-w-4xl mx-auto leading-tight">
                             "Transform digital spaces to spark meaningful creation and collaboration"
                         </h3>
                     </div>
@@ -308,7 +308,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
             </section>
 
             {/* --- ACT IV: THE HUMANS --- */}
-            <section className="relative z-10 py-32 px-6">
+            <section className="relative z-10 py-24 px-6">
                 <div className="container mx-auto max-w-6xl">
                     <motion.div 
                         initial={{ opacity: 0 }} 
@@ -342,7 +342,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
             </section>
 
             {/* --- ACT V: THE INVITATION --- */}
-            <section className="relative z-10 min-h-screen flex items-center justify-center py-32 px-6 overflow-hidden bg-[#030205]">
+            <section className="relative z-10 min-h-screen flex items-center justify-center py-24 px-6 overflow-hidden bg-[#030205]">
                 
                 {/* Refined Background */}
                 <div className="absolute inset-0 pointer-events-none">
@@ -358,7 +358,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8 }}
                         >
-                            <h2 className="font-display font-bold text-5xl md:text-8xl mb-8 tracking-tighter leading-none">
+                            <h2 className="font-display font-bold text-5xl md:text-7xl mb-8 tracking-tighter leading-none">
                                 The Future Is <br/>
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-fuchsia-400 to-purple-600 animate-pulse-slow">Being Built.</span>
                             </h2>

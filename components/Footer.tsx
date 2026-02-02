@@ -128,11 +128,8 @@ const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCookieSettings }) => 
           </div>
         </div>
 
-        <motion.div variants={itemVariants} className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-600">
+        <motion.div variants={itemVariants} className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-center md:justify-between items-center text-xs text-gray-600">
             <p>&copy; {new Date().getFullYear()} Streamyst BV. All rights reserved.</p>
-            <div className="flex gap-4 mt-2 md:mt-0">
-                <span>Built with 💜 in Antwerp</span>
-            </div>
         </motion.div>
       </motion.div>
     </footer>

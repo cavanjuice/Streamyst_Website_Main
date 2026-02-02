@@ -381,16 +381,16 @@ const ProductShowcase: React.FC = () => {
   };
 
   return (
-    <section id="product" className="relative z-10 min-h-screen flex items-center py-12 lg:py-40 overflow-hidden">
+    <section id="product" className="relative z-10 min-h-screen flex items-center py-12 lg:py-24 overflow-hidden">
       <div className="container mx-auto px-6 max-w-7xl">
         
-        <div className="text-center mb-16 lg:mb-24 max-w-4xl mx-auto">
+        <div className="text-center mb-16 lg:mb-20 max-w-4xl mx-auto">
            <motion.h2 
              initial={{ opacity: 0, y: 20 }}
              whileInView={{ opacity: 1, y: 0 }}
              viewport={{ once: true, margin: "-100px" }}
              transition={{ delay: 0.1 }}
-             className="font-display font-bold text-4xl md:text-6xl lg:text-7xl text-white mb-6 tracking-tight"
+             className="font-display font-bold text-4xl md:text-5xl lg:text-6xl text-white mb-6 tracking-tight"
            >
              UPGRADE YOUR <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-500">EXPERIENCE</span>
            </motion.h2>
@@ -403,14 +403,14 @@ const ProductShowcase: React.FC = () => {
            />
         </div>
 
-        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-16 items-center">
+        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-12 items-center">
           
           <motion.div 
             initial={{ opacity: 0, scale: 0.9, y: 30 }}
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            className="relative h-[280px] md:h-[550px] lg:h-[650px] flex items-center justify-center group w-full"
+            className="relative h-[280px] md:h-[450px] lg:h-[500px] flex items-center justify-center group w-full"
           >
             <div className="absolute w-[120%] h-[120%] bg-violet-600/5 rounded-full blur-[100px] pointer-events-none" />
             
@@ -455,8 +455,8 @@ const ProductShowcase: React.FC = () => {
              className="relative z-20 w-full"
           >
             <div className="mb-4 lg:mb-8">
-                <h2 className="font-display font-bold text-2xl lg:text-5xl mb-2 lg:mb-4 tracking-tight">THE <span className="text-violet-400">VYBE</span> CORE</h2>
-                <p className="text-sm lg:text-lg text-gray-400 font-light leading-relaxed max-w-xl">
+                <h2 className="font-display font-bold text-2xl lg:text-4xl mb-2 lg:mb-4 tracking-tight">THE <span className="text-violet-400">VYBE</span> CORE</h2>
+                <p className="text-sm lg:text-base text-gray-400 font-light leading-relaxed max-w-xl">
                     Wearable emotional intelligence. A direct line to your community's heartbeat, translated into visible and physical feedback.
                 </p>
             </div>
@@ -478,7 +478,7 @@ const ProductShowcase: React.FC = () => {
                             hidden: { opacity: 0, x: 20 },
                             visible: { opacity: 1, x: 0, transition: { duration: 0.5 } }
                         }}
-                        className={`relative p-3 lg:p-6 rounded-xl lg:rounded-2xl border transition-all duration-500 cursor-pointer group flex justify-between items-center overflow-hidden ${activeFeature === i ? 'bg-white/5 border-white/20 shadow-2xl shadow-violet-500/10' : 'bg-transparent border-white/5 hover:border-white/10'}`}
+                        className={`relative p-3 lg:p-5 rounded-xl lg:rounded-2xl border transition-all duration-500 cursor-pointer group flex justify-between items-center overflow-hidden ${activeFeature === i ? 'bg-white/5 border-white/20 shadow-2xl shadow-violet-500/10' : 'bg-transparent border-white/5 hover:border-white/10'}`}
                         onClick={() => handleToggleFeature(i)}
                         onMouseEnter={() => setActiveFeature(i)}
                         onMouseLeave={() => setActiveFeature(null)}
@@ -486,7 +486,7 @@ const ProductShowcase: React.FC = () => {
                         <div className="relative z-10 flex flex-col">
                             <div className="flex items-center gap-3 mb-1">
                                 <span className={`text-[10px] font-mono font-bold transition-colors ${activeFeature === i ? item.accentColor : 'text-gray-700'}`}>0{i + 1}</span>
-                                <h3 className={`text-sm md:text-xl font-bold font-display transition-colors ${activeFeature === i ? 'text-white' : 'text-gray-400'}`}>
+                                <h3 className={`text-sm md:text-lg font-bold font-display transition-colors ${activeFeature === i ? 'text-white' : 'text-gray-400'}`}>
                                     {item.title}
                                 </h3>
                             </div>
