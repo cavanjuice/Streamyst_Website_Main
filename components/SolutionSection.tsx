@@ -170,7 +170,7 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
         }`}
       />
 
-      <div className="container mx-auto px-4 sm:px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10 flex flex-col items-center">
         <div className="text-center mb-16 lg:mb-20 max-w-4xl mx-auto">
           <AnimatePresence mode='wait'>
             <motion.div
@@ -208,8 +208,8 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
           </AnimatePresence>
         </div>
 
-        {/* 3D EVOLUTION CARD - ENFORCED MAX-WIDTH to max-w-2xl (approx 672px) */}
-        <div className="w-full max-w-2xl mx-auto relative perspective-1000">
+        {/* 3D EVOLUTION CARD - FORCE WIDTH via style */}
+        <div className="relative perspective-1000 mx-auto" style={{ width: 'min(100%, 700px)' }}>
              <motion.div 
                 ref={cardRef}
                 initial={{ opacity: 0, scale: 0.9, rotateX: 10 }}
@@ -249,7 +249,6 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                 </div>
 
                 {/* --- CONTENT LAYER --- */}
-                {/* Reduced min-heights: min-h-[280px] -> min-h-[260px], lg:min-h-[360px] -> lg:min-h-[300px] */}
                 <div className="grid lg:grid-cols-2 relative z-20 pointer-events-none min-h-[260px] lg:min-h-[300px]">
                     
                     {/* LEFT: CHARACTER VISUAL (BREAKS OUT) */}

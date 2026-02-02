@@ -303,7 +303,7 @@ const InteractiveDemo: React.FC = () => {
           </defs>
       </svg>
 
-      <div className="container mx-auto px-4 lg:px-6 relative z-10">
+      <div className="container mx-auto px-4 lg:px-6 relative z-10 flex flex-col items-center">
         
         {/* Unified Header Style */}
         <div className="text-center mb-16 lg:mb-20 max-w-4xl mx-auto">
@@ -318,10 +318,10 @@ const InteractiveDemo: React.FC = () => {
            </motion.h2>
         </div>
 
-        {/* 3D TILT CONTAINER - ENFORCED SMALLER MAX-WIDTH (max-w-3xl is ~768px) */}
+        {/* 3D TILT CONTAINER - FORCE WIDTH via style */}
         <div 
-            className="relative w-full max-w-3xl mx-auto flex justify-center perspective-1000"
-            style={{ perspective: 1000 }}
+            className="relative perspective-1000 mx-auto"
+            style={{ width: 'min(100%, 700px)', perspective: 1000 }}
         >
             <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 50 }}

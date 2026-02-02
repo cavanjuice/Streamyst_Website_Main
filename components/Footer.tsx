@@ -130,6 +130,8 @@ const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCookieSettings }) => 
 
         <motion.div variants={itemVariants} className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-center md:justify-between items-center text-xs text-gray-600">
             <p>&copy; {new Date().getFullYear()} Streamyst BV. All rights reserved.</p>
+            {/* DEBUG VERSION TAG - CHECK FOR THIS ON DEPLOYMENT */}
+            <p className="mt-2 md:mt-0 font-mono text-[10px] opacity-30">v.DEBUG.01</p>
         </motion.div>
       </motion.div>
     </footer>

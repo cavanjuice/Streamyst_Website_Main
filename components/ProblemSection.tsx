@@ -137,7 +137,7 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
       <div className="absolute inset-0 bg-gradient-to-b from-[#030205] via-[#0A0A0B] to-[#030205] -z-10" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[60%] bg-violet-900/10 blur-[150px] rounded-full pointer-events-none" />
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-6 relative z-10 flex flex-col items-center">
         
         {/* Header - Unified Style */}
         <div className="text-center mb-12 lg:mb-16 max-w-4xl mx-auto">
@@ -166,13 +166,14 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
         </div>
 
         {/* --- MAIN INTERFACE (VIDEO LEFT, CHAT RIGHT) --- */}
-        {/* ENFORCED SMALLER SIZE: max-w-3xl (768px) and height reductions */}
+        {/* FORCE WIDTH using strict CSS function */}
         <motion.div 
             initial={{ opacity: 0, scale: 0.95, y: 40 }}
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            className="w-full max-w-3xl mx-auto bg-[#0A0A0B] border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:flex-row h-auto lg:h-[300px] relative group"
+            style={{ width: 'min(100%, 700px)' }}
+            className="mx-auto bg-[#0A0A0B] border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:flex-row h-auto lg:h-[300px] relative group"
         >
             
             {/* LEFT: VIDEO PLAYER */}
