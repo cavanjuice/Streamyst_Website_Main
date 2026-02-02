@@ -318,9 +318,9 @@ const InteractiveDemo: React.FC = () => {
            </motion.h2>
         </div>
 
-        {/* 3D TILT CONTAINER */}
+        {/* 3D TILT CONTAINER - Scaled Down from max-w-4xl to max-w-[50rem] (~10% decrease) */}
         <div 
-            className="relative max-w-4xl mx-auto flex justify-center perspective-1000"
+            className="relative max-w-[50rem] mx-auto flex justify-center perspective-1000"
             style={{ perspective: 1000 }}
         >
             <motion.div
@@ -336,7 +336,7 @@ const InteractiveDemo: React.FC = () => {
                 animate={{
                     x: shake > 0 ? [0, -shake, shake, -shake, shake, 0] : 0 
                 }}
-                className="relative w-full max-w-4xl bg-black/60 backdrop-blur-2xl border border-white/10 rounded-[1.5rem] lg:rounded-[2rem] shadow-[0_50px_100px_rgba(0,0,0,0.8)] overflow-hidden transform-style-3d"
+                className="relative w-full max-w-[50rem] bg-black/60 backdrop-blur-2xl border border-white/10 rounded-[1.5rem] lg:rounded-[2rem] shadow-[0_50px_100px_rgba(0,0,0,0.8)] overflow-hidden transform-style-3d"
             >
                 {/* Dynamic Glare Reflection */}
                 <motion.div 
@@ -346,10 +346,12 @@ const InteractiveDemo: React.FC = () => {
                     }}
                 />
 
-                <div className="grid lg:grid-cols-12 lg:min-h-[420px]">
+                {/* Reduced height from min-h-[420px] to min-h-[380px] */}
+                <div className="grid lg:grid-cols-12 lg:min-h-[380px]">
                     
                     {/* LEFT: VISUALIZER */}
-                    <div className="lg:col-span-7 relative flex items-center justify-center p-4 lg:p-8 overflow-hidden bg-[#0A0A0B] h-[360px] lg:h-auto">
+                    {/* Reduced height from h-[360px] to h-[320px], Padding p-8 to p-6 */}
+                    <div className="lg:col-span-7 relative flex items-center justify-center p-4 lg:p-6 overflow-hidden bg-[#0A0A0B] h-[320px] lg:h-auto">
                         
                         {/* Dynamic Environment Glow */}
                         <div 
@@ -572,7 +574,7 @@ const InteractiveDemo: React.FC = () => {
                                 x: isMobile ? 0 : layerX,
                                 y: isMobile ? 0 : layerY
                             }}
-                            className="relative z-10 w-full max-w-[280px] lg:max-w-[400px] aspect-[4/5]"
+                            className="relative z-10 w-full max-w-[250px] lg:max-w-[360px] aspect-[4/5]"
                         >
                              {activeEmotion === 'shock' && (
                                 <>
@@ -638,7 +640,7 @@ const InteractiveDemo: React.FC = () => {
                         }}
                     >
                         {/* CHAT INTERFACE */}
-                        <div className="flex-1 flex flex-col h-[100px] lg:h-auto lg:min-h-[220px] mb-4 relative">
+                        <div className="flex-1 flex flex-col h-[100px] lg:h-auto lg:min-h-[200px] mb-4 relative">
                             <div className="flex items-center justify-between text-gray-400 border-b border-white/10 pb-2 mb-2">
                                 <div className="flex items-center gap-2">
                                     <Wifi className="w-3 h-3 lg:w-4 lg:h-4 text-violet-500" />
@@ -695,14 +697,14 @@ const InteractiveDemo: React.FC = () => {
                                         whileTap={{ scale: 0.95 }}
                                         onClick={() => triggerReaction(e.id)}
                                         className={`
-                                            relative h-12 lg:h-14 rounded-xl border border-white/10 overflow-hidden group transition-all duration-300
+                                            relative h-10 lg:h-12 rounded-xl border border-white/10 overflow-hidden group transition-all duration-300
                                             ${activeEmotion === e.id ? 'bg-white/10 border-white/40 ring-1 ring-white/20' : 'bg-white/5 hover:bg-white/10'}
                                         `}
                                     >
                                         <div className={`absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity ${e.color}`} />
                                         
                                         <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                                            <span className="text-xl lg:text-2xl mb-0 lg:mb-1 filter drop-shadow-lg group-hover:scale-110 transition-transform duration-200">{e.emoji}</span>
+                                            <span className="text-lg lg:text-xl mb-0 lg:mb-0.5 filter drop-shadow-lg group-hover:scale-110 transition-transform duration-200">{e.emoji}</span>
                                             <span className="hidden lg:block text-[8px] lg:text-[9px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-white transition-colors">{e.label}</span>
                                         </div>
 

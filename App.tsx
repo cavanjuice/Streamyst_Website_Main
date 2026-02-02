@@ -69,6 +69,7 @@ const FloatingRoleToggle: React.FC<{ role: 'streamer' | 'viewer', setRole: (r: '
           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           // Mobile: Right side flush (right-0), thinner padding, tab shape. 
           // Desktop: Left side floating (left-6), full padding, pill shape.
+          // Note: Needs to be outside any transform container to center correctly with 'fixed'
           className="fixed right-0 md:right-auto md:left-6 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center p-1 md:p-1.5 rounded-l-2xl rounded-r-none md:rounded-full bg-[#0A0A0B]/80 backdrop-blur-xl border-y border-l border-white/10 md:border shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)]"
         >
            {/* Active Pill Background */}
@@ -217,7 +218,7 @@ const App: React.FC = () => {
               <Hero onOpenVideo={() => setIsVideoOpen(true)} />
               <ProblemStatement role={role} />
               <ExperienceToggle role={role} setRole={setRole} />
-              <FloatingRoleToggle role={role} setRole={setRole} />
+              {/* FloatingRoleToggle moved to root App level to fix positioning context */}
               <ProblemSection role={role} />
               <SolutionSection role={role} />
               <HowItWorks />
@@ -245,6 +246,14 @@ const App: React.FC = () => {
           currentView={currentView}
           onNavigate={(view, id) => handleNavigation(view as any, id)} 
         />
+      )}
+
+      {/* 
+          Moved FloatingRoleToggle here (outside of motion.div) 
+          to ensure fixed positioning works relative to viewport 
+      */}
+      {currentView === 'home' && (
+         <FloatingRoleToggle role={role} setRole={setRole} />
       )}
       
       <main className="flex-grow">
