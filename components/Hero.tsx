@@ -175,11 +175,12 @@ const Hero: React.FC<HeroProps> = ({ onOpenVideo }) => {
                 
                 {/* --- IMAGE SECTION --- */}
                 {/* Mobile: Absolute Top. Reduced pt and height adjusted to pull image up closing the gap. */}
+                {/* Desktop: Removed pt-24 to align vertically center with text */}
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 1, ease: "circOut" }}
-                    className="absolute top-0 left-0 w-full h-[65%] lg:static lg:h-auto lg:order-2 flex items-center justify-center z-0 lg:z-10 pt-20 lg:pt-24"
+                    className="absolute top-0 left-0 w-full h-[65%] lg:static lg:h-auto lg:order-2 flex items-center justify-center z-0 lg:z-10 pt-20 lg:pt-0"
                 >
                     <div className="relative w-full h-full flex items-center justify-center lg:justify-end">
                          {/* Asset Wrapper: Reduced max-width on desktop to 400px (was 480px) to decrease scale */}
@@ -211,7 +212,8 @@ const Hero: React.FC<HeroProps> = ({ onOpenVideo }) => {
 
                 {/* --- TEXT SECTION --- */}
                 {/* Mobile: Absolute Bottom Overlay. Increased pb to push buttons up away from scroll indicator. */}
-                <div className="absolute bottom-0 left-0 w-full lg:static lg:w-auto z-20 lg:order-1 flex flex-col items-center lg:items-start text-center lg:text-left pb-24 pt-12 px-6 bg-gradient-to-t from-[#030205] via-[#030205]/60 to-transparent lg:bg-none">
+                {/* Desktop: Removed padding to allow grid centering to work perfectly */}
+                <div className="absolute bottom-0 left-0 w-full lg:static lg:w-auto z-20 lg:order-1 flex flex-col items-center lg:items-start text-center lg:text-left pb-24 pt-12 px-6 lg:py-0 lg:px-0 bg-gradient-to-t from-[#030205] via-[#030205]/60 to-transparent lg:bg-none">
                     
                     <motion.div
                         initial={{ opacity: 0, y: 15 }}
