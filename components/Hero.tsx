@@ -312,7 +312,7 @@ const Hero: React.FC<HeroProps> = ({ onOpenVideo }) => {
                      />
                  </div>
             </motion.div>
-
+        </div>
     </section>
   );
 };
