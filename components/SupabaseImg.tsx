@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { getAssetUrl } from '../utils/supabaseClient';
 import { ImageOff } from 'lucide-react';
 
@@ -9,18 +9,16 @@ interface SupabaseImgProps extends React.ImgHTMLAttributes<HTMLImageElement> {
 }
 
 export const SupabaseImg: React.FC<SupabaseImgProps> = ({ filename, alt, className, fallback, ...props }) => {
-    const [src, setSrc] = useState<string>('');
+    // Generate URL synchronously/immediately to start fetching as soon as possible
+    const src = useMemo(() => filename ? getAssetUrl(filename) : '', [filename]);
     const [error, setError] = useState(false);
 
+    // Reset error state if filename changes
     useEffect(() => {
-        if (filename) {
-            const url = getAssetUrl(filename);
-            setSrc(url);
-            setError(false);
-        }
+        setError(false);
     }, [filename]);
 
-    if (error) {
+    if (error || !src) {
         if (fallback) return <>{fallback}</>;
         
         // Default fallback: A subtle placeholder box
@@ -39,7 +37,7 @@ export const SupabaseImg: React.FC<SupabaseImgProps> = ({ filename, alt, classNa
             className={className} 
             onError={(e) => {
                 console.warn(`[SupabaseImg] Failed to load image: ${filename}`);
-                console.warn(`Check if the bucket 'assets' exists in Supabase and is set to PUBLIC.`);
+                // Don't warn about bucket here, just set error state
                 setError(true);
             }}
             {...props} 

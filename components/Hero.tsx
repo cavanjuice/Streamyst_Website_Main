@@ -205,6 +205,9 @@ const Hero: React.FC<HeroProps> = ({ onOpenVideo }) => {
                                filename="DSC006262.webp"
                                alt="Streamyst Wearable Tech"
                                className="relative z-10 h-full w-auto object-contain lg:w-full lg:h-auto animate-float"
+                               // @ts-ignore
+                               fetchPriority="high"
+                               loading="eager"
                              />
                          </div>
                     </div>
@@ -276,40 +279,39 @@ const Hero: React.FC<HeroProps> = ({ onOpenVideo }) => {
                 </div>
 
             </div>
-        </div>
 
-        {/* Scroll Hint (Desktop) */}
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: hasScrolled ? 0 : 1 }}
-            transition={{ delay: hasScrolled ? 0 : 1.5, duration: hasScrolled ? 0.3 : 1 }}
-            className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 hidden md:flex flex-col items-center gap-2 pointer-events-none"
-        >
-            <span className="text-[9px] uppercase tracking-[0.2em] text-white/40 font-medium">Scroll</span>
-            <div className="w-[1px] h-12 bg-white/10 relative overflow-hidden">
-                <motion.div 
-                    animate={{ y: ["-100%", "100%"] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-                    className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-transparent via-violet-400 to-transparent"
-                />
-            </div>
-        </motion.div>
+            {/* Scroll Hint (Desktop) */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: hasScrolled ? 0 : 1 }}
+                transition={{ delay: hasScrolled ? 0 : 1.5, duration: hasScrolled ? 0.3 : 1 }}
+                className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 hidden md:flex flex-col items-center gap-2 pointer-events-none"
+            >
+                <span className="text-[9px] uppercase tracking-[0.2em] text-white/40 font-medium">Scroll</span>
+                <div className="w-[1px] h-12 bg-white/10 relative overflow-hidden">
+                    <motion.div 
+                        animate={{ y: ["-100%", "100%"] }}
+                        transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                        className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-transparent via-violet-400 to-transparent"
+                    />
+                </div>
+            </motion.div>
 
-        {/* Scroll Hint (Mobile) */}
-        <motion.div
-             initial={{ opacity: 0 }}
-             animate={{ opacity: hasScrolled ? 0 : 1 }}
-             transition={{ delay: hasScrolled ? 0 : 1.5, duration: hasScrolled ? 0.3 : 1 }}
-             className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 md:hidden flex flex-col items-center pointer-events-none"
-        >
-             <div className="w-5 h-8 border border-white/20 rounded-full flex justify-center p-1.5 backdrop-blur-sm">
-                 <motion.div 
-                     animate={{ y: [0, 8, 0] }}
-                     transition={{ duration: 1.5, repeat: Infinity }}
-                     className="w-1 h-1 bg-white rounded-full"
-                 />
-             </div>
-        </motion.div>
+            {/* Scroll Hint (Mobile) */}
+            <motion.div
+                 initial={{ opacity: 0 }}
+                 animate={{ opacity: hasScrolled ? 0 : 1 }}
+                 transition={{ delay: hasScrolled ? 0 : 1.5, duration: hasScrolled ? 0.3 : 1 }}
+                 className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 md:hidden flex flex-col items-center pointer-events-none"
+            >
+                 <div className="w-5 h-8 border border-white/20 rounded-full flex justify-center p-1.5 backdrop-blur-sm">
+                     <motion.div 
+                         animate={{ y: [0, 8, 0] }}
+                         transition={{ duration: 1.5, repeat: Infinity }}
+                         className="w-1 h-1 bg-white rounded-full"
+                     />
+                 </div>
+            </motion.div>
 
     </section>
   );
