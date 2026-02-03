@@ -401,7 +401,7 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: -5 }}
                                             transition={{ duration: 0.3 }}
-                                            className="relative lg:absolute top-0 left-0 w-full text-lg lg:text-3xl font-display font-bold leading-tight text-white"
+                                            className="relative lg:absolute -top-[10px] left-0 w-full text-lg lg:text-3xl font-display font-bold leading-tight text-white"
                                         >
                                             {leveledUp ? (isStreamer ? "Maximum Sync" : "Full Presence") : "Disconnected State"}
                                         </motion.h3>
@@ -416,7 +416,7 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                                             animate={{ opacity: 1 }}
                                             exit={{ opacity: 0 }}
                                             transition={{ duration: 0.3 }}
-                                            className="relative lg:absolute top-[5px] left-0 w-full text-gray-400 text-[9px] lg:text-sm leading-relaxed font-light"
+                                            className="relative lg:absolute top-[5px] left-0 w-full text-gray-400 text-[7px] lg:text-[10px] leading-relaxed font-light"
                                         >
                                             {currentState.desc}
                                         </motion.p>
