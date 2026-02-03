@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback, memo, useTransition } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import ExperienceToggle from './components/ExperienceToggle';
@@ -32,6 +32,19 @@ import { Ghost, Radio } from 'lucide-react';
 
 // Define the View Type including new legal pages
 type ViewState = 'home' | 'about' | 'survey' | 'legal-notice' | 'privacy' | 'terms' | 'accessibility';
+
+// --- MEMOIZED COMPONENTS ---
+// Wrapping heavy components to prevent re-renders when parent state (like 'role') changes but props don't.
+const MemoizedNavbar = memo(Navbar);
+const MemoizedHero = memo(Hero);
+const MemoizedParticleBackground = memo(ParticleBackground);
+const MemoizedHowItWorks = memo(HowItWorks);
+const MemoizedFeaturesShowcase = memo(FeaturesShowcase);
+const MemoizedProductShowcase = memo(ProductShowcase);
+const MemoizedInteractiveDemo = memo(InteractiveDemo);
+const MemoizedSingleStatShowcase = memo(SingleStatShowcase);
+const MemoizedWaitlist = memo(Waitlist);
+const MemoizedFooter = memo(Footer);
 
 const FloatingRoleToggle: React.FC<{ role: 'streamer' | 'viewer', setRole: (r: 'streamer' | 'viewer') => void }> = ({ role, setRole }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -120,16 +133,28 @@ const FloatingRoleToggle: React.FC<{ role: 'streamer' | 'viewer', setRole: (r: '
 };
 
 const App: React.FC = () => {
+  // UI State: Updates instantly for responsive buttons
   const [role, setRole] = useState<'streamer' | 'viewer'>('streamer');
+  
+  // Content State: Updates via Transition to prevent UI freeze
+  const [contentRole, setContentRole] = useState<'streamer' | 'viewer'>('streamer');
+  const [isPending, startTransition] = useTransition();
+
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [currentView, setCurrentView] = useState<ViewState>('home');
-  // Use a ref instead of state to avoid re-render loops and stale closures during effects
   const pendingScrollRef = useRef<string | null>(null);
   const [userEmail, setUserEmail] = useState('');
   const [isCookieBannerOpen, setIsCookieBannerOpen] = useState(false);
 
-  // Consolidated Navigation Handler
-  const handleNavigation = (view: ViewState, id?: string) => {
+  // Sync contentRole with role using transition
+  useEffect(() => {
+    startTransition(() => {
+      setContentRole(role);
+    });
+  }, [role]);
+
+  // Consolidated Navigation Handler - Memoized to prevent Navbar re-renders
+  const handleNavigation = useCallback((view: ViewState, id?: string) => {
       // Case 1: Already on the view, just scroll to ID
       if (currentView === view) {
           if (id) {
@@ -146,7 +171,16 @@ const App: React.FC = () => {
           }
           setCurrentView(view); // Trigger view change
       }
-  };
+  }, [currentView]);
+
+  // Callbacks for memoized components
+  const handleOpenVideo = useCallback(() => setIsVideoOpen(true), []);
+  const handleCloseVideo = useCallback(() => setIsVideoOpen(false), []);
+  const handleJoinSurvey = useCallback((email: string) => { 
+        if (email) setUserEmail(email); 
+        setCurrentView('survey'); 
+  }, []);
+  const handleOpenCookieSettings = useCallback(() => setIsCookieBannerOpen(true), []);
 
   // Effect to handle scrolling logic after view changes
   useEffect(() => {
@@ -218,18 +252,25 @@ const App: React.FC = () => {
       default:
         return (
           <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
-              <Hero onOpenVideo={() => setIsVideoOpen(true)} />
-              <ProblemStatement role={role} />
+              <MemoizedHero onOpenVideo={handleOpenVideo} />
+              {/* Pass contentRole to heavy sections to delay their update */}
+              <ProblemStatement role={contentRole} />
+              
+              {/* ExperienceToggle needs instant feedback for the pill, but might render heavy content. 
+                  We pass 'role' (instant) for the pill/buttons, but consider separating internal content if needed.
+                  For now, let's keep it responsive. */}
               <ExperienceToggle role={role} setRole={setRole} />
+              
               {/* FloatingRoleToggle moved to root App level to fix positioning context */}
-              <ProblemSection role={role} />
-              <SolutionSection role={role} />
-              <HowItWorks />
-              <FeaturesShowcase />
-              <ProductShowcase />
-              <InteractiveDemo />
-              <SingleStatShowcase />
-              <Waitlist onJoinSurvey={(email) => { if (email) setUserEmail(email); setCurrentView('survey'); }} />
+              <ProblemSection role={contentRole} />
+              <SolutionSection role={contentRole} />
+              
+              <MemoizedHowItWorks />
+              <MemoizedFeaturesShowcase />
+              <MemoizedProductShowcase />
+              <MemoizedInteractiveDemo />
+              <MemoizedSingleStatShowcase />
+              <MemoizedWaitlist onJoinSurvey={handleJoinSurvey} />
           </motion.div>
         );
     }
@@ -237,7 +278,7 @@ const App: React.FC = () => {
 
   return (
     <div className="relative w-full min-h-screen bg-cosmic-950 text-white selection:bg-cyan-500/30 overflow-x-hidden">
-      <ParticleBackground />
+      <MemoizedParticleBackground />
       <GDPRBanner 
         forceOpen={isCookieBannerOpen} 
         onCloseForce={() => setIsCookieBannerOpen(false)} 
@@ -245,7 +286,7 @@ const App: React.FC = () => {
       
       {/* Navbar Logic - Using handleNavigation for consistent behavior */}
       {(currentView === 'home' || currentView === 'about') && (
-        <Navbar 
+        <MemoizedNavbar 
           currentView={currentView}
           onNavigate={(view, id) => handleNavigation(view as any, id)} 
         />
@@ -267,13 +308,13 @@ const App: React.FC = () => {
 
       {/* Show Footer only on Home/About/Legal pages, generally hidden on full-screen flows like Survey */}
       {currentView !== 'survey' && (
-        <Footer 
+        <MemoizedFooter 
             onNavigate={(view) => setCurrentView(view)} 
-            onOpenCookieSettings={() => setIsCookieBannerOpen(true)}
+            onOpenCookieSettings={handleOpenCookieSettings}
         />
       )}
       
-      <VideoModal isOpen={isVideoOpen} onClose={() => setIsVideoOpen(false)} />
+      <VideoModal isOpen={isVideoOpen} onClose={handleCloseVideo} />
     </div>
   );
 };

@@ -23,10 +23,17 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
         getAssetUrl("wearable_1.webp"),
         getAssetUrl("viewerhappy.webp")
     ];
-    imgUrls.forEach(url => {
-        const img = new Image();
-        img.src = url;
-    });
+    // Deferred load to not block main thread
+    const t = setTimeout(() => {
+        imgUrls.forEach(url => {
+            const img = new Image();
+            img.src = url;
+            if ('decode' in img) {
+                img.decode().catch(() => {});
+            }
+        });
+    }, 2500);
+    return () => clearTimeout(t);
   }, []);
   
   // Section Scroll Logic for Auto-Level Up
@@ -225,7 +232,8 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
         </div>
 
         {/* 3D EVOLUTION CARD */}
-        <div className="relative perspective-1000 mx-auto mt-8" style={{ width: 'min(100%, 750px)' }}>
+        {/* Scaled down container width from 750px to 600px for desktop */}
+        <div className="relative perspective-1000 mx-auto mt-8" style={{ width: 'min(100%, 600px)' }}>
              <motion.div 
                 ref={cardRef}
                 initial={{ opacity: 0, scale: 0.9, rotateX: 10 }}
@@ -239,42 +247,42 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                     rotateY,
                     transformStyle: "preserve-3d"
                 }}
-                // Reduced minimum height to force overflow interaction
-                className="relative w-full group min-h-[460px] lg:min-h-[420px]"
+                // Reduced minimum height from 420px to 340px for desktop to maintain ratio
+                className="relative w-full group min-h-[400px] lg:min-h-[340px]"
              >
                 {/* --- FLOATING HEADER PANELS (OUTSIDE CARD) --- */}
                 
-                {/* Level Badge - Top Left Outside */}
+                {/* Level Badge - Top Left Outside - Scaled Down */}
                 <motion.div 
                     layout
-                    className={`absolute -top-6 left-4 lg:-top-8 lg:-left-6 z-40 flex items-center gap-3 px-5 py-2.5 rounded-full border backdrop-blur-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] transform-gpu ${
+                    className={`absolute -top-5 left-4 lg:-top-6 lg:-left-4 z-40 flex items-center gap-2 px-4 py-2 rounded-full border backdrop-blur-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] transform-gpu ${
                         leveledUp 
                             ? (isStreamer ? 'bg-[#1e1b2e] border-violet-500/50 text-white' : 'bg-[#2e1b1b] border-orange-500/50 text-white')
                             : 'bg-[#0A0A0B] border-white/10 text-gray-500'
                     }`}
                 >
-                    <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Lvl</span>
+                    <span className="text-[9px] font-bold uppercase tracking-widest opacity-60">Lvl</span>
                     <motion.span 
                         key={currentState.level}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="font-mono text-xl font-bold leading-none"
+                        className="font-mono text-lg font-bold leading-none"
                     >
                         {currentState.level}
                     </motion.span>
                 </motion.div>
 
-                {/* Rank Badge - Top Right Outside */}
+                {/* Rank Badge - Top Right Outside - Scaled Down */}
                 <motion.div 
                     layout
-                    className={`absolute -top-6 right-4 lg:-top-8 lg:-right-6 z-40 flex items-center gap-2 px-5 py-2.5 rounded-full border backdrop-blur-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] transform-gpu ${
+                    className={`absolute -top-5 right-4 lg:-top-6 lg:-right-4 z-40 flex items-center gap-2 px-4 py-2 rounded-full border backdrop-blur-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] transform-gpu ${
                         leveledUp 
                             ? (isStreamer ? 'bg-[#1e1b2e] border-violet-500/50 text-violet-200' : 'bg-[#2e1b1b] border-orange-500/50 text-orange-200')
                             : 'bg-[#0A0A0B] border-white/10 text-gray-500'
                     }`}
                 >
-                    {leveledUp ? <Crown size={14} /> : <Activity size={14} />}
-                    <motion.span layout className="text-xs font-bold uppercase tracking-widest">{currentState.rank}</motion.span>
+                    {leveledUp ? <Crown size={12} /> : <Activity size={12} />}
+                    <motion.span layout className="text-[10px] font-bold uppercase tracking-widest">{currentState.rank}</motion.span>
                 </motion.div>
 
                 {/* --- CARD BACKGROUND --- */}
@@ -316,8 +324,8 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                     {/* LEFT: CHARACTER VISUAL */}
                     <div className="relative h-[280px] lg:h-auto w-full flex items-end justify-center lg:justify-start order-1 lg:order-none pointer-events-none">
                         
-                        {/* Wrapper to align image - Increased height relative to container to ensure overflow */}
-                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 lg:-left-12 lg:translate-x-0 w-[140%] max-w-[360px] lg:max-w-none lg:w-[130%] h-[160%] lg:h-[180%] z-30">
+                        {/* Wrapper to align image - Adjusted left offset for smaller width */}
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 lg:-left-8 lg:translate-x-0 w-[140%] max-w-[360px] lg:max-w-none lg:w-[130%] h-[160%] lg:h-[180%] z-30">
                              <AnimatePresence mode="wait">
                                 {leveledUp && isStreamer ? (
                                     streamerImages.map((src, index) => (
@@ -377,13 +385,13 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                         </div>
                     </div>
 
-                    {/* RIGHT: STATS & CONTROLS */}
-                    <div className="relative z-30 p-8 lg:p-12 flex flex-col justify-center h-full order-2 lg:order-none pointer-events-none">
+                    {/* RIGHT: STATS & CONTROLS - Scaled padding down */}
+                    <div className="relative z-30 p-6 lg:p-8 flex flex-col justify-center h-full order-2 lg:order-none pointer-events-none">
                         
-                        <div className="flex flex-col gap-6 lg:gap-8 pointer-events-auto">
+                        <div className="flex flex-col gap-5 lg:gap-6 pointer-events-auto">
                             {/* HEADER - Tightened height and margin */}
                             <div>
-                                <div className="h-[40px] lg:h-[48px] mb-4 relative">
+                                <div className="h-[32px] lg:h-[40px] mb-3 relative">
                                     <AnimatePresence mode="wait">
                                         <motion.h3 
                                             key={leveledUp ? 'up' : 'down'}
@@ -391,14 +399,14 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: -5 }}
                                             transition={{ duration: 0.3 }}
-                                            className="absolute top-0 left-0 w-full text-3xl lg:text-4xl font-display font-bold leading-tight text-white"
+                                            className="absolute top-0 left-0 w-full text-2xl lg:text-3xl font-display font-bold leading-tight text-white"
                                         >
                                             {leveledUp ? (isStreamer ? "Maximum Sync" : "Full Presence") : "Disconnected State"}
                                         </motion.h3>
                                     </AnimatePresence>
                                 </div>
                                 
-                                <div className="h-[48px] relative">
+                                <div className="h-[40px] relative">
                                     <AnimatePresence mode="wait">
                                         <motion.p 
                                             key={currentState.desc}
@@ -406,7 +414,7 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                                             animate={{ opacity: 1 }}
                                             exit={{ opacity: 0 }}
                                             transition={{ duration: 0.3 }}
-                                            className="absolute top-[10px] left-0 w-full text-gray-400 text-sm leading-relaxed font-light"
+                                            className="absolute top-[5px] left-0 w-full text-gray-400 text-xs lg:text-sm leading-relaxed font-light"
                                         >
                                             {currentState.desc}
                                         </motion.p>
@@ -415,10 +423,10 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                             </div>
 
                             {/* STATS BARS */}
-                            <div className="space-y-4">
+                            <div className="space-y-3">
                                 {currentState.stats.map((stat, i) => (
                                     <div key={i}>
-                                        <div className="flex justify-between items-end mb-1.5 text-[10px]">
+                                        <div className="flex justify-between items-end mb-1 text-[10px]">
                                             <span className="font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
                                                 {stat.icon} {stat.label}
                                             </span>
@@ -431,7 +439,7 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                                                 {stat.value}/100
                                             </motion.span>
                                         </div>
-                                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                        <div className="h-1 lg:h-1.5 bg-white/5 rounded-full overflow-hidden">
                                             <motion.div 
                                                 initial={{ width: 0 }}
                                                 animate={{ width: `${stat.value}%` }}
@@ -449,8 +457,8 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                                 ))}
                             </div>
 
-                            {/* FEATURE GRID */}
-                            <div className="grid grid-cols-3 gap-3">
+                            {/* FEATURE GRID - Scaled Padding */}
+                            <div className="grid grid-cols-3 gap-2">
                                 {(currentRoleData.after.features || []).map((feat, i) => (
                                     <motion.div 
                                         key={i} 
@@ -458,7 +466,7 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.2 + (i * 0.1) }}
                                         className={`
-                                            rounded-xl p-3 border transition-all duration-500 relative overflow-hidden group text-center flex flex-col items-center justify-center gap-2
+                                            rounded-lg p-2 border transition-all duration-500 relative overflow-hidden group text-center flex flex-col items-center justify-center gap-1.5
                                             ${leveledUp 
                                                 ? 'bg-white/5 border-white/10 hover:bg-white/10' 
                                                 : 'bg-black/20 border-white/5 opacity-40 grayscale'
@@ -472,25 +480,25 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                                         )}
 
                                         <div className={`${leveledUp ? (isStreamer ? 'text-violet-400' : 'text-orange-400') : 'text-gray-600'}`}>
-                                            <feat.icon size={18} />
+                                            <feat.icon size={16} />
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className={`font-bold text-[10px] uppercase tracking-wide ${leveledUp ? 'text-white' : 'text-gray-600'}`}>
+                                            <span className={`font-bold text-[9px] uppercase tracking-wide ${leveledUp ? 'text-white' : 'text-gray-600'}`}>
                                                 {feat.label}
                                             </span>
-                                            <span className="text-[9px] text-gray-500 hidden lg:block">{feat.sub}</span>
+                                            <span className="text-[8px] text-gray-500 hidden lg:block">{feat.sub}</span>
                                         </div>
                                     </motion.div>
                                 ))}
                             </div>
 
-                            {/* ACTION BUTTON */}
+                            {/* ACTION BUTTON - Scaled Padding */}
                             <motion.button
                                 layout
                                 onClick={toggleLevelUp}
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
-                                className={`w-full py-4 rounded-xl font-bold text-xs tracking-[0.2em] uppercase overflow-hidden transition-all duration-300 relative group ${
+                                className={`w-full py-3 rounded-xl font-bold text-xs tracking-[0.2em] uppercase overflow-hidden transition-all duration-300 relative group ${
                                     leveledUp 
                                         ? 'bg-white/5 text-gray-400 hover:bg-white/10 border border-white/10' 
                                         : (isStreamer 

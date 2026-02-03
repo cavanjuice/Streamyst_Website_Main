@@ -179,25 +179,34 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
             {/* LEFT: VIDEO PLAYER */}
             <div className="flex-1 relative bg-black overflow-hidden flex flex-col justify-between group/video min-h-[200px] lg:min-h-0">
                 
-                {/* Video Simulation */}
+                {/* 
+                   OPTIMIZED VIDEO RENDERING:
+                   Instead of swapping the <source> tag which forces a heavy reload,
+                   we render BOTH videos and toggle opacity. 
+                   This keeps both video decoders active/hot.
+                */}
                 <div className="absolute inset-0 opacity-70">
                      <video
-                        key={role} // Force reload on role change
                         autoPlay
                         loop
                         muted
                         playsInline
-                        className={`w-full h-full object-cover transition-transform duration-[20s] ease-linear ${mode === 'overload' ? 'scale-110' : 'scale-100'}`}
+                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${role === 'streamer' ? 'opacity-100 z-10' : 'opacity-0 z-0'} ${mode === 'overload' ? 'scale-110' : 'scale-100'} transition-transform duration-[20s] ease-linear`}
                      >
-                        <source 
-                            src={role === 'streamer' 
-                                ? "https://ssdjhkdkoqgmysgncfqa.supabase.co/storage/v1/object/public/assetscompressed/streamersad.mp4" 
-                                : "https://ssdjhkdkoqgmysgncfqa.supabase.co/storage/v1/object/public/assetscompressed/viewersad.mp4"
-                            } 
-                            type="video/mp4" 
-                        />
+                        <source src="https://ssdjhkdkoqgmysgncfqa.supabase.co/storage/v1/object/public/assetscompressed/streamersad.mp4" type="video/mp4" />
                      </video>
-                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/60" />
+                     
+                     <video
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${role === 'viewer' ? 'opacity-100 z-10' : 'opacity-0 z-0'} ${mode === 'overload' ? 'scale-110' : 'scale-100'} transition-transform duration-[20s] ease-linear`}
+                     >
+                        <source src="https://ssdjhkdkoqgmysgncfqa.supabase.co/storage/v1/object/public/assetscompressed/viewersad.mp4" type="video/mp4" />
+                     </video>
+
+                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/60 z-20" />
                 </div>
 
                 {/* --- VIDEO OVERLAYS --- */}
