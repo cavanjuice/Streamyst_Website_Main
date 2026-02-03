@@ -35,14 +35,14 @@ const emotions: EmotionData[] = [
   { id: 'clap', label: "Support", emoji: "👏", color: "text-yellow-400", hex: "#facc15" }
 ];
 
-const staticImage = getAssetUrl("originalcharacter.png");
+const staticImage = getAssetUrl("originalcharacter.webp");
 
 const emotionImages: Record<Emotion, string> = {
-  happy: getAssetUrl("joy2.png"),
-  love: getAssetUrl("love2.png"),
-  hype: getAssetUrl("hype2.png"),
-  shock: getAssetUrl("shock2.png"),
-  clap: getAssetUrl("support2.png")
+  happy: getAssetUrl("joy2.webp"),
+  love: getAssetUrl("love2.webp"),
+  hype: getAssetUrl("hype2.webp"),
+  shock: getAssetUrl("shock2.webp"),
+  clap: getAssetUrl("support2.webp")
 };
 
 // Sentiment Analysis Simulation Data

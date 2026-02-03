@@ -46,7 +46,7 @@ const Waitlist: React.FC<WaitlistProps> = ({ onJoinSurvey }) => {
 
             <div className="lg:w-1/2 relative min-h-[250px] lg:min-h-full bg-cosmic-800 overflow-hidden group">
                 <SupabaseImg 
-                    filename="preview (2).webp" 
+                    filename="preview(2).webp" 
                     alt="Streamers connecting" 
                     className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-[2000ms] ease-out"
                 />

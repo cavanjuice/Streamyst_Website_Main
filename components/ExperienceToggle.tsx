@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { EyeOff, MessageSquare, Settings, Frown, Ghost, Lock, BatteryWarning, MonitorStop } from 'lucide-react';
 import { SupabaseImg } from './SupabaseImg';
+import { getAssetUrl } from '../utils/supabaseClient';
 
 type Role = 'streamer' | 'viewer';
 
@@ -56,6 +57,18 @@ const SpotlightCard: React.FC<{ children: React.ReactNode; index: number; classN
 const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Preload images to prevent flickering when switching roles
+  useEffect(() => {
+    const imagesToPreload = [
+        getAssetUrl("streamersad.webp"),
+        getAssetUrl("viewersad.webp")
+    ];
+    imagesToPreload.forEach(url => {
+        const img = new Image();
+        img.src = url;
+    });
+  }, []);
 
   const problems = {
     streamer: {
@@ -223,7 +236,7 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
                          <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] md:w-[240px] md:h-[240px] rounded-full blur-[50px] lg:blur-[60px] opacity-40 ${role === 'streamer' ? 'bg-violet-600' : 'bg-orange-600'}`} />
 
                          <SupabaseImg 
-                             filename={role === 'streamer' ? "streamersad.png" : "viewersad.png"}
+                             filename={role === 'streamer' ? "streamersad.webp" : "viewersad.webp"}
                              alt={role}
                              className="relative z-10 w-full h-full object-contain drop-shadow-[0_0_25px_rgba(0,0,0,0.6)] grayscale-[20%] contrast-125"
                          />

@@ -202,7 +202,7 @@ const Hero: React.FC<HeroProps> = ({ onOpenVideo }) => {
                              </div>
 
                              <SupabaseImg 
-                               filename="DSC006262.png"
+                               filename="DSC006262.webp"
                                alt="Streamyst Wearable Tech"
                                className="relative z-10 h-full w-auto object-contain lg:w-full lg:h-auto animate-float"
                              />

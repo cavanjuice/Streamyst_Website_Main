@@ -1,10 +1,9 @@
-
 // @ts-nocheck
 import React, { useState, Suspense, useMemo, useRef, Component, ReactNode, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Canvas, useLoader, useFrame } from '@react-three/fiber';
+import { Canvas, useLoader, useFrame, useThree } from '@react-three/fiber';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
-import { OrbitControls, Center, Resize, Environment } from '@react-three/drei';
+import { OrbitControls, Center, Resize, Environment, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { Loader2, Eye, Zap, Sun } from 'lucide-react';
 import { supabase } from '../utils/supabaseClient';
@@ -180,17 +179,9 @@ const FallbackModel = ({ activeFeature }: { activeFeature: number | null }) => {
     )
 }
 
-// Inner Component that actually loads the model using Suspense
-const LoadedVybeModel = ({ url, activeFeature }: { url: string, activeFeature: number | null }) => {
-  const obj = useLoader(OBJLoader, url);
-  const meshRef = useRef<THREE.Group>(null);
-  
-  const materialsMap = useRef<Map<string, THREE.MeshPhysicalMaterial>>(new Map());
-
-  useMemo(() => {
-    materialsMap.current.clear();
-    
-    obj.traverse((child) => {
+// SHARED MATERIAL LOGIC
+const applyMaterials = (object: THREE.Object3D) => {
+    object.traverse((child) => {
       if (child instanceof THREE.Mesh) {
          // High quality dark metallic material
          const mat = new THREE.MeshPhysicalMaterial({
@@ -247,84 +238,135 @@ const LoadedVybeModel = ({ url, activeFeature }: { url: string, activeFeature: n
          child.material = mat;
          child.castShadow = true;
          child.receiveShadow = true;
-         materialsMap.current.set(child.name, mat);
+         // Store reference to material for updates
+         child.userData.materialRef = mat;
       }
     });
-  }, [obj]);
-
-  useFrame((state) => {
-    const t = state.clock.elapsedTime;
-
-    if (meshRef.current) {
-        let rotY = Math.sin(t * 0.5) * 0.15;
-        let scale = 1;
-
-        if (activeFeature === 2) {
-             const pulseSpeed = 15; 
-             scale = 1 + Math.max(0, Math.sin(t * pulseSpeed)) * 0.03;
-        }
-
-        meshRef.current.rotation.y = rotY;
-        meshRef.current.scale.set(scale, scale, scale);
-        meshRef.current.position.set(0, 0, 0);
-    }
-
-    materialsMap.current.forEach((mat) => {
-        let targetColor = new THREE.Color(0, 0, 0);
-        let targetIntensity = 0;
-        let targetGradientStrength = 0;
-
-        if (activeFeature === 1) {
-            targetColor = new THREE.Color('#ffffff'); 
-            targetIntensity = 0.05 + (Math.sin(t * 2.5) + 1) * 0.2; 
-            targetGradientStrength = 1;
-        }
-
-        const lerpSpeed = activeFeature === 2 ? 0.5 : 0.1;
-        mat.emissive.lerp(targetColor, lerpSpeed);
-        mat.emissiveIntensity = THREE.MathUtils.lerp(mat.emissiveIntensity, targetIntensity, lerpSpeed);
-
-        if (mat.userData.shader) {
-            mat.userData.shader.uniforms.uTime.value = t;
-            if (typeof mat.userData.gradientStrength === 'undefined') mat.userData.gradientStrength = 0;
-            mat.userData.gradientStrength = THREE.MathUtils.lerp(
-                mat.userData.gradientStrength, 
-                targetGradientStrength, 
-                0.1
-            );
-            mat.userData.shader.uniforms.uGradientStrength.value = mat.userData.gradientStrength;
-            mat.userData.shader.uniforms.uEmissiveIntensity.value = mat.emissiveIntensity;
-        }
-    });
-  });
-
-  return (
-    <group>
-        <Center>
-            <group ref={meshRef}>
-                <Resize scale={4}>
-                    <primitive object={obj} rotation={[Math.PI / 2, 0, 0]} />
-                </Resize>
-            </group>
-        </Center>
-        
-        {activeFeature === 0 && <SentimentLights />}
-        {activeFeature === 2 && <HapticRings />}
-        {activeFeature !== 0 && <MovingHighlight color={null} />}
-    </group>
-  );
 };
 
-// Wrapper that checks URL validity before attempting to load
+// SHARED ANIMATION LOOP
+const useModelAnimation = (scene: THREE.Group | THREE.Object3D, activeFeature: number | null, meshRef: React.RefObject<THREE.Group>) => {
+    useFrame((state) => {
+        const t = state.clock.elapsedTime;
+
+        if (meshRef.current) {
+            let rotY = Math.sin(t * 0.5) * 0.15;
+            let scale = 1;
+
+            if (activeFeature === 2) {
+                 const pulseSpeed = 15; 
+                 scale = 1 + Math.max(0, Math.sin(t * pulseSpeed)) * 0.03;
+            }
+
+            meshRef.current.rotation.y = rotY;
+            meshRef.current.scale.set(scale, scale, scale);
+            meshRef.current.position.set(0, 0, 0);
+        }
+
+        scene.traverse((child) => {
+            if (child instanceof THREE.Mesh && child.userData.materialRef) {
+                const mat = child.userData.materialRef;
+                let targetColor = new THREE.Color(0, 0, 0);
+                let targetIntensity = 0;
+                let targetGradientStrength = 0;
+
+                if (activeFeature === 1) {
+                    targetColor = new THREE.Color('#ffffff'); 
+                    targetIntensity = 0.05 + (Math.sin(t * 2.5) + 1) * 0.2; 
+                    targetGradientStrength = 1;
+                }
+
+                const lerpSpeed = activeFeature === 2 ? 0.5 : 0.1;
+                mat.emissive.lerp(targetColor, lerpSpeed);
+                mat.emissiveIntensity = THREE.MathUtils.lerp(mat.emissiveIntensity, targetIntensity, lerpSpeed);
+
+                if (mat.userData.shader) {
+                    mat.userData.shader.uniforms.uTime.value = t;
+                    if (typeof mat.userData.gradientStrength === 'undefined') mat.userData.gradientStrength = 0;
+                    mat.userData.gradientStrength = THREE.MathUtils.lerp(
+                        mat.userData.gradientStrength, 
+                        targetGradientStrength, 
+                        0.1
+                    );
+                    mat.userData.shader.uniforms.uGradientStrength.value = mat.userData.gradientStrength;
+                    mat.userData.shader.uniforms.uEmissiveIntensity.value = mat.emissiveIntensity;
+                }
+            }
+        });
+    });
+};
+
+// --- LOADER FOR OBJ FILES ---
+const OBJModel = ({ url, activeFeature }: { url: string, activeFeature: number | null }) => {
+    const obj = useLoader(OBJLoader, url);
+    const meshRef = useRef<THREE.Group>(null);
+    
+    useMemo(() => applyMaterials(obj), [obj]);
+    useModelAnimation(obj, activeFeature, meshRef);
+
+    return (
+        <group ref={meshRef}>
+            <Resize scale={4}>
+                <primitive object={obj} rotation={[Math.PI / 2, 0, 0]} />
+            </Resize>
+        </group>
+    );
+}
+
+// --- LOADER FOR GLB FILES (With Draco Support) ---
+const GLBModel = ({ url, activeFeature }: { url: string, activeFeature: number | null }) => {
+    // Enable Draco with default decoder (from CDN)
+    const { scene } = useGLTF(url, true);
+    const meshRef = useRef<THREE.Group>(null);
+
+    useMemo(() => applyMaterials(scene), [scene]);
+    useModelAnimation(scene, activeFeature, meshRef);
+
+    return (
+        <group ref={meshRef}>
+            <Resize scale={4}>
+                <primitive object={scene} rotation={[Math.PI / 2, 0, 0]} />
+            </Resize>
+        </group>
+    );
+}
+
+// --- MAIN WRAPPER COMPONENT ---
+const LoadedVybeModel = ({ url, activeFeature }: { url: string, activeFeature: number | null }) => {
+    // Determine type based on extension
+    const isGLB = url.toLowerCase().includes('.glb') || url.toLowerCase().includes('.gltf');
+
+    return (
+        <group>
+            <Center>
+                {isGLB ? (
+                    <GLBModel url={url} activeFeature={activeFeature} />
+                ) : (
+                    <OBJModel url={url} activeFeature={activeFeature} />
+                )}
+            </Center>
+            
+            {activeFeature === 0 && <SentimentLights />}
+            {activeFeature === 2 && <HapticRings />}
+            {activeFeature !== 0 && <MovingHighlight color={null} />}
+        </group>
+    );
+};
+
 const VybeModel = ({ activeFeature }: { activeFeature: number | null }) => {
     const [modelUrl, setModelUrl] = useState<string | null>(null);
     const [error, setError] = useState(false);
 
     useEffect(() => {
-        const { data } = supabase.storage.from('assets').getPublicUrl('Assembly vybe 3.obj');
+        // --- CONFIGURATION ---
+        // Change this filename to point to a GLB/Draco file if you upload one.
+        // Current: 'Assembly vybe 3.obj' (OBJ)
+        // Option: 'assembly_model_3.glb' (GLB/Draco)
+        const FILENAME = 'Assembly vybe 3.obj'; 
+        
+        const { data } = supabase.storage.from('assets').getPublicUrl(FILENAME);
         const url = data.publicUrl;
 
-        // Perform a HEAD request to verify existence and avoid "Uncaught Error" from Loader
         const checkUrl = async () => {
             try {
                 const res = await fetch(url, { method: 'HEAD' });
@@ -344,7 +386,7 @@ const VybeModel = ({ activeFeature }: { activeFeature: number | null }) => {
     }, []);
 
     if (error) return <FallbackModel activeFeature={activeFeature} />;
-    if (!modelUrl) return null; // Wait for check to complete
+    if (!modelUrl) return null;
 
     return <LoadedVybeModel url={modelUrl} activeFeature={activeFeature} />;
 };

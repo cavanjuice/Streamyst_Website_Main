@@ -86,7 +86,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView = 'home', onNavigate }) => 
               {/* Logo fills the height of the container - Minimized padding for maximum mobile logo size */}
               <div className="relative h-full transition-transform duration-300 group-hover:scale-105 origin-left py-1 md:py-2">
                  <SupabaseImg 
-                  filename="Logo2.png"
+                  filename="logostreamyst.webp"
                   alt="Streamyst" 
                   className="h-full w-auto object-contain" 
                   fallback={<span className="text-xl font-bold font-display tracking-tighter">STREAMYST</span>}

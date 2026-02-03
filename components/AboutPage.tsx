@@ -6,8 +6,8 @@ import { getAssetUrl } from '../utils/supabaseClient';
 
 // --- ASSETS & CONSTANTS ---
 
-const FOUNDER_1_IMG = getAssetUrl("robbe.png"); // Robbe
-const FOUNDER_2_IMG = getAssetUrl("HF_Justin 313.jpg"); // Justin - Updated Filename
+const FOUNDER_1_IMG = getAssetUrl("robbe.webp"); // Robbe
+const FOUNDER_2_IMG = getAssetUrl("HF_Justin 313.webp"); // Justin - Updated Filename
 
 // --- DOM SUB-COMPONENTS ---
 
@@ -191,7 +191,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
                              {/* Glow */}
                              <div className="absolute inset-0 bg-violet-500/10 blur-[100px] rounded-full opacity-50 group-hover:opacity-70 transition-opacity duration-700" />
                              <img 
-                                src={getAssetUrl("Founders Pic Transparent.png")}
+                                src={getAssetUrl("Founders Pic Transparent.webp")}
                                 alt="Streamyst Founders"
                                 className="relative z-10 w-full h-full object-contain drop-shadow-[0_0_50px_rgba(139,92,246,0.2)]"
                                 style={{
@@ -376,7 +376,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
                             cta="Join Waitlist" 
                             color="violet" 
                             delay={0} 
-                            image={getAssetUrl("mascot3.PNG")}
+                            image={getAssetUrl("mascot3.webp")}
                             onClick={() => onNavigate?.('home', 'waitlist')}
                         />
                         <PortalPath 
@@ -385,7 +385,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
                             cta="Join Discord" 
                             color="orange" 
                             delay={0.1} 
-                            image={getAssetUrl("mascot2.PNG")}
+                            image={getAssetUrl("mascot2.webp")}
                             href="https://discord.gg/streamyst"
                         />
                         <PortalPath 
@@ -394,7 +394,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
                             cta="View Careers" 
                             color="pink" 
                             delay={0.2} 
-                            image={getAssetUrl("mascot1.PNG")}
+                            image={getAssetUrl("mascot1.webp")}
                             href="mailto:jobs@streamyst.com"
                         />
                     </div>

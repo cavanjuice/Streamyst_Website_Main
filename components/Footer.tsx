@@ -39,7 +39,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCookieSettings }) => 
           <motion.div variants={itemVariants} className="mb-8 lg:mb-0 text-center lg:text-left max-w-xs">
              <div className="flex items-center justify-center lg:justify-start mb-4 cursor-pointer" onClick={() => onNavigate?.('home')}>
                 <img 
-                  src={getAssetUrl("logostreamyst.png")} 
+                  src={getAssetUrl("logostreamyst.webp")} 
                   alt="Streamyst" 
                   className="h-20 w-auto object-contain" 
                 />
@@ -130,8 +130,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCookieSettings }) => 
 
         <motion.div variants={itemVariants} className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-center md:justify-between items-center text-xs text-gray-600">
             <p>&copy; {new Date().getFullYear()} Streamyst BV. All rights reserved.</p>
-            {/* DEBUG VERSION TAG - CHECK FOR THIS ON DEPLOYMENT */}
-            <p className="mt-2 md:mt-0 font-mono text-[10px] opacity-30">v.DEBUG.01</p>
+            <p className="mt-2 md:mt-0 font-mono text-[10px] opacity-30">v0.1.7</p>
         </motion.div>
       </motion.div>
     </footer>

@@ -77,16 +77,16 @@ export const saveSurveyResponse = async (surveyData: SurveyResponse) => {
 };
 
 /**
- * Helper to get the public URL for a file in the 'assets' bucket.
+ * Helper to get the public URL for a file in the 'assetscompressed' bucket.
  * Handles URL encoding automatically.
  */
 export const getAssetUrl = (filename: string) => {
-  const { data } = supabase.storage.from('assets').getPublicUrl(filename);
+  const { data } = supabase.storage.from('assetscompressed').getPublicUrl(filename);
   return data.publicUrl;
 };
 
 /**
- * Deprecated: Use getAssetUrl for 'assets' bucket items.
+ * Deprecated: Use getAssetUrl for 'assetscompressed' bucket items.
  */
 export const getStorageUrl = (bucket: string, path: string) => {
   const { data } = supabase.storage.from(bucket).getPublicUrl(path);

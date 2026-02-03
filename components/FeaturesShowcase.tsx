@@ -7,28 +7,28 @@ const features = [
   {
     title: "Unique expression",
     desc: "With XR we're able to create any look that fits your style, making you stand out!",
-    image: getAssetUrl("Express.png"),
+    image: getAssetUrl("Express.webp"),
     delay: 0,
     sizeClass: "h-[120%] max-h-[250px] md:max-h-[320px]"
   },
   {
     title: "Engage audiences",
     desc: "Make use of XR elements to let your viewers become part of the experience",
-    image: getAssetUrl("FIRED.png"),
+    image: getAssetUrl("FIRED.webp"),
     delay: 0.1,
     sizeClass: "h-[120%] max-h-[250px] md:max-h-[320px]"
   },
   {
     title: "Reflect sentiment",
     desc: "Let the overlay react directly to the input from your viewers, making it reflective of your audience",
-    image: getAssetUrl("WATER.png"),
+    image: getAssetUrl("WATER.webp"),
     delay: 0.2,
     sizeClass: "h-[120%] max-h-[250px] md:max-h-[320px]"
   },
   {
     title: "Feel the vybe",
     desc: "Add the Vybe for a more immersive experience, feeling and seeing the digital connection IRL",
-    image: getAssetUrl("DSC006262.png"),
+    image: getAssetUrl("DSC006262.webp"),
     delay: 0.3,
     sizeClass: "h-[125%] max-h-[280px] md:max-h-[360px] -mb-4"
   }
