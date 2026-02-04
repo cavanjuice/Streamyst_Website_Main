@@ -322,11 +322,11 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                 <div className="flex flex-col lg:grid lg:grid-cols-2 relative z-20 h-full">
                     
                     {/* LEFT: CHARACTER VISUAL - COMPRESSED HEIGHT ON MOBILE */}
-                    {/* Reduced height from h-[180px] to h-[170px] for scale reduction */}
-                    <div className="relative h-[170px] lg:h-auto w-full flex items-end justify-center lg:justify-start order-1 lg:order-none pointer-events-none overflow-hidden lg:overflow-visible">
+                    {/* Decreased height further to h-[240px] to drastically move stats up */}
+                    <div className="relative h-[240px] lg:h-auto w-full flex items-end justify-center lg:justify-start order-1 lg:order-none pointer-events-none overflow-visible">
                         
-                        {/* Wrapper: Reduced width from 140% to 100% on mobile to shrink character scale so head fits. Kept height 160% to allow vertical room. */}
-                        <div className="absolute bottom-0 w-[100%] max-w-[320px] lg:max-w-none lg:w-[130%] h-[160%] lg:h-[180%] z-30 lg:-left-8">
+                        {/* Wrapper: Reduced height % on mobile to lower the head (less pop-out) while container height adds body room */}
+                        <div className="absolute bottom-0 w-[100%] max-w-[320px] lg:max-w-none lg:w-[130%] h-[120%] lg:h-[180%] z-30 lg:-left-8">
                              <AnimatePresence mode="wait">
                                 {leveledUp && isStreamer ? (
                                     streamerImages.map((src, index) => (
@@ -334,11 +334,12 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                                             key={`seq-${index}`}
                                             src={src} 
                                             alt="Streamer Level Up" 
-                                            className="absolute inset-0 w-full h-full object-cover object-top lg:object-contain lg:object-bottom origin-bottom"
+                                            // Adjusted: -top-[70px] to move face up 30px more (was -top-10).
+                                            className="absolute left-0 right-0 bottom-0 -top-[70px] lg:inset-0 w-full lg:h-full object-cover object-top lg:object-contain lg:object-bottom origin-bottom"
                                             style={{ 
-                                                // Mask only the bottom edge to blend into card
-                                                maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)',
-                                                WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)'
+                                                // Mask edge pushed up to cut off bottom 25% (showing 75%)
+                                                maskImage: 'linear-gradient(to bottom, black 75%, transparent 75%)',
+                                                WebkitMaskImage: 'linear-gradient(to bottom, black 75%, transparent 75%)'
                                             }} 
                                             initial={{ opacity: 0 }}
                                             animate={{ 
@@ -362,9 +363,9 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                                         // Mobile: object-cover object-top preserves face visibility while allowing a short container
                                         className="absolute inset-0 w-full h-full object-cover object-top lg:object-contain lg:object-bottom origin-bottom"
                                         style={{ 
-                                            // Mask only the bottom edge to blend into card
-                                            maskImage: leveledUp ? 'linear-gradient(to bottom, black 85%, transparent 100%)' : 'linear-gradient(to bottom, black 80%, transparent 100%)',
-                                            WebkitMaskImage: leveledUp ? 'linear-gradient(to bottom, black 85%, transparent 100%)' : 'linear-gradient(to bottom, black 80%, transparent 100%)',
+                                            // Mask edge pushed further down
+                                            maskImage: leveledUp ? 'linear-gradient(to bottom, black 98%, transparent 100%)' : 'linear-gradient(to bottom, black 90%, transparent 100%)',
+                                            WebkitMaskImage: leveledUp ? 'linear-gradient(to bottom, black 98%, transparent 100%)' : 'linear-gradient(to bottom, black 90%, transparent 100%)',
                                         }} 
                                         initial={{ opacity: 0, scale: 0.95 }}
                                         animate={{ 
@@ -388,12 +389,13 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                     </div>
 
                     {/* RIGHT: STATS & CONTROLS - Tightened padding p-4 -> p-3.5 */}
-                    <div className="relative z-30 p-3.5 lg:p-8 flex flex-col justify-center h-full order-2 lg:order-none pointer-events-none">
+                    {/* Increased negative margin to -mt-12 to push contents significantly higher */}
+                    <div className="relative z-30 p-3.5 lg:p-8 flex flex-col justify-start lg:justify-center h-full order-2 lg:order-none pointer-events-none -mt-12 lg:mt-0">
                         
                         <div className="flex flex-col gap-2 lg:gap-6 pointer-events-auto">
                             {/* HEADER - Tightened height and margin */}
                             <div>
-                                <div className="h-auto min-h-[26px] lg:h-[40px] mb-1 lg:mb-3 relative">
+                                <div className="h-auto min-h-[26px] lg:h-[40px] mb-0 lg:mb-3 relative">
                                     <AnimatePresence mode="wait">
                                         <motion.h3 
                                             key={leveledUp ? 'up' : 'down'}
@@ -408,7 +410,7 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                                     </AnimatePresence>
                                 </div>
                                 
-                                <div className="h-auto min-h-[30px] lg:h-[40px] relative">
+                                <div className="h-auto min-h-[30px] lg:h-[40px] relative -mt-2 lg:mt-0">
                                     <AnimatePresence mode="wait">
                                         <motion.p 
                                             key={currentState.desc}
@@ -416,7 +418,7 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                                             animate={{ opacity: 1 }}
                                             exit={{ opacity: 0 }}
                                             transition={{ duration: 0.3 }}
-                                            className="relative lg:absolute top-[5px] left-0 w-full text-gray-400 text-[7px] lg:text-[10px] leading-relaxed font-light"
+                                            className="relative lg:absolute top-0 lg:top-[5px] left-0 w-full text-gray-400 text-[11px] lg:text-[10px] leading-tight lg:leading-relaxed font-light"
                                         >
                                             {currentState.desc}
                                         </motion.p>
@@ -425,7 +427,8 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                             </div>
 
                             {/* STATS BARS */}
-                            <div className="space-y-1.5 lg:space-y-3">
+                            {/* Added mb-3 to push features down, preventing "sticking too close" */}
+                            <div className="space-y-1.5 lg:space-y-3 mb-3 lg:mb-0">
                                 {currentState.stats.map((stat, i) => (
                                     <div key={i}>
                                         <div className="flex justify-between items-end mb-0.5 lg:mb-1 text-[9px] lg:text-[10px]">

@@ -124,13 +124,17 @@ const getSessionId = () => {
  * Requires an 'analytics_events' table in Supabase.
  */
 export const trackEvent = async (eventName: string, properties: Record<string, any> = {}) => {
-    // 1. Check GDPR Consent (Must be 'all' to track detailed analytics)
-    // If strict mode is preferred, uncomment the next line:
-    // const consent = localStorage.getItem('streamyst_cookie_consent');
-    // if (consent !== 'all') return; 
-
-    // Note: For now, we will log to console if consent is missing, but in production 
-    // you should decide if you want to block all tracking or just PII.
+    // 1. STRICT GDPR CHECK
+    // Only track if consent is explicitly set to 'all'
+    if (typeof window !== 'undefined') {
+        const consent = localStorage.getItem('streamyst_cookie_consent');
+        if (consent !== 'all') {
+            if (process.env.NODE_ENV === 'development') {
+                console.debug(`[Analytics Blocked] ${eventName} - No Consent`);
+            }
+            return; 
+        }
+    }
     
     const sessionId = getSessionId();
     const timestamp = new Date().toISOString();

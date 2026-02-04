@@ -44,7 +44,7 @@ const PrivacyPolicy: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                                 <li><strong>Profile Data:</strong> Your role (Streamer, Viewer, or Other), streaming frequency, viewer count estimates, and platform usage habits.</li>
                                 <li><strong>Preference & Feedback Data:</strong> Information on your challenges (pain points), desired features, interaction styles, and free-text feedback regarding the livestreaming experience.</li>
                                 <li><strong>Economic Research Data:</strong> Pricing sensitivity data (Van Westendorp price sensitivity meter), preferred business models (subscription vs one-time), and purchase intent levels.</li>
-                                <li><strong>Usage Data:</strong> Anonymous technical data via cookies (if consented) regarding website performance and device type.</li>
+                                <li><strong>Usage Data:</strong> We collect IP addresses, browser types, and interaction data (clicks, heatmaps, scroll behavior) via Supabase and analytics tools. This is used to optimize the UX and is only active if you explicitly click "Accept" on our cookie banner.</li>
                             </ul>
                         </section>
 
@@ -61,13 +61,24 @@ const PrivacyPolicy: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
                         <section>
                             <h2 className="text-xl font-bold text-white mb-3">4. Third-Party Services</h2>
+                            <p className="mb-2">
+                                We utilize specialized partners to ensure a high-quality experience. <strong>Streamyst BV maintains a Zero-Tolerance Policy: we never sell, license, or trade platform-derived data or user insights to third parties.</strong>
+                            </p>
+                            <ul className="list-disc pl-5 space-y-2 text-gray-400">
+                                <li><strong>Supabase:</strong> For secure database management. Data is stored on secure servers located within the European Union (EU-Central).</li>
+                                <li><strong>Analytics Tools:</strong> We use industry-standard tools for UX tracking. These scripts are strictly blocked until you provide consent via our Cookie Banner.</li>
+                            </ul>
+                        </section>
+
+                        <section>
+                            <h2 className="text-xl font-bold text-white mb-3">5. Data Retention</h2>
                             <p>
-                                We use <strong>Supabase</strong> for secure database management and storage. Supabase is compliant with GDPR standards. We do not sell your data to third-party advertisers.
+                                We store your personal data only as long as necessary for the development of the alpha/beta phase. We maintain a standard retention period of two (2) years or until the conclusion of the Alpha/Beta phase, whichever comes first, unless you request earlier deletion or withdraw your consent. Survey data is anonymized once the research phase is complete.
                             </p>
                         </section>
 
                         <section>
-                            <h2 className="text-xl font-bold text-white mb-3">5. Your Rights</h2>
+                            <h2 className="text-xl font-bold text-white mb-3">6. Your Rights</h2>
                             <p>Under GDPR, you have the right to:</p>
                             <ul className="list-disc pl-5 space-y-2 text-gray-400 mt-2">
                                 <li>Access the personal data we hold about you.</li>
@@ -78,14 +89,14 @@ const PrivacyPolicy: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                         </section>
 
                         <section>
-                            <h2 className="text-xl font-bold text-white mb-3">6. Cookies</h2>
+                            <h2 className="text-xl font-bold text-white mb-3">7. Cookies</h2>
                             <p>
                                 We use essential cookies to make the site work. Optional analytics cookies are only set with your explicit consent via our Cookie Banner. You can change your preferences at any time via the "Cookie Settings" link in the footer.
                             </p>
                         </section>
 
                         <div className="h-px w-full bg-white/10 my-8" />
-                        <p className="text-sm text-gray-500">Last Updated: February 2026</p>
+                        <p className="text-sm text-gray-500">Last Updated: March 2024</p>
                     </div>
                 </motion.div>
             </div>

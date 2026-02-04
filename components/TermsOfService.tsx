@@ -38,14 +38,27 @@ const TermsOfService: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                         </section>
 
                         <section>
-                            <h2 className="text-xl font-bold text-white mb-3">3. Feedback & Survey Submissions</h2>
-                            <p>
-                                We value your input. If you submit feedback, survey responses, ideas, or suggestions ("Feedback") to us through our website:
-                            </p>
-                            <ul className="list-disc pl-5 mt-2 space-y-1">
-                                <li>You agree that such Feedback is non-confidential and becomes the sole property of Streamyst BV.</li>
-                                <li>Streamyst BV shall own exclusive rights, including all intellectual property rights, and shall be entitled to the unrestricted use and dissemination of this Feedback for any purpose (commercial or otherwise) without acknowledgment or compensation to you.</li>
-                            </ul>
+                            <h2 className="text-xl font-bold text-white mb-3">3. Feedback, Survey Submissions, and Collaboration</h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <h3 className="font-bold text-white">3.1 Collaborative Intent</h3>
+                                    <p>Streamyst BV is built on community-driven innovation. We view your survey responses and suggestions ("Feedback") as vital to this collaborative process.</p>
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-white">3.2 Assignment of Rights</h3>
+                                    <p>To ensure Streamyst can implement ideas without legal uncertainty, by submitting Feedback, you agree to the following:</p>
+                                    <ul className="list-disc pl-5 mt-2 space-y-1">
+                                        <li><strong>Ownership:</strong> You hereby irrevocably assign to Streamyst BV all right, title, and interest worldwide in and to the Feedback.</li>
+                                        <li><strong>Waiver of Compensation:</strong> Feedback is provided voluntarily without entitlement to royalties or compensation.</li>
+                                        <li><strong>Moral Rights:</strong> You waive any "moral rights" to the Feedback to the extent permitted by Belgian Law.</li>
+                                        <li><strong>Usage:</strong> Streamyst BV has unrestricted rights to use and commercialize this Feedback for hardware, software, or marketing.</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-white">3.3 Future Collaboration</h3>
+                                    <p>Legal ownership protects the project's viability but does not preclude us from reaching out to specific contributors for formal partnerships or deep-dive sessions.</p>
+                                </div>
+                            </div>
                         </section>
 
                         <section>
@@ -77,7 +90,7 @@ const TermsOfService: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                         </section>
 
                         <div className="h-px w-full bg-white/10 my-8" />
-                        <p className="text-sm text-gray-500">Last Updated: February 2026</p>
+                        <p className="text-sm text-gray-500">Last Updated: March 2024</p>
                     </div>
                 </motion.div>
             </div>

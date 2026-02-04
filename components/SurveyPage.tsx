@@ -7,7 +7,7 @@ import {
     Activity, DollarSign, Lightbulb, Wifi, Shield, 
     Cpu, Zap, AlertCircle, PlayCircle,
     Ghost, Crown, Heart, Briefcase, Globe, 
-    MousePointer2
+    MousePointer2, Square, CheckSquare
 } from 'lucide-react';
 import { saveSurveyResponse, getAssetUrl, trackEvent } from '../utils/supabaseClient';
 
@@ -298,6 +298,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
     });
     const [showExitModal, setShowExitModal] = useState(false);
     const [hasSeenExitModal, setHasSeenExitModal] = useState(false);
+    const [hasAgreedToTerms, setHasAgreedToTerms] = useState(false);
 
     // Initial load tracking
     useEffect(() => {
@@ -336,6 +337,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
         // Standard Flow ends at step 12 (Friction) -> Next is 13 (Exit)
         // Other Flow ends at step 15 (Anything else) -> Next is 16 (Exit)
         if ((!isOther && step === 12) || (isOther && step === 15)) {
+            if (!hasAgreedToTerms) return; // Explicit check, though button should be disabled
             submitData();
         }
 
@@ -450,6 +452,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
         />
     );
 
+    // Updated renderContinue to accept an optional pre-check logic or extra validation
     const renderContinue = (disabled = false) => (
         <div className="mt-12 flex justify-end">
             <button 
@@ -459,6 +462,23 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
             >
                 Continue →
             </button>
+        </div>
+    );
+
+    // NEW: Render Consent Checkbox
+    const renderConsent = () => (
+        <div className="mt-8 p-4 bg-white/5 border border-white/10 rounded-xl">
+            <div 
+                className="flex items-start gap-3 cursor-pointer"
+                onClick={() => setHasAgreedToTerms(!hasAgreedToTerms)}
+            >
+                <div className={`mt-0.5 w-5 h-5 rounded border flex items-center justify-center shrink-0 transition-colors ${hasAgreedToTerms ? 'bg-violet-500 border-violet-500' : 'border-gray-500 hover:border-white'}`}>
+                    {hasAgreedToTerms && <Check size={14} className="text-white" />}
+                </div>
+                <p className="text-xs text-gray-400 leading-relaxed select-none">
+                    I agree to the Terms of Service regarding Feedback and Privacy. I understand my feedback is provided voluntarily to help build Streamyst.
+                </p>
+            </div>
         </div>
     );
 
@@ -678,13 +698,15 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                             {renderContinue()}
                         </div>
                     );
-                case 15: // Q14 Anything Else
+                case 15: // Q14 Anything Else + MANDATORY CONSENT
                      return (
                         <div className="max-w-2xl mx-auto">
                             <h2 className="text-3xl font-display font-bold text-center mb-2">Anything else you’d like to share?</h2>
                             <p className="text-gray-400 text-center mb-8">Ideas, questions, concerns, wild concepts, we’d love to hear them.</p>
                             {renderTextArea(data.anythingElse, 'anythingElse', "Open floor...")}
-                            {renderContinue()}
+                            
+                            {renderConsent()}
+                            {renderContinue(!hasAgreedToTerms)}
                         </div>
                     );
                 case 16: // EXIT
@@ -1190,7 +1212,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                     </div>
                 );
 
-            case 12: // NEW FRICTION QUESTION
+            case 12: // NEW FRICTION QUESTION + MANDATORY CONSENT
                 const frictionOptions = isViewer ? VIEWER_FRICTION_OPTIONS : STREAMER_FRICTION_OPTIONS;
                 return (
                     <div className="max-w-3xl mx-auto">
@@ -1198,7 +1220,9 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                             {isViewer ? "What would stop you from supporting Streamyst?" : "What would most stop you from trying Streamyst?"}
                         </h2>
                         {renderMultiSelect(frictionOptions, data.frictionPoints || [], 'frictionPoints')}
-                        {renderContinue()}
+                        
+                        {renderConsent()}
+                        {renderContinue(!hasAgreedToTerms)}
                     </div>
                 );
             
