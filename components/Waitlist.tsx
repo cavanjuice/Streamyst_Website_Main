@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Loader2, ChevronRight, ClipboardList, AlertCircle } from 'lucide-react';
-import { saveEmailToWaitlist } from '../utils/supabaseClient';
+import { saveEmailToWaitlist, trackEvent } from '../utils/supabaseClient';
 import { SupabaseImg } from './SupabaseImg';
 
 interface WaitlistProps {
@@ -29,6 +29,11 @@ const Waitlist: React.FC<WaitlistProps> = ({ onJoinSurvey }) => {
     }
 
     setStatus('success');
+  };
+
+  const handleSurveyClick = () => {
+      trackEvent('waitlist_survey_click', { email_present: !!email });
+      if (onJoinSurvey) onJoinSurvey(email);
   };
 
   return (
@@ -88,7 +93,7 @@ const Waitlist: React.FC<WaitlistProps> = ({ onJoinSurvey }) => {
                             </div>
                             
                             <button 
-                                onClick={() => onJoinSurvey && onJoinSurvey(email)}
+                                onClick={handleSurveyClick}
                                 className="group relative overflow-hidden bg-white text-black font-bold py-3.5 px-8 rounded-full text-sm transition-all transform hover:-translate-y-0.5 hover:shadow-lg hover:shadow-violet-500/20 flex items-center gap-2 w-full sm:w-auto justify-center"
                             >
                                 <span className="relative z-10 flex items-center gap-2">

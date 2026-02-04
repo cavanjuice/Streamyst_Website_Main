@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useMotionTemplate } from 'framer-motion';
 import { Sparkles, Wifi } from 'lucide-react';
-import { getAssetUrl } from '../utils/supabaseClient';
+import { getAssetUrl, trackEvent } from '../utils/supabaseClient';
 
 // Custom Icons from Old Code to ensure exact animation match
 const HeartIcon = ({ className, style }: { className?: string, style?: React.CSSProperties }) => (
@@ -144,6 +144,8 @@ const InteractiveDemo: React.FC = () => {
     setActiveEmotion(emotionId);
     setTriggerKey(prev => prev + 1);
     
+    trackEvent('demo_emotion_click', { emotion: emotionId });
+
     // Shake effect based on emotion intensity
     if (emotionId === 'hype' || emotionId === 'shock') {
         setShake(5);

@@ -29,6 +29,7 @@ import AccessibilityStatement from './components/AccessibilityStatement';
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { Ghost, Radio } from 'lucide-react';
+import { trackEvent } from './utils/supabaseClient';
 
 // Define the View Type including new legal pages
 type ViewState = 'home' | 'about' | 'survey' | 'legal-notice' | 'privacy' | 'terms' | 'accessibility';
@@ -72,6 +73,11 @@ const FloatingRoleToggle: React.FC<{ role: 'streamer' | 'viewer', setRole: (r: '
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleSetRole = (newRole: 'streamer' | 'viewer') => {
+      setRole(newRole);
+      trackEvent('role_toggle_floating', { role: newRole });
+  };
+
   return (
     // WRAPPER: Handles Fixed Positioning & Centering statically to avoid Framer Motion conflicts
     // Changed top-1/2 to top-[50vh] to ensure viewport-relative positioning even if parent has transforms
@@ -100,7 +106,7 @@ const FloatingRoleToggle: React.FC<{ role: 'streamer' | 'viewer', setRole: (r: '
             />
 
             <button 
-                onClick={() => setRole('streamer')}
+                onClick={() => handleSetRole('streamer')}
                 className={`relative z-10 w-7 md:w-10 py-4 md:py-6 rounded-l-xl rounded-r-none md:rounded-full flex flex-col items-center justify-center gap-2 transition-colors duration-300 ${role === 'streamer' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
                 title="Streamer Mode"
             >
@@ -114,7 +120,7 @@ const FloatingRoleToggle: React.FC<{ role: 'streamer' | 'viewer', setRole: (r: '
             </button>
 
             <button 
-                onClick={() => setRole('viewer')}
+                onClick={() => handleSetRole('viewer')}
                 className={`relative z-10 w-7 md:w-10 py-4 md:py-6 rounded-l-xl rounded-r-none md:rounded-full flex flex-col items-center justify-center gap-2 transition-colors duration-300 ${role === 'viewer' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
                 title="Viewer Mode"
             >
@@ -146,6 +152,11 @@ const App: React.FC = () => {
   const [userEmail, setUserEmail] = useState('');
   const [isCookieBannerOpen, setIsCookieBannerOpen] = useState(false);
 
+  // Initial App Load Tracking
+  useEffect(() => {
+    trackEvent('app_load');
+  }, []);
+
   // Sync contentRole with role using transition
   useEffect(() => {
     startTransition(() => {
@@ -155,6 +166,8 @@ const App: React.FC = () => {
 
   // Consolidated Navigation Handler - Memoized to prevent Navbar re-renders
   const handleNavigation = useCallback((view: ViewState, id?: string) => {
+      trackEvent('navigation_click', { target_view: view, target_id: id || 'top' });
+
       // Case 1: Already on the view, just scroll to ID
       if (currentView === view) {
           if (id) {
@@ -174,16 +187,32 @@ const App: React.FC = () => {
   }, [currentView]);
 
   // Callbacks for memoized components
-  const handleOpenVideo = useCallback(() => setIsVideoOpen(true), []);
-  const handleCloseVideo = useCallback(() => setIsVideoOpen(false), []);
+  const handleOpenVideo = useCallback(() => {
+      setIsVideoOpen(true);
+      trackEvent('video_modal_open');
+  }, []);
+  
+  const handleCloseVideo = useCallback(() => {
+      setIsVideoOpen(false);
+      trackEvent('video_modal_close');
+  }, []);
+
   const handleJoinSurvey = useCallback((email: string) => { 
         if (email) setUserEmail(email); 
         setCurrentView('survey'); 
+        trackEvent('survey_start_from_waitlist', { email_provided: !!email });
   }, []);
-  const handleOpenCookieSettings = useCallback(() => setIsCookieBannerOpen(true), []);
+
+  const handleOpenCookieSettings = useCallback(() => {
+      setIsCookieBannerOpen(true);
+      trackEvent('cookie_settings_open');
+  }, []);
 
   // Effect to handle scrolling logic after view changes
   useEffect(() => {
+      // Track Page View
+      trackEvent('page_view', { view: currentView });
+
       // Check if we have a pending scroll target from the navigation action
       const scrollTargetId = pendingScrollRef.current;
       
@@ -259,7 +288,10 @@ const App: React.FC = () => {
               {/* ExperienceToggle needs instant feedback for the pill, but might render heavy content. 
                   We pass 'role' (instant) for the pill/buttons, but consider separating internal content if needed.
                   For now, let's keep it responsive. */}
-              <ExperienceToggle role={role} setRole={setRole} />
+              <ExperienceToggle role={role} setRole={(r) => {
+                  setRole(r);
+                  trackEvent('role_toggle_main', { role: r });
+              }} />
               
               {/* FloatingRoleToggle moved to root App level to fix positioning context */}
               <ProblemSection role={contentRole} />

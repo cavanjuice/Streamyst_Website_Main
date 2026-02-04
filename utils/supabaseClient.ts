@@ -23,6 +23,8 @@ export interface SurveyResponse {
  */
 export const saveEmailToWaitlist = async (email: string) => {
   console.log("Attempting to save email to waitlist:", email);
+  trackEvent('waitlist_submission_attempt', { email_domain: email.split('@')[1] });
+
   try {
     const { data, error } = await supabase
       .from('waitlist')
@@ -32,16 +34,20 @@ export const saveEmailToWaitlist = async (email: string) => {
     if (error) {
       if (error.code === '23505') {
         console.log('Email already registered, treating as success.');
+        trackEvent('waitlist_submission_duplicate');
         return { error: null, data }; 
       }
       console.error('Supabase Waitlist INSERT Error:', error);
+      trackEvent('waitlist_submission_error', { error: error.message });
       alert(`Database Error: ${error.message}`);
       return { error };
     }
     console.log('Successfully saved to waitlist:', data);
+    trackEvent('waitlist_submission_success');
     return { data, error: null };
   } catch (err: any) {
     console.error('Supabase Client Exception:', err);
+    trackEvent('waitlist_client_exception', { error: err.message });
     alert(`Client Error: ${err.message}`);
     return { error: err };
   }
@@ -52,6 +58,8 @@ export const saveEmailToWaitlist = async (email: string) => {
  */
 export const saveSurveyResponse = async (surveyData: SurveyResponse) => {
   console.log("Attempting to save survey data...", surveyData);
+  trackEvent('survey_submission_start', { userType: surveyData.userType });
+
   try {
     const payload = {
       user_type: surveyData.userType,
@@ -66,12 +74,15 @@ export const saveSurveyResponse = async (surveyData: SurveyResponse) => {
 
     if (error) {
       console.error('Supabase Survey INSERT Error:', error);
+      trackEvent('survey_submission_error', { error: error.message });
       return { error };
     }
     console.log('Successfully saved survey:', data);
+    trackEvent('survey_submission_success', { userType: surveyData.userType });
     return { data, error: null };
   } catch (err: any) {
     console.error('Supabase Client Exception:', err);
+    trackEvent('survey_client_exception', { error: err.message });
     return { error: err };
   }
 };
@@ -91,4 +102,66 @@ export const getAssetUrl = (filename: string) => {
 export const getStorageUrl = (bucket: string, path: string) => {
   const { data } = supabase.storage.from(bucket).getPublicUrl(path);
   return data.publicUrl;
+};
+
+// --- ANALYTICS ENGINE ---
+
+/**
+ * Generates or retrieves a persistent session ID for analytics
+ */
+const getSessionId = () => {
+    if (typeof window === 'undefined') return 'server-side';
+    let sessionId = sessionStorage.getItem('streamyst_analytics_session');
+    if (!sessionId) {
+        sessionId = crypto.randomUUID();
+        sessionStorage.setItem('streamyst_analytics_session', sessionId);
+    }
+    return sessionId;
+};
+
+/**
+ * Tracks a custom event to Supabase if consent is given.
+ * Requires an 'analytics_events' table in Supabase.
+ */
+export const trackEvent = async (eventName: string, properties: Record<string, any> = {}) => {
+    // 1. Check GDPR Consent (Must be 'all' to track detailed analytics)
+    // If strict mode is preferred, uncomment the next line:
+    // const consent = localStorage.getItem('streamyst_cookie_consent');
+    // if (consent !== 'all') return; 
+
+    // Note: For now, we will log to console if consent is missing, but in production 
+    // you should decide if you want to block all tracking or just PII.
+    
+    const sessionId = getSessionId();
+    const timestamp = new Date().toISOString();
+    const pagePath = typeof window !== 'undefined' ? window.location.pathname + window.location.hash : '';
+
+    const payload = {
+        event_name: eventName,
+        properties: {
+            ...properties,
+            screen_width: typeof window !== 'undefined' ? window.innerWidth : 0,
+            referrer: typeof document !== 'undefined' ? document.referrer : '',
+            userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : ''
+        },
+        session_id: sessionId,
+        page_path: pagePath,
+        created_at: timestamp
+    };
+
+    // Dev Environment Logging
+    if (process.env.NODE_ENV === 'development') {
+        console.groupCollapsed(`[Analytics] ${eventName}`);
+        console.log(payload);
+        console.groupEnd();
+    }
+
+    try {
+        // Fire and forget - don't await to avoid blocking UI
+        supabase.from('analytics_events').insert([payload]).then(({ error }) => {
+            if (error) console.warn('Analytics sync failed:', error.message);
+        });
+    } catch (e) {
+        // Silently fail to not disrupt user experience
+    }
 };

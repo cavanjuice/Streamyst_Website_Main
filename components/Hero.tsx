@@ -5,6 +5,7 @@ import { Sparkles, Play, ChevronRight } from 'lucide-react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { SupabaseImg } from './SupabaseImg';
+import { trackEvent } from '../utils/supabaseClient';
 
 // --- SHADERS ---
 
@@ -165,6 +166,16 @@ const Hero: React.FC<HeroProps> = ({ onOpenVideo }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleJoinWaitlist = () => {
+      trackEvent('cta_click', { location: 'hero', button: 'join_waitlist' });
+      document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleWatchDemo = () => {
+      trackEvent('cta_click', { location: 'hero', button: 'watch_demo' });
+      onOpenVideo();
+  };
+
   return (
     // Updated: Poster layout for mobile (Image Top, Text Bottom Overlay), Grid for Desktop
     <section className="relative h-[100dvh] w-full overflow-hidden flex flex-col">
@@ -256,7 +267,7 @@ const Hero: React.FC<HeroProps> = ({ onOpenVideo }) => {
                         className="flex flex-row items-center gap-3 w-full justify-center lg:justify-start"
                     >
                         <button
-                            onClick={() => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })}
+                            onClick={handleJoinWaitlist}
                             className="group relative px-6 py-3 bg-white text-cosmic-950 font-bold text-xs sm:text-base rounded-full transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_40px_rgba(255,255,255,0.35)] overflow-hidden"
                         >
                             <span className="relative z-10 flex items-center justify-center gap-2 group-hover:translate-x-1 transition-transform">
@@ -266,7 +277,7 @@ const Hero: React.FC<HeroProps> = ({ onOpenVideo }) => {
                         </button>
 
                         <button
-                            onClick={onOpenVideo}
+                            onClick={handleWatchDemo}
                             className="relative px-6 py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-semibold text-xs sm:text-base rounded-full transition-all duration-300 flex items-center justify-center gap-2 group backdrop-blur-sm"
                         >
                              <div className="relative flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/10 border border-white/20 group-hover:border-violet-400 transition-colors">

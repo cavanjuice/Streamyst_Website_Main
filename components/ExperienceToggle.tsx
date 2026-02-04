@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { EyeOff, MessageSquare, Settings, Frown, Ghost, Lock, BatteryWarning, MonitorStop } from 'lucide-react';
 import { SupabaseImg } from './SupabaseImg';
-import { getAssetUrl } from '../utils/supabaseClient';
+import { getAssetUrl, trackEvent } from '../utils/supabaseClient';
 
 type Role = 'streamer' | 'viewer';
 
@@ -69,6 +69,11 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
         img.src = url;
     });
   }, []);
+
+  const handleRoleChange = (newRole: Role) => {
+      setRole(newRole);
+      // Tracking occurs in parent or we can track here if needed, but parent tracks primary switch
+  };
 
   const problems = {
     streamer: {
@@ -324,13 +329,13 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
                  
                  {/* BUTTONS - Reduced Width */}
                  <button
-                   onClick={() => setRole('streamer')}
+                   onClick={() => handleRoleChange('streamer')}
                    className={`relative z-10 w-32 md:w-36 lg:w-40 py-2 md:py-2.5 rounded-full font-bold font-display tracking-widest text-[10px] md:text-xs transition-colors duration-200 ${role === 'streamer' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
                  >
                    STREAMER
                  </button>
                  <button
-                   onClick={() => setRole('viewer')}
+                   onClick={() => handleRoleChange('viewer')}
                    className={`relative z-10 w-32 md:w-36 lg:w-40 py-2 md:py-2.5 rounded-full font-bold font-display tracking-widest text-[10px] md:text-xs transition-colors duration-200 ${role === 'viewer' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
                  >
                    VIEWER

@@ -9,7 +9,7 @@ import {
     Ghost, Crown, Heart, Briefcase, Globe, 
     MousePointer2
 } from 'lucide-react';
-import { saveSurveyResponse, getAssetUrl } from '../utils/supabaseClient';
+import { saveSurveyResponse, getAssetUrl, trackEvent } from '../utils/supabaseClient';
 
 // --- ASSETS ---
 const MASCOT_1 = getAssetUrl("mascot1.webp");
@@ -299,6 +299,18 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
     const [showExitModal, setShowExitModal] = useState(false);
     const [hasSeenExitModal, setHasSeenExitModal] = useState(false);
 
+    // Initial load tracking
+    useEffect(() => {
+        trackEvent('survey_view');
+    }, []);
+
+    // Track step changes
+    useEffect(() => {
+        if (step > 0) {
+            trackEvent('survey_step_view', { step, totalSteps: totalSteps, userType: data.userType });
+        }
+    }, [step]);
+
     // Flow Logic
     const isViewer = data.userType === 'viewer';
     const isOther = data.userType === 'other';
@@ -369,11 +381,17 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
             if (e.clientY <= 0 && step > 0 && step < (totalSteps - 1) && !hasSeenExitModal) {
                 setShowExitModal(true);
                 setHasSeenExitModal(true);
+                trackEvent('survey_exit_intent');
             }
         };
         document.addEventListener('mouseleave', handleMouseLeave);
         return () => document.removeEventListener('mouseleave', handleMouseLeave);
     }, [step, hasSeenExitModal, totalSteps]);
+
+    const handleSurveyAbandon = () => {
+        trackEvent('survey_abandon', { step });
+        onExit();
+    };
 
     // --- ANIMATION COMPONENTS ---
 
@@ -468,7 +486,10 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                             This takes 3 minutes. Your answers could shape what we build.
                         </p>
                         <button
-                            onClick={nextStep}
+                            onClick={() => {
+                                trackEvent('survey_start_click');
+                                nextStep();
+                            }}
                             className="group relative px-10 py-5 bg-white text-black font-bold text-lg rounded-full overflow-hidden transition-transform hover:scale-105 active:scale-95"
                         >
                             <span className="relative z-10 flex items-center gap-2">I'm In <ArrowRight size={20} /></span>
@@ -1335,7 +1356,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                                         <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                                     </button>
                                     <button 
-                                        onClick={onExit}
+                                        onClick={handleSurveyAbandon}
                                         className="w-full py-3 text-gray-500 hover:text-white text-xs font-medium uppercase tracking-widest transition-colors"
                                     >
                                         Abandon Progress
