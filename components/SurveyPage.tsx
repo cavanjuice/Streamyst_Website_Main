@@ -10,12 +10,9 @@ import {
 } from 'lucide-react';
 import { saveSurveyResponse, getAssetUrl, trackEvent, setGAUserProperty } from '../utils/supabaseClient';
 
-// --- ASSETS ---
 const MASCOT_1 = getAssetUrl("mascot1.webp");
 const MASCOT_2 = getAssetUrl("mascot2.webp");
 const MASCOT_3 = getAssetUrl("mascot3.webp");
-
-// --- TYPES ---
 
 type UserType = 'streamer' | 'viewer' | 'other' | null;
 
@@ -40,7 +37,6 @@ interface SurveyData {
     platform: string;
     content: string;
     discovery: string;
-    // Other / Professional Flow Fields
     otherRoles: string[];
     otherContexts: string[];
     platformFamiliarity: number;
@@ -54,11 +50,8 @@ interface SurveyData {
     interestLevel: number;
     collaborationInterest: string[];
     anythingElse: string;
-    // New Friction Field
     frictionPoints: string[];
 }
-
-// --- CONSTANTS ---
 
 const STREAMER_PROBLEM_OPTIONS = [
     { id: 'engagement', label: 'Audience engagement / connection', icon: <Users size={18} /> },
@@ -216,8 +209,6 @@ const VIEWER_PRICING_MODELS = [
     }
 ];
 
-// --- COMPONENTS ---
-
 interface CardProps {
     selected: boolean;
     onClick: () => void;
@@ -255,7 +246,6 @@ const Card: React.FC<CardProps> = ({
         <div className="relative z-10">
             {children}
         </div>
-        {/* Selection Check */}
         <div className={`absolute top-4 right-4 w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${selected ? 'bg-violet-500 border-violet-500' : 'border-white/20'}`}>
             {selected && <Check size={14} className="text-white" />}
         </div>
@@ -285,7 +275,6 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
         priceExpensive: 15,
         priceTooExpensive: 30,
         priceTooCheap: 2,
-        // Other Flow Defaults
         otherRoles: [],
         otherContexts: [],
         platformFamiliarity: 5,
@@ -299,25 +288,20 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
     const [hasSeenExitModal, setHasSeenExitModal] = useState(false);
     const [hasAgreedToTerms, setHasAgreedToTerms] = useState(false);
 
-    // Initial load tracking
     useEffect(() => {
         trackEvent('survey_view');
     }, []);
 
-    // Track step changes
     useEffect(() => {
         if (step > 0) {
             trackEvent('survey_step_view', { step, totalSteps: totalSteps, userType: data.userType });
         }
     }, [step]);
 
-    // Flow Logic
     const isViewer = data.userType === 'viewer';
     const isOther = data.userType === 'other';
-    const totalSteps = isOther ? 17 : 14; 
+    const totalSteps = isOther ? 17 : 15; 
     const progress = Math.min(100, (step / totalSteps) * 100);
-
-    // --- LOGIC ---
 
     const submitData = async () => {
         const { error } = await saveSurveyResponse(data);
@@ -325,14 +309,12 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
     };
 
     const nextStep = () => {
-        // Validation checks for Standard Flow
         if (!isOther) {
-            if (step === 4 && data.problemRank?.length !== 3) return; // Must rank 3
-            if (step === 8 && (data.desiredFeatures?.length || 0) !== 2) return; // Must pick 2
+            if (step === 3 && data.problemRank?.length !== 3) return; 
+            if (step === 7 && (data.desiredFeatures?.length || 0) !== 2) return; 
         }
 
-        // TRIGGER SAVE ON FINAL STEP TRANSITION
-        if ((!isOther && step === 12) || (isOther && step === 15)) {
+        if (step === totalSteps - 2) {
             if (!hasAgreedToTerms) return; 
             submitData();
         }
@@ -348,8 +330,6 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
 
     const updateData = (key: keyof SurveyData, value: any) => {
         setData(prev => ({ ...prev, [key]: value }));
-        
-        // OPTIMIZATION: Set GA User Property on Identity selection
         if (key === 'userType' && value) {
             setGAUserProperty({ user_role: value });
         }
@@ -360,13 +340,11 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
         if (current.includes(value)) {
             updateData(key, current.filter(i => i !== value));
         } else {
-            // Logic for max selection for standard features
             if (key === 'desiredFeatures' && current.length >= 2) return;
             updateData(key, [...current, value]);
         }
     };
 
-    // Exit Intent Logic (Before Unload - Browser Native)
     useEffect(() => {
         const handleBeforeUnload = (e: BeforeUnloadEvent) => {
             if (step > 1 && step < (totalSteps - 1)) {
@@ -378,7 +356,6 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
         return () => window.removeEventListener('beforeunload', handleBeforeUnload);
     }, [step, totalSteps]);
 
-    // Exit Intent Logic (Mouse Leave - Custom Modal)
     useEffect(() => {
         const handleMouseLeave = (e: MouseEvent) => {
             if (e.clientY <= 0 && step > 0 && step < (totalSteps - 1) && !hasSeenExitModal) {
@@ -396,16 +373,12 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
         onExit();
     };
 
-    // --- ANIMATION COMPONENTS ---
-
     const containerVariants = {
         hidden: { opacity: 0, x: 20 },
         visible: { opacity: 1, x: 0, transition: { duration: 0.4, ease: "circOut" as const } },
         exit: { opacity: 0, x: -20, transition: { duration: 0.3, ease: "circIn" as const } }
     };
 
-    // --- RENDER HELPERS ---
-    
     const renderScale = (val: number, setVal: (n: number) => void, minLabel = "Low", maxLabel = "High") => (
         <div className="relative mb-8 px-4">
             <div className="flex justify-between text-2xl mb-8">
@@ -481,11 +454,42 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
         </div>
     );
 
-    // --- STEP CONTENT ---
+    const renderEmailStep = () => (
+        <div className="max-w-xl mx-auto text-center relative">
+            <h2 className="text-3xl font-display font-bold mb-6">
+                {initialEmail ? "Just to confirm—is this email correct?" : "Quick—we'll need your email to send you early access"}
+            </h2>
+            <p className="text-gray-400 mb-8 leading-relaxed">
+                 {initialEmail ? "We grabbed this from your waitlist entry. We want to make sure your invite lands safely." : "We're building in public. We'll send you early invites first."}
+            </p>
+            
+            <div className="relative group">
+                <input 
+                    type="email" 
+                    placeholder="yourname@email.com"
+                    value={data.email || ''}
+                    onChange={(e) => updateData('email', e.target.value)}
+                    className="w-full bg-[#1A1830] border border-white/20 rounded-xl p-5 text-xl text-center text-white focus:border-violet-500 outline-none mb-6 placeholder-gray-600 font-mono transition-all group-hover:border-white/40"
+                />
+            </div>
+            
+            <div className="flex items-center justify-center gap-2 text-sm text-gray-400 mb-10">
+                <Check size={16} className="text-violet-500" />
+                <span>We promise not to spam you. Ever.</span>
+            </div>
+
+            <button 
+                onClick={nextStep}
+                disabled={!data.email?.includes('@')}
+                className="w-full py-4 bg-gradient-to-r from-violet-600 to-indigo-600 rounded-xl font-bold text-white shadow-lg hover:shadow-violet-500/20 transition-all disabled:opacity-50"
+            >
+                {initialEmail ? "Yes, that's me →" : "Lock In Access →"}
+            </button>
+        </div>
+    );
 
     const renderStep = () => {
-        // --- SHARED STEPS ---
-        if (step === 0) { // ENTRY HOOK
+        if (step === 0) {
              return (
                 <div className="text-center max-w-2xl mx-auto pt-10 relative">
                     <Mascot src={MASCOT_3} className="-right-32 bottom-20 w-56 opacity-80" delay={0.6} />
@@ -529,7 +533,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
             );
         }
 
-        if (step === 1) { // IDENTITY
+        if (step === 1) {
              return (
                 <div className="max-w-5xl mx-auto">
                     <h2 className="text-3xl font-display font-bold text-center mb-12">First things first—which best describes you?</h2>
@@ -558,10 +562,9 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
             );
         }
 
-        // --- OTHER FLOW (14 Questions) ---
         if (isOther) {
             switch(step) {
-                case 2: // Q1 Roles
+                case 2:
                     return (
                         <div className="max-w-3xl mx-auto">
                             <h2 className="text-3xl font-display font-bold text-center mb-12">Please describe your role(s)</h2>
@@ -569,7 +572,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                             {renderContinue()}
                         </div>
                     );
-                case 3: // Q2 Context
+                case 3:
                     return (
                         <div className="max-w-3xl mx-auto">
                             <h2 className="text-3xl font-display font-bold text-center mb-12">In what context are you interested in livestreaming?</h2>
@@ -577,7 +580,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                             {renderContinue()}
                         </div>
                     );
-                case 4: // Q3 Familiarity
+                case 4:
                     return (
                         <div className="max-w-2xl mx-auto">
                             <h2 className="text-3xl font-display font-bold text-center mb-12">How familiar are you with livestreaming platforms?</h2>
@@ -585,7 +588,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                             {renderContinue()}
                         </div>
                     );
-                case 5: // Q4 Interest
+                case 5:
                     return (
                         <div className="max-w-3xl mx-auto">
                             <h2 className="text-3xl font-display font-bold text-center mb-12">What initially caught your interest about Streamyst?</h2>
@@ -593,7 +596,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                             {renderContinue()}
                         </div>
                     );
-                case 6: // Q5 Missing
+                case 6:
                     return (
                         <div className="max-w-2xl mx-auto">
                             <h2 className="text-3xl font-display font-bold text-center mb-6">From your perspective, what is currently missing in livestream experiences?</h2>
@@ -601,7 +604,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                             {renderContinue()}
                         </div>
                     );
-                case 7: // Q6 Fit
+                case 7:
                      return (
                         <div className="max-w-2xl mx-auto">
                             <h2 className="text-3xl font-display font-bold text-center mb-2">How do you see Streamyst fitting into your world?</h2>
@@ -610,7 +613,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                             {renderContinue()}
                         </div>
                     );
-                case 8: // Q7 Problem
+                case 8:
                     return (
                         <div className="max-w-2xl mx-auto">
                             <h2 className="text-3xl font-display font-bold text-center mb-8">What problem would you most want Streamyst to help solve?</h2>
@@ -624,7 +627,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                             {renderContinue()}
                         </div>
                     );
-                case 9: // Q8 Value
+                case 9:
                      return (
                         <div className="max-w-2xl mx-auto">
                             <h2 className="text-3xl font-display font-bold text-center mb-2">What would make Streamyst truly valuable for you?</h2>
@@ -633,7 +636,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                             {renderContinue()}
                         </div>
                     );
-                case 10: // Q9 Concerns
+                case 10:
                     return (
                         <div className="max-w-3xl mx-auto">
                             <h2 className="text-3xl font-display font-bold text-center mb-12">What concerns or frictions do you foresee?</h2>
@@ -641,7 +644,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                             {renderContinue()}
                         </div>
                     );
-                case 11: // Q10 Pricing
+                case 11:
                     return (
                          <div className="max-w-2xl mx-auto">
                             <h2 className="text-3xl font-display font-bold text-center mb-12">How would you expect Streamyst to be priced for your use case?</h2>
@@ -660,7 +663,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                             {renderContinue()}
                         </div>
                     );
-                case 12: // Q11 Interest
+                case 12:
                      return (
                         <div className="max-w-2xl mx-auto">
                             <h2 className="text-3xl font-display font-bold text-center mb-12">How interested are you in Streamyst?</h2>
@@ -668,7 +671,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                             {renderContinue()}
                         </div>
                     );
-                case 13: // Q12 Collab
+                case 13:
                     return (
                         <div className="max-w-3xl mx-auto">
                             <h2 className="text-3xl font-display font-bold text-center mb-12">Would you be open to collaborating or exploring further?</h2>
@@ -676,28 +679,9 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                             {renderContinue()}
                         </div>
                     );
-                case 14: // Q13 Email
-                     return (
-                        <div className="max-w-xl mx-auto text-center">
-                            <h2 className="text-3xl font-display font-bold mb-6">
-                                Leave your email (optional)
-                            </h2>
-                            <p className="text-gray-400 mb-8">
-                                We’ll only reach out if it’s relevant to your interest.
-                            </p>
-                            
-                            <input 
-                                type="email" 
-                                placeholder="yourname@email.com"
-                                value={data.email || ''}
-                                onChange={(e) => updateData('email', e.target.value)}
-                                className="w-full bg-[#1A1830] border border-white/20 rounded-xl p-5 text-xl text-center text-white focus:border-violet-500 outline-none mb-6 placeholder-gray-600 font-mono"
-                            />
-                            
-                            {renderContinue()}
-                        </div>
-                    );
-                case 15: // Q14 Anything Else + MANDATORY CONSENT
+                case 14:
+                    return renderEmailStep();
+                case 15:
                      return (
                         <div className="max-w-2xl mx-auto">
                             <h2 className="text-3xl font-display font-bold text-center mb-2">Anything else you’d like to share?</h2>
@@ -708,17 +692,15 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                             {renderContinue(!hasAgreedToTerms)}
                         </div>
                     );
-                case 16: // EXIT
+                case 16:
                     return renderExit();
                 default:
                     return null;
             }
         }
-
-        // --- STANDARD FLOW (Viewer/Streamer) ---
         
         switch (step) {
-            case 2: // QUALIFICATION
+            case 2:
                 if (isViewer) {
                     return (
                         <div className="max-w-2xl mx-auto">
@@ -745,7 +727,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                                     <div 
                                         key={opt}
                                         onClick={() => updateData('interactionStyle', opt)}
-                                        className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center gap-3 ${data.interactionStyle === opt ? 'bg-violet-900/20 border-violet-500' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
+                                        className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${data.interactionStyle === opt ? 'bg-violet-900/20 border-violet-500' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
                                     >
                                         <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${data.interactionStyle === opt ? 'border-violet-500' : 'border-gray-500'}`}>
                                             {data.interactionStyle === opt && <div className="w-2.5 h-2.5 rounded-full bg-violet-500" />}
@@ -808,45 +790,11 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                     </div>
                 );
 
-            case 3: // EMAIL
-                return (
-                    <div className="max-w-xl mx-auto text-center">
-                        <h2 className="text-3xl font-display font-bold mb-6">
-                            {initialEmail ? "Just to confirm—is this email correct?" : "Quick—we'll need your email to send you early access"}
-                        </h2>
-                        <p className="text-gray-400 mb-8">
-                             {initialEmail ? "We grabbed this from your waitlist entry. We want to make sure your invite lands safely." : "We're building in public. We'll send you beta invites first."}
-                        </p>
-                        
-                        <input 
-                            type="email" 
-                            placeholder="yourname@email.com"
-                            value={data.email || ''}
-                            onChange={(e) => updateData('email', e.target.value)}
-                            className="w-full bg-[#1A1830] border border-white/20 rounded-xl p-5 text-xl text-center text-white focus:border-violet-500 outline-none mb-6 placeholder-gray-600 font-mono"
-                        />
-                        
-                        <div className="flex items-center justify-center gap-2 text-sm text-gray-400 mb-10">
-                            <Check size={16} className="text-violet-500" />
-                            <span>We promise not to spam you. Ever.</span>
-                        </div>
-
-                        <button 
-                            onClick={nextStep}
-                            disabled={!data.email?.includes('@')}
-                            className="w-full py-4 bg-gradient-to-r from-violet-600 to-indigo-600 rounded-xl font-bold text-white shadow-lg hover:shadow-violet-500/20 transition-all disabled:opacity-50"
-                        >
-                            {initialEmail ? "Yes, that's me →" : "Lock In Access →"}
-                        </button>
-                    </div>
-                );
-
-            case 4: // PROBLEM RANKING (DRAG DROP)
+            case 3:
                 const problemOptions = isViewer ? VIEWER_PROBLEM_OPTIONS : STREAMER_PROBLEM_OPTIONS;
 
                 return (
                     <div className="max-w-4xl mx-auto relative">
-                        {/* Mascot Peek */}
                         <Mascot src={MASCOT_1} className="-top-24 right-10 w-40" delay={0.3} />
                         
                         <div className="text-center mb-8 relative z-10">
@@ -857,7 +805,6 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                         </div>
 
                         <div className="flex flex-col md:flex-row gap-8 relative z-10">
-                            {/* Selected Slots */}
                             <div className="md:w-1/2 space-y-4">
                                 <h3 className="text-xs font-bold uppercase tracking-widest text-violet-400 mb-4">Your Top 3 Priorities</h3>
                                 {[0, 1, 2].map((index) => {
@@ -891,7 +838,6 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                                 })}
                             </div>
 
-                            {/* Available Options */}
                             <div className="md:w-1/2">
                                 <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">Available Challenges</h3>
                                 <div className="space-y-2 h-[400px] overflow-y-auto pr-2 custom-scrollbar">
@@ -929,7 +875,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                     </div>
                 );
 
-            case 5: // PAIN INTENSITY
+            case 4:
                 const currentProblemList = isViewer ? VIEWER_PROBLEM_OPTIONS : STREAMER_PROBLEM_OPTIONS;
                 const problemLabel = currentProblemList.find(p => p.id === (data.problemRank?.[0]))?.label || "Your top challenge";
 
@@ -947,7 +893,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                     </div>
                 );
 
-            case 6: // ATTEMPTED SOLUTIONS
+            case 5:
                 const attemptOptions = isViewer 
                     ? [
                         "Donated to get attention", "Joined Discord communities",
@@ -983,7 +929,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                     </div>
                 );
 
-            case 7: // SOLUTION PREFERENCE
+            case 6:
                 const solutionOptions = isViewer
                     ? [
                         { id: 'interaction', icon: <Zap size={32} />, title: "Better Interaction", desc: "Tools to affect the stream directly" },
@@ -1034,7 +980,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                     </div>
                 );
 
-            case 8: // FEATURE DESIRABILITY
+            case 7:
                 const featureOptions = isViewer 
                     ? [
                         "My actions change the stream lighting/visuals",
@@ -1093,7 +1039,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                     </div>
                 );
 
-            case 9: // PURCHASE INTENT
+            case 8:
                 return (
                     <div className="max-w-xl mx-auto text-center relative">
                         <Mascot src={MASCOT_2} className="-right-24 bottom-10 w-40 opacity-80" delay={0.4} />
@@ -1125,7 +1071,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                     </div>
                 );
 
-            case 10: // PRICING (Van Westendorp)
+            case 9:
                 return (
                     <div className="max-w-3xl mx-auto">
                          <h2 className="text-3xl font-display font-bold text-center mb-4">Let's talk pricing for a moment...</h2>
@@ -1163,7 +1109,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                     </div>
                 );
 
-            case 11: // PAYMENT MODEL - REVISED
+            case 10:
                 const pricingOptions = isViewer ? VIEWER_PRICING_MODELS : STREAMER_PRICING_MODELS;
                 const question = isViewer 
                     ? "If Streamyst launches to make your favorite streamer’s content more interactive and meaningful, how would you prefer to support it?"
@@ -1207,7 +1153,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                     </div>
                 );
 
-            case 12: // FRICTION QUESTION + MANDATORY CONSENT
+            case 11:
                 const frictionOptions = isViewer ? VIEWER_FRICTION_OPTIONS : STREAMER_FRICTION_OPTIONS;
                 return (
                     <div className="max-w-3xl mx-auto">
@@ -1215,13 +1161,26 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                             {isViewer ? "What would stop you from supporting Streamyst?" : "What would most stop you from trying Streamyst?"}
                         </h2>
                         {renderMultiSelect(frictionOptions, data.frictionPoints || [], 'frictionPoints')}
+                        {renderContinue()}
+                    </div>
+                );
+            
+            case 12:
+                return renderEmailStep();
+
+            case 13:
+                return (
+                    <div className="max-w-2xl mx-auto">
+                        <h2 className="text-3xl font-display font-bold text-center mb-2">Anything else you’d like to share?</h2>
+                        <p className="text-gray-400 text-center mb-8">Ideas, questions, concerns, wild concepts, we’d love to hear them.</p>
+                        {renderTextArea(data.anythingElse, 'anythingElse', "Open floor...")}
                         
                         {renderConsent()}
                         {renderContinue(!hasAgreedToTerms)}
                     </div>
                 );
-            
-            case 13: // EXIT
+
+            case 14:
                 return renderExit();
 
             default:
@@ -1250,7 +1209,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 <p className="text-xl text-gray-300 mb-12 leading-relaxed relative z-10">
                 Thank you for helping us build the future of streaming.
                 <br/>
-                <span className="text-violet-400 font-bold">You've been added to the priority alpha list.</span>
+                <span className="text-violet-400 font-bold">You've been added to our priority access list.</span>
                 </p>
 
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mb-12 relative z-10">
@@ -1262,7 +1221,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                     </li>
                     <li className="flex items-center gap-3">
                         <Check size={16} className="text-green-400" />
-                        You'll receive a personal invite when Beta opens.
+                        You'll receive a personal invite when Early Access opens.
                     </li>
                     <li className="flex items-center gap-3">
                         <Check size={16} className="text-green-400" />
@@ -1272,9 +1231,14 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 </div>
 
                 <div className="flex flex-col md:flex-row gap-4 justify-center relative z-10">
-                <button className="px-8 py-3 bg-[#5865F2] text-white font-bold rounded-full hover:bg-[#4752C4] transition-colors flex items-center justify-center gap-2">
+                <a 
+                    href="https://discord.gg/ty8mJHNS" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="px-8 py-3 bg-[#5865F2] text-white font-bold rounded-full hover:bg-[#4752C4] transition-colors flex items-center justify-center gap-2"
+                >
                     <MessageSquare size={20} /> Join Discord
-                </button>
+                </a>
                 <button onClick={onExit} className="px-8 py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-full transition-colors">
                     Return to Site
                 </button>
@@ -1283,114 +1247,109 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
     );
 
     return (
-        <div className="min-h-screen bg-cosmic-950 text-white pb-20 pt-24 px-6 font-body">
+        <div className="min-h-screen bg-cosmic-950 text-white font-body relative overflow-x-hidden">
             
-            {/* PROGRESS BAR */}
-            <div className="fixed top-0 left-0 w-full h-2 bg-white/5 z-50">
-                <motion.div 
-                    className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 shadow-[0_0_20px_rgba(139,92,246,0.5)]"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${progress}%` }}
-                    transition={{ duration: 0.5 }}
-                />
-            </div>
-
-            {/* HEADER INFO & NAVIGATION */}
-            {step > 0 && step < (totalSteps - 1) && (
-                <>
-                    <button 
-                        onClick={prevStep}
-                        className="fixed top-8 left-6 z-50 p-2 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors border border-white/5"
-                    >
-                        <ArrowLeft size={20} />
-                    </button>
-
-                    <div className="fixed top-6 right-6 z-40 flex items-center gap-4 text-xs font-mono text-gray-500 uppercase tracking-widest">
-                        <span>Survey In Progress</span>
-                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                        <span className="hidden md:inline">~{Math.max(1, 3 - Math.floor(step * 0.25))} mins left</span>
-                    </div>
-                </>
-            )}
-
-            {/* MAIN CONTENT AREA */}
-            <AnimatePresence mode="wait">
-                <motion.div
-                    key={step}
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    className="w-full"
-                >
-                    {renderStep()}
-                </motion.div>
-            </AnimatePresence>
-
-            {/* EXIT INTENT MODAL */}
-            <AnimatePresence>
-                {showExitModal && (
-                    <div className="fixed inset-0 bg-[#030205]/90 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-                        <motion.div 
-                            initial={{ scale: 0.95, opacity: 0, y: 20 }}
-                            animate={{ scale: 1, opacity: 1, y: 0 }}
-                            exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                            className="relative w-full max-w-md bg-[#0A0A0B] border border-white/10 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden"
-                        >
-                            {/* Decorative Glow */}
-                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-indigo-500" />
-                            <div className="absolute -top-24 -right-24 w-48 h-48 bg-violet-500/10 rounded-full blur-[60px] pointer-events-none" />
-
-                            <div className="p-8 relative z-10 text-center">
-                                <div className="w-14 h-14 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10 mx-auto">
-                                   <div className="relative">
-                                       <AlertCircle className="text-violet-400" size={28} />
-                                       <div className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                                   </div>
-                                </div>
-                                
-                                <h3 className="text-2xl font-display font-bold text-white mb-3">
-                                    Wait! You're almost there.
-                                </h3>
-                                
-                                <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                                    You've completed <strong>{Math.round(progress)}%</strong> of the survey. 
-                                    Leaving now means losing your priority access spot and your chance to shape the product.
-                                </p>
-
-                                {/* Progress Bar in Modal */}
-                                <div className="w-full h-2 bg-white/5 rounded-full mb-8 overflow-hidden">
-                                    <div 
-                                        className="h-full bg-gradient-to-r from-violet-500 to-indigo-500" 
-                                        style={{ width: `${progress}%` }}
-                                    />
-                                </div>
-
-                                <div className="flex flex-col gap-3">
-                                    <button 
-                                        onClick={() => setShowExitModal(false)}
-                                        className="w-full py-3.5 bg-white text-black font-bold rounded-xl hover:scale-[1.02] transition-transform flex items-center justify-center gap-2 group shadow-lg shadow-white/5"
-                                    >
-                                        <span>Complete Survey</span>
-                                        <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                                    </button>
-                                    <button 
-                                        onClick={handleSurveyAbandon}
-                                        className="w-full py-3 text-gray-500 hover:text-white text-xs font-medium uppercase tracking-widest transition-colors"
-                                    >
-                                        Abandon Progress
-                                    </button>
-                                </div>
-                            </div>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
-
-            {/* BACKGROUND ELEMENTS */}
             <div className="fixed inset-0 pointer-events-none -z-10">
                 <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.05)_0%,transparent_70%)]" />
                 <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-violet-900/10 blur-[120px]" />
+            </div>
+
+            <div className="w-full min-h-screen pb-20 pt-24 px-6 scale-90 origin-top transform-gpu transition-transform duration-500">
+                <div className="fixed top-0 left-0 w-full h-2 bg-white/5 z-50">
+                    <motion.div 
+                        className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 shadow-[0_0_20px_rgba(139,92,246,0.5)]"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${progress}%` }}
+                        transition={{ duration: 0.5 }}
+                    />
+                </div>
+
+                {step > 0 && step < (totalSteps - 1) && (
+                    <>
+                        <button 
+                            onClick={prevStep}
+                            className="fixed top-8 left-6 z-50 p-2 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors border border-white/5"
+                        >
+                            <ArrowLeft size={20} />
+                        </button>
+
+                        <div className="fixed top-6 right-6 z-40 flex items-center gap-4 text-xs font-mono text-gray-500 uppercase tracking-widest">
+                            <span>Survey In Progress</span>
+                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                            <span className="hidden md:inline">~{Math.max(1, 3 - Math.floor(step * 0.25))} mins left</span>
+                        </div>
+                    </>
+                )}
+
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={step}
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        className="w-full"
+                    >
+                        {renderStep()}
+                    </motion.div>
+                </AnimatePresence>
+
+                <AnimatePresence>
+                    {showExitModal && (
+                        <div className="fixed inset-0 bg-[#030205]/90 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+                            <motion.div 
+                                initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                                className="relative w-full max-w-md bg-[#0A0A0B] border border-white/10 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden"
+                            >
+                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-indigo-500" />
+                                <div className="absolute -top-24 -right-24 w-48 h-48 bg-violet-500/10 rounded-full blur-[60px] pointer-events-none" />
+
+                                <div className="p-8 relative z-10 text-center">
+                                    <div className="w-14 h-14 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10 mx-auto">
+                                    <div className="relative">
+                                        <AlertCircle className="text-violet-400" size={28} />
+                                        <div className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                                    </div>
+                                    </div>
+                                    
+                                    <h3 className="text-2xl font-display font-bold text-white mb-3">
+                                        Wait! You're almost there.
+                                    </h3>
+                                    
+                                    <p className="text-gray-400 text-sm leading-relaxed mb-6">
+                                        You've completed <strong>{Math.round(progress)}%</strong> of the survey. 
+                                        Leaving now means losing your priority access spot and your chance to shape the product.
+                                    </p>
+
+                                    <div className="w-full h-2 bg-white/5 rounded-full mb-8 overflow-hidden">
+                                        <div 
+                                            className="h-full bg-gradient-to-r from-violet-500 to-indigo-500" 
+                                            style={{ width: `${progress}%` }}
+                                        />
+                                    </div>
+
+                                    <div className="flex flex-col gap-3">
+                                        <button 
+                                            onClick={() => setShowExitModal(false)}
+                                            className="w-full py-3.5 bg-white text-black font-bold rounded-xl hover:scale-[1.02] transition-transform flex items-center justify-center gap-2 group shadow-lg shadow-white/5"
+                                        >
+                                            <span>Complete Survey</span>
+                                            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                                        </button>
+                                        <button 
+                                            onClick={handleSurveyAbandon}
+                                            className="w-full py-3 text-gray-500 hover:text-white text-xs font-medium uppercase tracking-widest transition-colors"
+                                        >
+                                            Abandon Progress
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
             </div>
         </div>
     );

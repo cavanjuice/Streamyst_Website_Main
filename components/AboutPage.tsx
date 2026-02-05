@@ -1,18 +1,37 @@
-
-import React, { useRef, useMemo, useState, useEffect } from 'react';
-import { motion, useScroll, useTransform, useSpring, useMotionValue, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Twitter, Linkedin, Github, MessageSquare, Zap, Globe, Users, Code, ChevronDown } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { ArrowRight, Linkedin, ChevronDown, Mail } from 'lucide-react';
 import { getAssetUrl } from '../utils/supabaseClient';
+
+// --- BRAND SVG COMPONENTS ---
+
+const DiscordLogo = ({ size = 20 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.29a.074.074 0 0 1 .077-.01c3.927 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .077.01c.12.098.246.196.373.29a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.874.89.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+  </svg>
+);
+
+const TwitchLogo = ({ size = 20 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
+  </svg>
+);
 
 // --- ASSETS & CONSTANTS ---
 
 const FOUNDER_1_IMG = getAssetUrl("robbe.webp"); // Robbe
-const FOUNDER_2_IMG = getAssetUrl("HF_Justin 313.webp"); // Justin - Updated Filename
+const FOUNDER_2_IMG = getAssetUrl("HF_Justin 313.webp"); // Justin
 
 // --- DOM SUB-COMPONENTS ---
 
-const SocialLink = ({ icon }: { icon: React.ReactNode }) => (
-    <a href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 hover:border-violet-500/50 transition-all duration-300">
+const SocialLink = ({ icon, href, label }: { icon: React.ReactNode, href: string, label: string }) => (
+    <a 
+        href={href} 
+        target="_blank" 
+        rel="noopener noreferrer"
+        aria-label={label}
+        className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 hover:border-violet-500/50 transition-all duration-300"
+    >
         {icon}
     </a>
 );
@@ -71,15 +90,20 @@ const TimelineNode = ({ title, date, children, index }: { title: string, date: s
 
 // --- ACT IV: FOUNDER CARD ---
 
-const FounderCard = ({ img, name, role, quote, delay }: { img: string, name: string, role: string, quote: string, delay: number }) => {
+interface FounderSocials {
+    linkedin?: string;
+    email?: string;
+    twitch?: string;
+}
+
+const FounderCard = ({ img, name, role, quote, socials, delay }: { img: string, name: string, role: string, quote: string, socials: FounderSocials, delay: number }) => {
     const cardRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({
         target: cardRef,
         offset: ["start end", "end start"]
     });
     
-    // Parallax: Image moves slower/faster than container
-    // We move the image from -15% (top hidden) to 15% (bottom hidden) as we scroll down
+    // Parallax: Image moves from -15% to 15% relative to scroll
     const y = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"]);
 
     return (
@@ -126,9 +150,9 @@ const FounderCard = ({ img, name, role, quote, delay }: { img: string, name: str
                     </div>
 
                     <div className="flex gap-4">
-                        <SocialLink icon={<Linkedin size={18} />} />
-                        <SocialLink icon={<Twitter size={18} />} />
-                        <SocialLink icon={<Github size={18} />} />
+                        {socials.linkedin && <SocialLink icon={<Linkedin size={18} />} href={socials.linkedin} label="LinkedIn" />}
+                        {socials.email && <SocialLink icon={<Mail size={18} />} href={`mailto:${socials.email}`} label="Email" />}
+                        {socials.twitch && <SocialLink icon={<TwitchLogo size={18} />} href={socials.twitch} label="Twitch" />}
                     </div>
                 </div>
             </div>
@@ -145,15 +169,11 @@ interface AboutPageProps {
 
 const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
     const { scrollYProgress } = useScroll();
-    const springScroll = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
-    
-    // Background parallax based on scroll
-    const bgY = useTransform(springScroll, [0, 1], ["0%", "20%"]);
     
     return (
         <div className="relative bg-[#030205] text-white min-h-screen overflow-x-hidden selection:bg-orange-500/30">
             
-            {/* --- GLOBAL BACKGROUND (Clean, Non-Cosmic) --- */}
+            {/* --- GLOBAL BACKGROUND --- */}
             <div className="fixed inset-0 z-0 pointer-events-none bg-[#030205]">
                 <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0B] via-[#05040a] to-[#000000] opacity-80" />
             </div>
@@ -188,7 +208,6 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
                         </div>
                         
                         <div className="relative w-full max-w-4xl mx-auto md:h-[400px] flex items-center justify-center group">
-                             {/* Glow */}
                              <div className="absolute inset-0 bg-violet-500/10 blur-[100px] rounded-full opacity-50 group-hover:opacity-70 transition-opacity duration-700" />
                              <img 
                                 src={getAssetUrl("Founders Pic Transparent.webp")}
@@ -240,7 +259,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
                         <TimelineNode title="Industrial Supervisor" date="THE BRIDGE" index={1}>
                             <p className="mb-4">
                                 Enter <strong className="text-white">Justin-Caine Cavanas</strong>. 
-                                XR & AI Lead at PLAYAR, building immersive experiences for Apple, Dior, and Samsung.
+                                XR & AI Lead at PLAYAR, 6+ years experience building immersive experiences for leading brands.
                             </p>
                             <p>
                                 He wasn't just Robbe's thesis mentor, he was the bridge between academic theory and real-world magic.
@@ -263,9 +282,8 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
                 </div>
             </section>
 
-            {/* --- ACT III: THE VISION --- */}
+            {/* --- Vision Section --- */}
             <section className="relative z-10 py-24 overflow-hidden">
-                {/* Background wash */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-full bg-gradient-to-b from-transparent via-violet-900/10 to-transparent pointer-events-none blur-3xl" />
 
                 <div className="container mx-auto px-6 relative">
@@ -276,9 +294,9 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
 
                     <div className="grid md:grid-cols-3 gap-8">
                         {[
-                            { title: "For Streamers", desc: "Superhuman Perception. Interact with 10,000 viewers the way you talk to 10 friends.", icon: <Zap className="w-8 h-8 text-yellow-400"/>, color: "border-yellow-500/30" },
-                            { title: "For Audiences", desc: "Meaningful Impact. Your energy becomes visible. You aren't just watching; you're influencing.", icon: <Users className="w-8 h-8 text-orange-400"/>, color: "border-orange-500/30" },
-                            { title: "For Everyone", desc: "Connection That Scales. Ambient emotional intelligence as standard as a microphone.", icon: <Globe className="w-8 h-8 text-violet-400"/>, color: "border-violet-500/30" }
+                            { title: "For Streamers", desc: "Superhuman Perception. Interact with 10,000 viewers the way you talk to 10 friends.", icon: <div className="text-yellow-400"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>, color: "border-yellow-500/30" },
+                            { title: "For Audiences", desc: "Meaningful Impact. Your energy becomes visible. You aren't just watching; you're influencing.", icon: <div className="text-orange-400"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>, color: "border-orange-500/30" },
+                            { title: "For Everyone", desc: "Connection That Scales. Ambient emotional intelligence as standard as a microphone.", icon: <div className="text-violet-400"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>, color: "border-violet-500/30" }
                         ].map((card, i) => (
                             <motion.div 
                                 key={i}
@@ -297,13 +315,6 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
                             </motion.div>
                         ))}
                     </div>
-
-                    <div className="mt-24 text-center">
-                        <div className="font-mono text-xs text-gray-500 uppercase tracking-widest mb-4">The Mission</div>
-                        <h3 className="font-display font-bold text-3xl md:text-4xl max-w-4xl mx-auto leading-tight">
-                            "Transform digital spaces to spark meaningful creation and collaboration"
-                        </h3>
-                    </div>
                 </div>
             </section>
 
@@ -321,12 +332,17 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
                         </p>
                     </motion.div>
 
-                    <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-start justify-center">
+                    <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-start justify-center mb-24">
                         <FounderCard 
                             img={FOUNDER_1_IMG} 
                             name="Robbe De Block" 
                             role="Co-Founder & CEO" 
                             quote="Interaction has to be felt and cherished, we are driven to always make it meaningful"
+                            socials={{
+                                linkedin: "https://www.linkedin.com/in/robbe-de-block-a9b148296/",
+                                email: "robbe.deblock@streamyst.com",
+                                twitch: "https://www.twitch.tv/mistvein_live"
+                            }}
                             delay={0}
                         />
 
@@ -334,20 +350,45 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
                             img={FOUNDER_2_IMG} 
                             name="Justin-Caine Cavanas" 
                             role="Co-Founder & CTO" 
-                            quote="We don't build tools. We build instruments for human connection."
+                            quote="As our world becomes more digital, it must also become more profoundly human."
+                            socials={{
+                                linkedin: "https://www.linkedin.com/in/justin-caine-cavanas",
+                                email: "justin.cavanas@streamyst.com"
+                            }}
                             delay={0.2}
                         />
                     </div>
+
+                    {/* Partnership Mention */}
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="max-w-4xl mx-auto pt-16 border-t border-white/5 text-center"
+                    >
+                        <h3 className="text-xs font-mono text-gray-500 uppercase tracking-[0.4em] mb-8">Strategic Ecosystem Partner</h3>
+                        <a 
+                            href="https://www.playar.com/" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="group relative inline-flex items-center justify-center p-8 rounded-[2rem] bg-white/[0.02] border border-white/10 backdrop-blur-xl transition-all duration-500 hover:border-violet-500/50 overflow-hidden cursor-pointer"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-r from-violet-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="relative z-10 flex flex-col items-center">
+                                <span className="text-3xl md:text-4xl font-display font-bold text-white tracking-tighter mb-2">PLAYAR</span>
+                                <p className="text-gray-400 text-sm md:text-base font-light italic">
+                                    Our official XR & Immersive Technology Partner.
+                                </p>
+                            </div>
+                        </a>
+                    </motion.div>
                 </div>
             </section>
 
             {/* --- ACT V: THE INVITATION --- */}
             <section className="relative z-10 min-h-screen flex items-center justify-center py-24 px-6 overflow-hidden bg-[#030205]">
-                
-                {/* Refined Background */}
                 <div className="absolute inset-0 pointer-events-none">
                      <div className="absolute bottom-0 left-0 right-0 h-[500px] bg-gradient-to-t from-violet-900/10 to-transparent" />
-                     {/* Changed from orange to violet-indigo theme */}
                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-violet-900/5 blur-[120px] rounded-full mix-blend-screen" />
                 </div>
 
@@ -372,8 +413,8 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
                     <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto mb-24">
                         <PortalPath 
                             title="Creators" 
-                            desc="Join the waitlist for superhuman connection." 
-                            cta="Join Waitlist" 
+                            desc="Join the priority list for superhuman connection." 
+                            cta="Join Early Access" 
                             color="violet" 
                             delay={0} 
                             image={getAssetUrl("mascot3.webp")}
@@ -383,10 +424,11 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
                             title="Audiences" 
                             desc="Help us shape the future of interaction." 
                             cta="Join Discord" 
+                            ctaIcon={<DiscordLogo size={14} />}
                             color="orange" 
                             delay={0.1} 
                             image={getAssetUrl("mascot2.webp")}
-                            href="https://discord.gg/streamyst"
+                            href="https://discord.gg/ty8mJHNS"
                         />
                         <PortalPath 
                             title="Builders" 
@@ -395,7 +437,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
                             color="pink" 
                             delay={0.2} 
                             image={getAssetUrl("mascot1.webp")}
-                            href="mailto:jobs@streamyst.com"
+                            href="mailto:justin.cavanas@streamyst.com"
                         />
                     </div>
 
@@ -417,15 +459,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack, onNavigate }) => {
     );
 };
 
-const QuoteBlock = ({ children }: { children?: React.ReactNode }) => (
-    <div className="relative pl-6 italic text-gray-300 font-light text-lg">
-        {/* Changed gradient from orange/violet to violet/indigo */}
-        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-violet-500 to-indigo-500 rounded-full" />
-        {children}
-    </div>
-);
-
-const PortalPath = ({ title, desc, cta, color, delay, image, onClick, href }: { title: string, desc: string, cta: string, color: string, delay: number, image: string, onClick?: () => void, href?: string }) => {
+const PortalPath = ({ title, desc, cta, ctaIcon, color, delay, image, onClick, href }: { title: string, desc: string, cta: string, ctaIcon?: React.ReactNode, color: string, delay: number, image: string, onClick?: () => void, href?: string }) => {
     
     const colorClasses = {
         violet: { border: 'border-violet-500/30', bg: 'bg-violet-500', text: 'text-violet-400' },
@@ -433,12 +467,11 @@ const PortalPath = ({ title, desc, cta, color, delay, image, onClick, href }: { 
         pink: { border: 'border-pink-500/30', bg: 'bg-pink-500', text: 'text-pink-400' }
     }[color as 'violet' | 'orange' | 'pink'];
 
-    // Determine component type based on props
     const Component = href ? motion.a : (onClick ? motion.button : motion.div);
     const props = href ? { href, target: "_blank", rel: "noopener noreferrer" } : { onClick };
 
     return (
-        // @ts-ignore - Dynamic component prop typing is tricky with Motion
+        // @ts-ignore
         <Component 
             {...props}
             initial={{ opacity: 0, y: 30 }}
@@ -447,13 +480,10 @@ const PortalPath = ({ title, desc, cta, color, delay, image, onClick, href }: { 
             transition={{ delay, duration: 0.5 }}
             className={`group relative h-[380px] w-full text-left block cursor-pointer transition-transform duration-300 hover:-translate-y-2`}
         >
-             {/* Background Container - CLIPS CONTENT */}
              <div className="absolute inset-0 rounded-3xl bg-[#0A0A0B] border border-white/10 overflow-hidden group-hover:border-white/20 transition-colors z-0">
-                 {/* Background Blob */}
                  <div className={`absolute -top-1/2 -right-1/2 w-full h-full ${colorClasses.bg} opacity-0 blur-[80px] group-hover:opacity-20 transition-opacity duration-700`} />
              </div>
 
-             {/* Mascot Image - UNCLIPPED (Higher Z-Index, Outside Overflow Container) */}
              <div className="absolute bottom-[-24px] right-[-24px] w-56 h-56 z-20 pointer-events-none">
                  <img 
                     src={image} 
@@ -462,7 +492,6 @@ const PortalPath = ({ title, desc, cta, color, delay, image, onClick, href }: { 
                  />
              </div>
 
-             {/* Content Layer */}
              <div className="relative z-10 p-8 h-full flex flex-col justify-between">
                  <div>
                      <div className="flex justify-between items-start mb-6">
@@ -474,7 +503,10 @@ const PortalPath = ({ title, desc, cta, color, delay, image, onClick, href }: { 
                  </div>
 
                  <div className="pt-8 border-t border-white/5">
-                     <span className={`text-xs font-mono uppercase tracking-widest text-gray-500 ${colorClasses.text} transition-colors duration-300 group-hover:text-white`}>{cta}</span>
+                     <span className={`text-xs font-mono uppercase tracking-widest text-gray-500 ${colorClasses.text} transition-colors duration-300 group-hover:text-white flex items-center gap-2`}>
+                        {ctaIcon}
+                        {cta}
+                     </span>
                  </div>
              </div>
         </Component>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
@@ -31,14 +30,14 @@ const TermsOfService: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                         </section>
 
                         <section>
-                            <h2 className="text-xl font-bold text-white mb-3">2. Beta & Waitlist</h2>
+                            <h2 className="text-xl font-bold text-white mb-3">2. Early Access Program</h2>
                             <p>
-                                Streamyst is currently in a pre-release development phase. Joining the waitlist or survey does not guarantee access to the product. We reserve the right to select participants for Alpha/Beta testing at our discretion.
+                                Streamyst is currently in a pre-release development phase. Joining the program or sharing feedback does not guarantee access to the product. We reserve the right to select participants for early testing at our discretion.
                             </p>
                         </section>
 
                         <section>
-                            <h2 className="text-xl font-bold text-white mb-3">3. Feedback, Survey Submissions, and Collaboration</h2>
+                            <h2 className="text-xl font-bold text-white mb-3">3. Feedback and Collaboration</h2>
                             <div className="space-y-4">
                                 <div>
                                     <h3 className="font-bold text-white">3.1 Collaborative Intent</h3>
@@ -54,36 +53,18 @@ const TermsOfService: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                                         <li><strong>Usage:</strong> Streamyst BV has unrestricted rights to use and commercialize this Feedback for hardware, software, or marketing.</li>
                                     </ul>
                                 </div>
-                                <div>
-                                    <h3 className="font-bold text-white">3.3 Future Collaboration</h3>
-                                    <p>Legal ownership protects the project's viability but does not preclude us from reaching out to specific contributors for formal partnerships or deep-dive sessions.</p>
-                                </div>
                             </div>
                         </section>
 
                         <section>
                             <h2 className="text-xl font-bold text-white mb-3">4. Intellectual Property</h2>
                             <p>
-                                All content on this site (including text, graphics, logos, 3D models, and code) is the property of Streamyst BV and is protected by copyright and intellectual property laws. You may not reproduce or distribute any content without our written permission.
+                                All content on this site (including text, graphics, logos, 3D models, and code) is the property of Streamyst BV and is protected by copyright and intellectual property laws.
                             </p>
                         </section>
 
                         <section>
-                            <h2 className="text-xl font-bold text-white mb-3">5. Disclaimer of Warranties</h2>
-                            <p>
-                                The website is provided "as is". We make no warranties regarding the accuracy, reliability, or availability of the website. The product concepts shown are subject to change during development.
-                            </p>
-                        </section>
-
-                        <section>
-                            <h2 className="text-xl font-bold text-white mb-3">6. Limitation of Liability</h2>
-                            <p>
-                                Streamyst BV shall not be liable for any indirect, incidental, or consequential damages arising from your use of this website.
-                            </p>
-                        </section>
-
-                        <section>
-                            <h2 className="text-xl font-bold text-white mb-3">7. Governing Law</h2>
+                            <h2 className="text-xl font-bold text-white mb-3">5. Governing Law</h2>
                             <p>
                                 These terms are governed by the laws of Belgium. Any disputes shall be subject to the exclusive jurisdiction of the courts of Antwerp.
                             </p>

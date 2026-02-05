@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Play } from 'lucide-react';
@@ -76,14 +75,14 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose }) => {
                          {/* Actual Video Player Sourced from Supabase */}
                          <div className="w-full h-full bg-black flex items-center justify-center relative overflow-hidden">
                              <video 
-                                src={getAssetUrl('videonotext.mp4')}
+                                src={getAssetUrl('demovideo2.mp4')}
                                 autoPlay
                                 controls
                                 className="w-full h-full object-contain"
                              >
                                 <div className="text-center text-white">
                                     <p className="mb-2">Your browser does not support the video tag.</p>
-                                    <a href={getAssetUrl('videonotext.mp4')} className="text-violet-400 hover:underline">Download Video</a>
+                                    <a href={getAssetUrl('demovideo2.mp4')} className="text-violet-400 hover:underline">Download Video</a>
                                 </div>
                              </video>
                          </div>

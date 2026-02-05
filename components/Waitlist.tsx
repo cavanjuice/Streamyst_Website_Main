@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Loader2, ChevronRight, ClipboardList, AlertCircle } from 'lucide-react';
@@ -24,7 +23,6 @@ const Waitlist: React.FC<WaitlistProps> = ({ onJoinSurvey }) => {
     
     if (error) {
         setStatus('error');
-        // Log is already handled in client, UI stays in error state
         return;
     }
 
@@ -37,7 +35,6 @@ const Waitlist: React.FC<WaitlistProps> = ({ onJoinSurvey }) => {
   };
 
   return (
-    // Changed: Reduced padding significantly
     <section id="waitlist" className="py-16 lg:py-32 relative z-10">
       <div className="container mx-auto px-6">
         <motion.div 
@@ -60,7 +57,6 @@ const Waitlist: React.FC<WaitlistProps> = ({ onJoinSurvey }) => {
                 
                 <div className="absolute bottom-12 left-12 z-20">
                      <div className="font-display font-bold text-white text-2xl mb-2 tracking-tight">The Future is Tactile</div>
-                     {/* Updated bar to violet to match theme */}
                      <div className="w-10 h-1 bg-violet-500 rounded-full"></div>
                 </div>
             </div>
@@ -97,7 +93,7 @@ const Waitlist: React.FC<WaitlistProps> = ({ onJoinSurvey }) => {
                                 className="group relative overflow-hidden bg-white text-black font-bold py-3.5 px-8 rounded-full text-sm transition-all transform hover:-translate-y-0.5 hover:shadow-lg hover:shadow-violet-500/20 flex items-center gap-2 w-full sm:w-auto justify-center"
                             >
                                 <span className="relative z-10 flex items-center gap-2">
-                                    Take Beta Survey <ClipboardList className="w-4 h-4" />
+                                    Complete Survey <ClipboardList className="w-4 h-4" />
                                 </span>
                                 <div className="absolute inset-0 bg-gradient-to-r from-violet-200 to-indigo-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                             </button>
@@ -111,7 +107,7 @@ const Waitlist: React.FC<WaitlistProps> = ({ onJoinSurvey }) => {
                             className="w-full max-w-sm mx-auto"
                         >
                             <div className="inline-block px-3 py-1 rounded-full border border-violet-500/20 bg-violet-500/5 text-violet-400 text-[9px] font-bold uppercase tracking-[0.2em] mb-8">
-                                ALPHA ACCESS PROGRAM
+                                EARLY ACCESS PROGRAM
                             </div>
 
                             <h2 className="font-display font-bold text-3xl md:text-4xl mb-4 leading-tight tracking-tight">

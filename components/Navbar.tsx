@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { ClipboardList, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -83,7 +82,6 @@ const Navbar: React.FC<NavbarProps> = ({ currentView = 'home', onNavigate }) => 
                 className="flex items-center cursor-pointer group h-full" 
                 onClick={() => handleNav('home')}
             >
-              {/* Logo fills the height of the container - Minimized padding for maximum mobile logo size */}
               <div className="relative h-full transition-transform duration-300 group-hover:scale-105 origin-left py-1 md:py-2">
                  <SupabaseImg 
                   filename="logostreamyst.webp"
@@ -123,7 +121,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView = 'home', onNavigate }) => 
                     onClick={() => handleNav('survey')}
                     className={`text-base font-bold tracking-tight hover:text-violet-400 transition-colors duration-300 ${currentView === 'survey' ? 'text-violet-400' : 'text-gray-400'}`}
                   >
-                      Beta Survey
+                      Community Survey
                   </motion.button>
                 </motion.div>
 
@@ -134,7 +132,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView = 'home', onNavigate }) => 
                   onClick={() => handleNav('home', 'waitlist')}
                   className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-full font-bold transition-all duration-500 shadow-lg shadow-violet-900/20 hover:shadow-violet-600/40 hover:-translate-y-0.5 whitespace-nowrap px-7 py-3 text-base"
                 >
-                  Join Alpha
+                  Get Early Access
                 </motion.button>
             </div>
 
@@ -147,7 +145,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView = 'home', onNavigate }) => 
                     onClick={() => handleNav('home', 'waitlist')}
                     className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-full font-bold text-xs px-4 py-2 shadow-lg shadow-violet-900/20"
                 >
-                    JOIN ALPHA
+                    JOIN WAITLIST
                 </motion.button>
                 <motion.button 
                     initial={{ opacity: 0, x: 10 }}
@@ -187,15 +185,13 @@ const Navbar: React.FC<NavbarProps> = ({ currentView = 'home', onNavigate }) => 
                             onClick={() => handleNav('survey')}
                             className={`text-lg font-bold text-left ${currentView === 'survey' ? 'text-violet-400' : 'text-gray-400'}`}
                         >
-                            Beta Survey
+                            Community Survey
                         </button>
                         <div className="h-px bg-white/10 w-full" />
                         <div className="flex flex-col gap-2">
                             <span className="text-xs text-gray-500 uppercase tracking-widest">Connect</span>
                             <div className="flex gap-4">
-                                {/* Social placeholders */}
-                                <a href="#" className="text-gray-400 hover:text-white">Twitter</a>
-                                <a href="#" className="text-gray-400 hover:text-white">Discord</a>
+                                <a href="https://discord.gg/ty8mJHNS" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">Discord</a>
                             </div>
                         </div>
                     </div>
@@ -216,7 +212,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView = 'home', onNavigate }) => 
                 <ClipboardList size={16} className="relative z-10 text-violet-200" />
             </div>
             <span className="text-xs font-bold uppercase tracking-widest text-violet-100">
-                Beta Survey
+                Community Survey
             </span>
         </button>
     </>
