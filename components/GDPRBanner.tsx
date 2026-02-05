@@ -76,7 +76,7 @@ const GDPRBanner: React.FC<GDPRBannerProps> = ({ forceOpen, onCloseForce, isPrio
                 >
                     <div className={`pointer-events-auto bg-[#0A0A0B]/95 backdrop-blur-2xl border rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden group transition-all duration-500 ${isPriority ? 'border-violet-500/50 ring-1 ring-violet-500/20' : 'border-white/10'}`}>
                         
-                        {/* Shimmer Border for Priority */}
+                        {/* Shimmer Border for Priority (Survey Mode) */}
                         {isPriority && (
                             <motion.div 
                                 className="absolute inset-0 z-0 pointer-events-none"

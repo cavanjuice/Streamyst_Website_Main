@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -9,7 +8,7 @@ import {
     Ghost, Crown, Heart, Briefcase, Globe, 
     MousePointer2, Square, CheckSquare
 } from 'lucide-react';
-import { saveSurveyResponse, getAssetUrl, trackEvent } from '../utils/supabaseClient';
+import { saveSurveyResponse, getAssetUrl, trackEvent, setGAUserProperty } from '../utils/supabaseClient';
 
 // --- ASSETS ---
 const MASCOT_1 = getAssetUrl("mascot1.webp");
@@ -315,8 +314,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
     // Flow Logic
     const isViewer = data.userType === 'viewer';
     const isOther = data.userType === 'other';
-    // Standard flow increased by 1 step for friction question
-    const totalSteps = isOther ? 17 : 14; // 0-16 for other, 0-13 for standard
+    const totalSteps = isOther ? 17 : 14; 
     const progress = Math.min(100, (step / totalSteps) * 100);
 
     // --- LOGIC ---
@@ -334,10 +332,8 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
         }
 
         // TRIGGER SAVE ON FINAL STEP TRANSITION
-        // Standard Flow ends at step 12 (Friction) -> Next is 13 (Exit)
-        // Other Flow ends at step 15 (Anything else) -> Next is 16 (Exit)
         if ((!isOther && step === 12) || (isOther && step === 15)) {
-            if (!hasAgreedToTerms) return; // Explicit check, though button should be disabled
+            if (!hasAgreedToTerms) return; 
             submitData();
         }
 
@@ -352,6 +348,11 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
 
     const updateData = (key: keyof SurveyData, value: any) => {
         setData(prev => ({ ...prev, [key]: value }));
+        
+        // OPTIMIZATION: Set GA User Property on Identity selection
+        if (key === 'userType' && value) {
+            setGAUserProperty({ user_role: value });
+        }
     };
 
     const toggleArrayItem = (key: 'attemptedSolutions' | 'desiredFeatures' | 'otherRoles' | 'otherContexts' | 'initialInterest' | 'concerns' | 'collaborationInterest' | 'frictionPoints', value: string) => {
@@ -452,7 +453,6 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
         />
     );
 
-    // Updated renderContinue to accept an optional pre-check logic or extra validation
     const renderContinue = (disabled = false) => (
         <div className="mt-12 flex justify-end">
             <button 
@@ -465,7 +465,6 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
         </div>
     );
 
-    // NEW: Render Consent Checkbox
     const renderConsent = () => (
         <div className="mt-8 p-4 bg-white/5 border border-white/10 rounded-xl">
             <div 
@@ -544,7 +543,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                                 key={opt.id}
                                 selected={data.userType === opt.id}
                                 onClick={() => {
-                                    updateData('userType', opt.id);
+                                    updateData('userType', opt.id as UserType);
                                     setTimeout(nextStep, 300);
                                 }}
                                 className="flex flex-col items-center text-center py-10"
@@ -717,10 +716,6 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
         }
 
         // --- STANDARD FLOW (Viewer/Streamer) ---
-        // Remapping step numbers because 'Other' flow has pushed indices if handled linearly, 
-        // but here we are in a branched render.
-        // Step 0 & 1 are shared.
-        // Viewer/Streamer flow is steps 2-12.
         
         switch (step) {
             case 2: // QUALIFICATION
@@ -1212,7 +1207,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                     </div>
                 );
 
-            case 12: // NEW FRICTION QUESTION + MANDATORY CONSENT
+            case 12: // FRICTION QUESTION + MANDATORY CONSENT
                 const frictionOptions = isViewer ? VIEWER_FRICTION_OPTIONS : STREAMER_FRICTION_OPTIONS;
                 return (
                     <div className="max-w-3xl mx-auto">

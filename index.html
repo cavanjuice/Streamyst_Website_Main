@@ -13,10 +13,11 @@
         'ad_user_data': 'denied',
         'ad_personalization': 'denied',
         'analytics_storage': 'denied',
+        'ads_data_redaction': true,
         'wait_for_update': 500
       });
 
-      // 2. Immediate check for returning consented users
+      // 2. Immediate check for returning consented users to avoid data fragmentation
       try {
         var consent = localStorage.getItem('streamyst_cookie_consent');
         if (consent === 'all') {
@@ -30,7 +31,11 @@
       } catch (e) {}
 
       gtag('js', new Date());
-      gtag('config', 'G-2CE9KKX90D');
+      // Configuration with enhanced measurement and data redaction
+      gtag('config', 'G-2CE9KKX90D', {
+        'anonymize_ip': true,
+        'cookie_flags': 'SameSite=None;Secure'
+      });
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

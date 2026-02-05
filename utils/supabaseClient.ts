@@ -118,19 +118,28 @@ const getVisitorId = () => {
     return visitorId;
 };
 
+/**
+ * Sets persistent user properties in Google Analytics for segmentation.
+ */
+export const setGAUserProperty = (properties: Record<string, any>) => {
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+        (window as any).gtag('set', 'user_properties', properties);
+    }
+};
+
 export const trackEvent = async (eventName: string, properties: Record<string, any> = {}) => {
     const sessionId = getSessionId();
     const visitorId = getVisitorId();
 
     if (typeof window !== 'undefined') {
         // Forward event to Google Analytics.
-        // With Consent Mode implemented, gtag handles its own storage/privacy rules.
-        // We always send the event to gtag, and it will use 'cookieless pings' if consent is denied.
+        // Consent Mode v2 handles its own internal filtering.
         if ((window as any).gtag) {
             (window as any).gtag('event', eventName, {
                 ...properties,
                 session_id: sessionId,
-                visitor_id: visitorId
+                visitor_id: visitorId,
+                send_to: 'G-2CE9KKX90D'
             });
         }
 
