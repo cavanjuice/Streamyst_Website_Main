@@ -119,22 +119,26 @@ const getVisitorId = () => {
 };
 
 export const trackEvent = async (eventName: string, properties: Record<string, any> = {}) => {
-    if (typeof window !== 'undefined') {
-        const consent = safeGetItem(localStorage, 'streamyst_cookie_consent');
-        if (consent !== 'all') return; 
+    const sessionId = getSessionId();
+    const visitorId = getVisitorId();
 
-        // Forward event to Google Analytics if available
+    if (typeof window !== 'undefined') {
+        // Forward event to Google Analytics.
+        // With Consent Mode implemented, gtag handles its own storage/privacy rules.
+        // We always send the event to gtag, and it will use 'cookieless pings' if consent is denied.
         if ((window as any).gtag) {
             (window as any).gtag('event', eventName, {
                 ...properties,
-                session_id: getSessionId(),
-                visitor_id: getVisitorId()
+                session_id: sessionId,
+                visitor_id: visitorId
             });
         }
+
+        // Supabase tracking remains strictly governed by local choice for deep privacy logic.
+        const consent = safeGetItem(localStorage, 'streamyst_cookie_consent');
+        if (consent !== 'all') return; 
     }
     
-    const sessionId = getSessionId();
-    const visitorId = getVisitorId();
     const timestamp = new Date().toISOString();
     const pagePath = typeof window !== 'undefined' ? window.location.pathname + window.location.hash : '';
 

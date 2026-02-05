@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, useCallback, memo, useTransition } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -35,7 +34,6 @@ import { trackEvent } from './utils/supabaseClient';
 type ViewState = 'home' | 'about' | 'survey' | 'legal-notice' | 'privacy' | 'terms' | 'accessibility';
 
 // --- MEMOIZED COMPONENTS ---
-// Wrapping heavy components to prevent re-renders when parent state (like 'role') changes but props don't.
 const MemoizedNavbar = memo(Navbar);
 const MemoizedHero = memo(Hero);
 const MemoizedParticleBackground = memo(ParticleBackground);
@@ -60,8 +58,6 @@ const FloatingRoleToggle: React.FC<{ role: 'streamer' | 'viewer', setRole: (r: '
       const toggleRect = toggleSection.getBoundingClientRect();
       const endRect = endSection.getBoundingClientRect();
 
-      // Show when the bottom of the main toggle section leaves the viewport (scrolled past)
-      // And hide when the top of How It Works enters the viewport (arrived at static content)
       const scrolledPastToggle = toggleRect.bottom < 0;
       const reachedEnd = endRect.top < window.innerHeight;
 
@@ -69,7 +65,7 @@ const FloatingRoleToggle: React.FC<{ role: 'streamer' | 'viewer', setRole: (r: '
     };
 
     window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Check initial state
+    handleScroll(); 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -79,21 +75,16 @@ const FloatingRoleToggle: React.FC<{ role: 'streamer' | 'viewer', setRole: (r: '
   };
 
   return (
-    // WRAPPER: Handles Fixed Positioning & Centering statically to avoid Framer Motion conflicts
-    // Changed top-1/2 to top-[50vh] to ensure viewport-relative positioning even if parent has transforms
     <div className="fixed top-[50vh] right-0 md:right-auto md:left-6 z-40 -translate-y-1/2 pointer-events-none">
         <AnimatePresence>
         {isVisible && (
             <motion.div
-                // Use Motion for entrance/exit (X-axis) only. 
-                // Vertical position is handled by the parent wrapper.
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 50 }}
                 transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 className="pointer-events-auto flex flex-col items-center p-1 md:p-1.5 rounded-l-2xl rounded-r-none md:rounded-full bg-[#0A0A0B]/80 backdrop-blur-xl border-y border-l border-white/10 md:border shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)]"
             >
-            {/* Active Pill Background */}
             <motion.div
                 className={`absolute left-1 right-0 md:left-1.5 md:right-1.5 rounded-l-xl rounded-r-none md:rounded-full z-0 ${role === 'streamer' ? 'bg-violet-600' : 'bg-orange-500'}`}
                 initial={false}
@@ -102,7 +93,7 @@ const FloatingRoleToggle: React.FC<{ role: 'streamer' | 'viewer', setRole: (r: '
                     height: 'calc(50% - 4px)' 
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                style={{ top: 2 }} // Tighter offset for thinner look
+                style={{ top: 2 }} 
             />
 
             <button 
@@ -111,7 +102,6 @@ const FloatingRoleToggle: React.FC<{ role: 'streamer' | 'viewer', setRole: (r: '
                 title="Streamer Mode"
             >
                 <Radio size={14} className={`md:w-4 md:h-4 ${role === 'streamer' ? 'animate-pulse' : ''}`} />
-                {/* Vertical Text - Centered properly */}
                 <div className="hidden md:flex items-center justify-center h-20 w-4">
                     <span className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap origin-center" style={{ transform: 'rotate(-90deg)' }}>
                         Streamer
@@ -139,10 +129,7 @@ const FloatingRoleToggle: React.FC<{ role: 'streamer' | 'viewer', setRole: (r: '
 };
 
 const App: React.FC = () => {
-  // UI State: Updates instantly for responsive buttons
   const [role, setRole] = useState<'streamer' | 'viewer'>('streamer');
-  
-  // Content State: Updates via Transition to prevent UI freeze
   const [contentRole, setContentRole] = useState<'streamer' | 'viewer'>('streamer');
   const [isPending, startTransition] = useTransition();
 
@@ -152,23 +139,19 @@ const App: React.FC = () => {
   const [userEmail, setUserEmail] = useState('');
   const [isCookieBannerOpen, setIsCookieBannerOpen] = useState(false);
 
-  // Initial App Load Tracking
   useEffect(() => {
     trackEvent('app_load');
   }, []);
 
-  // Sync contentRole with role using transition
   useEffect(() => {
     startTransition(() => {
       setContentRole(role);
     });
   }, [role]);
 
-  // Consolidated Navigation Handler - Memoized to prevent Navbar re-renders
   const handleNavigation = useCallback((view: ViewState, id?: string) => {
       trackEvent('navigation_click', { target_view: view, target_id: id || 'top' });
 
-      // Case 1: Already on the view, just scroll to ID
       if (currentView === view) {
           if (id) {
               const element = document.getElementById(id);
@@ -177,16 +160,14 @@ const App: React.FC = () => {
               window.scrollTo({ top: 0, behavior: 'smooth' });
           }
       } 
-      // Case 2: Changing view
       else {
           if (id) {
-              pendingScrollRef.current = id; // Set intent
+              pendingScrollRef.current = id; 
           }
-          setCurrentView(view); // Trigger view change
+          setCurrentView(view); 
       }
   }, [currentView]);
 
-  // Callbacks for memoized components
   const handleOpenVideo = useCallback(() => {
       setIsVideoOpen(true);
       trackEvent('video_modal_open');
@@ -208,20 +189,13 @@ const App: React.FC = () => {
       trackEvent('cookie_settings_open');
   }, []);
 
-  // Effect to handle scrolling logic after view changes
   useEffect(() => {
-      // Track Page View
       trackEvent('page_view', { view: currentView });
 
-      // Check if we have a pending scroll target from the navigation action
       const scrollTargetId = pendingScrollRef.current;
       
       if (scrollTargetId) {
-          // Clear the ref immediately so future renders don't use it
           pendingScrollRef.current = null;
-
-          // WAIT for AnimatePresence to finish exiting the old view (duration is ~0.5s)
-          // We set 600ms to be safe, ensuring the new DOM is mounted.
           const timer = setTimeout(() => {
               const element = document.getElementById(scrollTargetId);
               if (element) {
@@ -230,12 +204,10 @@ const App: React.FC = () => {
           }, 600); 
           return () => clearTimeout(timer);
       } else {
-          // Standard page transition - scroll to top
           window.scrollTo(0, 0);
       }
   }, [currentView]);
 
-  // Handle View Rendering
   const renderView = () => {
     switch(currentView) {
       case 'about':
@@ -282,21 +254,13 @@ const App: React.FC = () => {
         return (
           <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
               <MemoizedHero onOpenVideo={handleOpenVideo} />
-              {/* Pass contentRole to heavy sections to delay their update */}
               <ProblemStatement role={contentRole} />
-              
-              {/* ExperienceToggle needs instant feedback for the pill, but might render heavy content. 
-                  We pass 'role' (instant) for the pill/buttons, but consider separating internal content if needed.
-                  For now, let's keep it responsive. */}
               <ExperienceToggle role={role} setRole={(r) => {
                   setRole(r);
                   trackEvent('role_toggle_main', { role: r });
               }} />
-              
-              {/* FloatingRoleToggle moved to root App level to fix positioning context */}
               <ProblemSection role={contentRole} />
               <SolutionSection role={contentRole} />
-              
               <MemoizedHowItWorks />
               <MemoizedFeaturesShowcase />
               <MemoizedProductShowcase />
@@ -314,9 +278,9 @@ const App: React.FC = () => {
       <GDPRBanner 
         forceOpen={isCookieBannerOpen} 
         onCloseForce={() => setIsCookieBannerOpen(false)} 
+        isPriority={currentView === 'survey'}
       />
       
-      {/* Navbar Logic - Using handleNavigation for consistent behavior */}
       {(currentView === 'home' || currentView === 'about') && (
         <MemoizedNavbar 
           currentView={currentView}
@@ -324,10 +288,6 @@ const App: React.FC = () => {
         />
       )}
 
-      {/* 
-          Moved FloatingRoleToggle here (outside of motion.div) 
-          to ensure fixed positioning works relative to viewport 
-      */}
       {currentView === 'home' && (
          <FloatingRoleToggle role={role} setRole={setRole} />
       )}
@@ -338,7 +298,6 @@ const App: React.FC = () => {
         </AnimatePresence>
       </main>
 
-      {/* Show Footer only on Home/About/Legal pages, generally hidden on full-screen flows like Survey */}
       {currentView !== 'survey' && (
         <MemoizedFooter 
             onNavigate={(view) => setCurrentView(view)} 

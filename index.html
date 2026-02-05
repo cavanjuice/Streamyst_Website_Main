@@ -6,8 +6,30 @@
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+      
+      // 1. Set Defaults (Deny everything first - GDPR Compliant)
+      gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'analytics_storage': 'denied',
+        'wait_for_update': 500
+      });
 
+      // 2. Immediate check for returning consented users
+      try {
+        var consent = localStorage.getItem('streamyst_cookie_consent');
+        if (consent === 'all') {
+          gtag('consent', 'update', {
+            'ad_storage': 'granted',
+            'ad_user_data': 'granted',
+            'ad_personalization': 'granted',
+            'analytics_storage': 'granted'
+          });
+        }
+      } catch (e) {}
+
+      gtag('js', new Date());
       gtag('config', 'G-2CE9KKX90D');
     </script>
     <meta charset="UTF-8" />
