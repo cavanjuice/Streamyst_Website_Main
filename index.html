@@ -1,7 +1,15 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2CE9KKX90D"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-2CE9KKX90D');
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Streamyst | The Next Evolution of Livestreaming</title>
@@ -9,85 +17,6 @@
     <!-- SEO & Indexing -->
     <meta name="title" content="Streamyst | The Next Evolution of Livestreaming">
     <meta name="description" content="Streamyst transforms livestreaming with interactive XR and haptic feedback. Connect streamers and audiences through real-time emotional engagement and wearable technology." />
-    <meta name="keywords" content="Streamyst, Livestreaming Tools, Interactive Streaming, XR Streaming, Haptic Feedback, Twitch Integration, YouTube Streaming, Viewer Engagement, Creator Economy, Wearable Tech">
-    <meta name="robots" content="index, follow">
-    <meta name="author" content="Streamyst">
-    <link rel="canonical" href="https://www.streamyst.com/" />
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.streamyst.com/">
-    <meta property="og:title" content="Streamyst | The Next Evolution of Livestreaming">
-    <meta property="og:description" content="Streamyst connects streamers with audiences by transforming engagement into real-time physical sensations and interactive XR. Experience the future of streaming.">
-    <meta property="og:image" content="https://ssdjhkdkoqgmysgncfqa.supabase.co/storage/v1/object/public/assetscompressed/logostreamyst.webp">
-    <meta property="og:site_name" content="Streamyst">
-    <meta property="og:locale" content="en_US">
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://www.streamyst.com/">
-    <meta property="twitter:title" content="Streamyst | The Next Evolution of Livestreaming">
-    <meta property="twitter:description" content="Streamyst connects streamers with audiences by transforming engagement into real-time physical sensations and interactive XR. Experience the future of streaming.">
-    <meta property="twitter:image" content="https://ssdjhkdkoqgmysgncfqa.supabase.co/storage/v1/object/public/assetscompressed/logostreamyst.webp">
-    <meta property="twitter:creator" content="@streamyst">
-    
-    <!-- Mobile & PWA -->
-    <meta name="theme-color" content="#030205">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Streamyst">
-
-    <!-- Structured Data (JSON-LD) -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "Organization",
-          "@id": "https://www.streamyst.com/#organization",
-          "name": "Streamyst",
-          "url": "https://www.streamyst.com",
-          "logo": "https://ssdjhkdkoqgmysgncfqa.supabase.co/storage/v1/object/public/assetscompressed/logostreamyst.webp",
-          "description": "Streamyst creates wearable technology and software that translates livestream chat sentiment into interactive feedback and physical sensations.",
-          "sameAs": [
-            "https://twitter.com/streamyst",
-            "https://www.linkedin.com/company/streamyst"
-          ]
-        },
-        {
-          "@type": "WebSite",
-          "@id": "https://www.streamyst.com/#website",
-          "url": "https://www.streamyst.com",
-          "name": "Streamyst",
-          "description": "The Next Evolution of Livestreaming",
-          "publisher": {
-            "@id": "https://www.streamyst.com/#organization"
-          },
-          "inLanguage": "en-US"
-        },
-        {
-          "@type": "SoftwareApplication",
-          "name": "Streamyst App",
-          "applicationCategory": "MultimediaApplication",
-          "operatingSystem": "Web",
-          "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "EUR"
-          },
-          "description": "Interactive XR and haptic feedback software for livestreamers."
-        }
-      ]
-    }
-    </script>
-    
-    <!-- Favicons -->
-    <!-- Google Search prefers 48x48 multiples (e.g. 96x96, 144x144, 192x192) -->
-    <link rel="icon" type="image/webp" sizes="192x192" href="https://ssdjhkdkoqgmysgncfqa.supabase.co/storage/v1/object/public/assetscompressed/logostreamyst.webp" />
-    <link rel="icon" type="image/webp" sizes="32x32" href="https://ssdjhkdkoqgmysgncfqa.supabase.co/storage/v1/object/public/assetscompressed/logostreamyst.webp" />
-    <link rel="icon" type="image/webp" sizes="16x16" href="https://ssdjhkdkoqgmysgncfqa.supabase.co/storage/v1/object/public/assetscompressed/logostreamyst.webp" />
-    <link rel="shortcut icon" href="https://ssdjhkdkoqgmysgncfqa.supabase.co/storage/v1/object/public/assetscompressed/logostreamyst.webp" />
-    <link rel="apple-touch-icon" sizes="180x180" href="https://ssdjhkdkoqgmysgncfqa.supabase.co/storage/v1/object/public/assetscompressed/logostreamyst.webp" />
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -103,7 +32,7 @@
           extend: {
             colors: {
               cosmic: {
-                950: '#030205', // Darker, deeper black
+                950: '#030205', 
                 900: '#0D0B1A',
                 800: '#151226',
                 700: '#2D2654',
@@ -119,27 +48,14 @@
               display: ['Space Grotesk', 'sans-serif'],
               body: ['Outfit', 'sans-serif'],
             },
-            backgroundImage: {
-              'noise': "url('https://grainy-gradients.vercel.app/noise.svg')",
-            },
             animation: {
               'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
               'float': 'float 6s ease-in-out infinite',
-              'glow': 'glow 2s ease-in-out infinite alternate',
-              'beam': 'beam 2s linear infinite',
             },
             keyframes: {
               float: {
                 '0%, 100%': { transform: 'translateY(0)' },
                 '50%': { transform: 'translateY(-20px)' },
-              },
-              glow: {
-                '0%': { boxShadow: '0 0 20px rgba(139, 92, 246, 0.1)' },
-                '100%': { boxShadow: '0 0 40px rgba(139, 92, 246, 0.4)' },
-              },
-              beam: {
-                '0%': { transform: 'translateX(-100%)' },
-                '100%': { transform: 'translateX(100%)' }
               }
             }
           }
@@ -147,82 +63,49 @@
       }
     </script>
     <style>
-      /* Restore Native Scrolling */
-      html {
-        scroll-behavior: smooth; /* Native smooth scroll for anchors */
-      }
-      
+      html { scroll-behavior: smooth; }
       body {
         background-color: #030205;
         color: #ffffff;
         font-family: 'Outfit', sans-serif;
         margin: 0;
         padding: 0;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        /* Prevent horizontal scroll issues globally */
         overflow-x: hidden; 
         width: 100%;
       }
-
-      /* Custom Scrollbar - Sleeker */
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #030205;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #2D2654;
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #8B5CF6;
-      }
-
-      /* Utility to hide scrollbar but allow scrolling */
-      .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-      }
-      .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-      }
-
-      .text-glow {
-        text-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
-      }
-      
-      /* High Performance Hardware Acceleration for critical elements */
-      .gpu-accelerated {
-        transform: translateZ(0);
-        backface-visibility: hidden;
-      }
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: #030205; }
+      ::-webkit-scrollbar-thumb { background: #2D2654; border-radius: 4px; }
+      .text-glow { text-shadow: 0 0 30px rgba(139, 92, 246, 0.5); }
     </style>
-  <script type="importmap">
+
+    <script type="importmap">
 {
   "imports": {
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "@react-three/fiber": "https://esm.sh/@react-three/fiber@^9.5.0",
-    "framer-motion": "https://esm.sh/framer-motion@^12.27.5",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
-    "@react-three/drei": "https://esm.sh/@react-three/drei@^10.7.7",
-    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.91.0",
-    "three/": "https://esm.sh/three@^0.182.0/",
-    "three": "https://esm.sh/three@^0.182.0",
+    "react": "https://esm.sh/react@18.3.1",
+    "react-dom": "https://esm.sh/react-dom@18.3.1",
+    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+    "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime",
+    "framer-motion": "https://esm.sh/framer-motion@11.11.11?external=react,react-dom",
+    "lucide-react": "https://esm.sh/lucide-react@0.454.0?external=react",
+    "three": "https://esm.sh/three@0.170.0",
+    "three/": "https://esm.sh/three@0.170.0/",
+    "@react-three/fiber": "https://esm.sh/@react-three/fiber@8.17.10?external=react,react-dom,three",
+    "@react-three/drei": "https://esm.sh/@react-three/drei@9.114.0?external=react,react-dom,three,@react-three/fiber",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.45.6",
+    "three/examples/jsm/loaders/OBJLoader": "https://esm.sh/three@0.170.0/examples/jsm/loaders/OBJLoader?external=three",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/",
     "vite": "https://esm.sh/vite@^7.3.1",
-    "three/examples/jsm/loaders/GLTFLoader": "https://esm.sh/three@0.182.0/examples/jsm/loaders/GLTFLoader",
-    "three/examples/jsm/loaders/OBJLoader": "https://esm.sh/three@0.182.0/examples/jsm/loaders/OBJLoader"
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.3"
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
+  <link rel="stylesheet" href="/index.css">
 </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-  </body>
+    <script type="module" src="index.tsx"></script>
+  <script type="module" src="/index.tsx"></script>
+</body>
 </html>

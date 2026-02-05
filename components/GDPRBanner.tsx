@@ -13,8 +13,15 @@ const GDPRBanner: React.FC<GDPRBannerProps> = ({ forceOpen, onCloseForce }) => {
 
     useEffect(() => {
         // 1. Initial Check on Mount (Delay)
-        const consent = localStorage.getItem('streamyst_cookie_consent');
-        if (!consent) {
+        // Wrapped in try-catch to prevent crash if localStorage is blocked (e.g. security settings)
+        try {
+            const consent = localStorage.getItem('streamyst_cookie_consent');
+            if (!consent) {
+                const timer = setTimeout(() => setIsVisible(true), 2000);
+                return () => clearTimeout(timer);
+            }
+        } catch (e) {
+            // Fail gracefully: If we can't check consent, show the banner
             const timer = setTimeout(() => setIsVisible(true), 2000);
             return () => clearTimeout(timer);
         }
@@ -33,7 +40,12 @@ const GDPRBanner: React.FC<GDPRBannerProps> = ({ forceOpen, onCloseForce }) => {
     };
 
     const handleConsent = (type: 'all' | 'necessary') => {
-        localStorage.setItem('streamyst_cookie_consent', type);
+        try {
+            localStorage.setItem('streamyst_cookie_consent', type);
+        } catch (e) {
+            console.warn('Streamyst: Could not save cookie preference (Storage Blocked)');
+        }
+        
         handleClose();
         
         if (type === 'all') {
