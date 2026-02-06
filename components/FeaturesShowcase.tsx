@@ -1,5 +1,4 @@
-
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { getAssetUrl } from '../utils/supabaseClient';
 
@@ -36,6 +35,7 @@ const features = [
 
 const FeaturesShowcase: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
   // Create 3 sets for infinite scroll illusion on mobile
   const extendedFeatures = [...features, ...features, ...features];
 
@@ -80,7 +80,11 @@ const FeaturesShowcase: React.FC = () => {
              }
          });
 
-         const activeIndex = cards.indexOf(closestCard);
+         const rawIndex = cards.indexOf(closestCard);
+         // Map raw index back to 0-3 range for indicators
+         const realIndex = rawIndex % features.length;
+         setActiveIndex(realIndex);
+
          const setLength = features.length; // 4 cards per set
 
          // Infinite Loop Logic based on Active Card Index
@@ -89,16 +93,16 @@ const FeaturesShowcase: React.FC = () => {
          // Set 3: Indices 8-11
 
          // If we drift into Set 1 (left), jump forward to Set 2
-         if (activeIndex < setLength) {
-             const targetIndex = activeIndex + setLength;
+         if (rawIndex < setLength) {
+             const targetIndex = rawIndex + setLength;
              // Calculate precise distance between the identical cards
-             const delta = cards[targetIndex].offsetLeft - cards[activeIndex].offsetLeft;
+             const delta = cards[targetIndex].offsetLeft - cards[rawIndex].offsetLeft;
              container.scrollLeft += delta;
          }
          // If we drift into Set 3 (right), jump backward to Set 2
-         else if (activeIndex >= setLength * 2) {
-             const targetIndex = activeIndex - setLength;
-             const delta = cards[activeIndex].offsetLeft - cards[targetIndex].offsetLeft;
+         else if (rawIndex >= setLength * 2) {
+             const targetIndex = rawIndex - setLength;
+             const delta = cards[rawIndex].offsetLeft - cards[targetIndex].offsetLeft;
              container.scrollLeft -= delta;
          }
     };
@@ -227,6 +231,14 @@ const FeaturesShowcase: React.FC = () => {
             </motion.div>
           ))}
         </motion.div>
+
+        {/* Mobile Indicators */}
+        <div className="flex lg:hidden justify-center gap-3 mt-6">
+            {features.map((_, i) => (
+                 <div key={i} className={`rounded-full transition-all duration-300 ${activeIndex === i ? 'w-2 h-2 bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]' : 'w-1.5 h-1.5 bg-white/20'}`} />
+            ))}
+        </div>
+
       </div>
     </section>
   );

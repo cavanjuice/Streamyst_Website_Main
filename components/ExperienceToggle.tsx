@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { EyeOff, MessageSquare, Settings, Frown, Ghost, Lock, BatteryWarning, MonitorStop } from 'lucide-react';
@@ -57,6 +56,7 @@ const SpotlightCard: React.FC<{ children: React.ReactNode; index: number; classN
 const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   // Preload images to prevent flickering when switching roles
   useEffect(() => {
@@ -73,6 +73,13 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
   const handleRoleChange = (newRole: Role) => {
       setRole(newRole);
       // Tracking occurs in parent or we can track here if needed, but parent tracks primary switch
+  };
+
+  const handleScroll = () => {
+      if (scrollRef.current) {
+          const index = Math.round(scrollRef.current.scrollLeft / scrollRef.current.clientWidth);
+          setActiveIndex(index);
+      }
   };
 
   const problems = {
@@ -128,6 +135,7 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
 
     // Reset scroll position when role changes
     container.scrollTo({ left: 0 });
+    setActiveIndex(0);
 
     // Clear any existing interval
     if (intervalRef.current) clearInterval(intervalRef.current);
@@ -355,6 +363,7 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
                 >
                     <div 
                         ref={scrollRef}
+                        onScroll={handleScroll}
                         className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 md:grid md:grid-cols-2 md:gap-4 lg:grid-cols-4 scrollbar-hide"
                         style={{ scrollSnapType: 'x mandatory' }} 
                     >
@@ -382,7 +391,18 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
                     {/* Mobile Navigation Hint */}
                     <div className="flex md:hidden justify-center gap-2 mt-2">
                         {currentProblem.items.map((_, i) => (
-                             <div key={i} className="w-1.5 h-1.5 rounded-full bg-white/20" />
+                             <button 
+                                key={i} 
+                                onClick={() => {
+                                    if (scrollRef.current) {
+                                        scrollRef.current.scrollTo({
+                                            left: i * scrollRef.current.clientWidth,
+                                            behavior: 'smooth'
+                                        });
+                                    }
+                                }}
+                                className={`rounded-full transition-all duration-300 ${activeIndex === i ? 'w-2 h-2 bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]' : 'w-1.5 h-1.5 bg-white/20'}`}
+                             />
                         ))}
                     </div>
 

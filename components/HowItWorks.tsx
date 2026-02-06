@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { MessageSquare, Zap, Activity } from 'lucide-react';
 
@@ -94,6 +94,32 @@ const PremiumCard: React.FC<{ step: typeof steps[0]; index: number }> = ({ step,
 };
 
 const HowItWorks: React.FC = () => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const handleScroll = () => {
+      if (scrollRef.current) {
+          // Approximate card width 85vw or similar. Using center point detection is robust.
+          const container = scrollRef.current;
+          const center = container.scrollLeft + container.clientWidth / 2;
+          const children = Array.from(container.children).filter((c) => (c as HTMLElement).tagName === 'DIV' && !(c as HTMLElement).classList.contains('hidden'));
+          
+          let closestIndex = 0;
+          let minDistance = Infinity;
+          
+          children.forEach((child, i) => {
+              const htmlChild = child as HTMLElement;
+              const childCenter = htmlChild.offsetLeft + htmlChild.offsetWidth / 2;
+              const dist = Math.abs(center - childCenter);
+              if (dist < minDistance) {
+                  minDistance = dist;
+                  closestIndex = i;
+              }
+          });
+          setActiveIndex(closestIndex);
+      }
+  };
+
   return (
     <section id="how-it-works" className="relative z-10 bg-[#030205] overflow-hidden min-h-screen flex flex-col justify-center py-24 lg:py-0">
       
@@ -134,13 +160,24 @@ const HowItWorks: React.FC = () => {
         </div>
 
         {/* Grid / Horizontal Scroll */}
-        <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-12 md:grid md:grid-cols-3 md:gap-8 md:pb-0 md:overflow-visible scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0">
+        <div 
+            ref={scrollRef}
+            onScroll={handleScroll}
+            className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-4 md:grid md:grid-cols-3 md:gap-8 md:pb-0 md:overflow-visible scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0"
+        >
           {steps.map((step, i) => (
             <PremiumCard key={i} step={step} index={i} />
           ))}
           
           {/* Spacer for mobile scroll */}
           <div className="w-4 shrink-0 md:hidden" />
+        </div>
+        
+        {/* Mobile Indicators */}
+        <div className="flex md:hidden justify-center gap-3 mt-6">
+            {steps.map((_, i) => (
+                 <div key={i} className={`rounded-full transition-all duration-300 ${activeIndex === i ? 'w-2 h-2 bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]' : 'w-1.5 h-1.5 bg-white/20'}`} />
+            ))}
         </div>
 
       </div>

@@ -12,10 +12,12 @@ export const SupabaseImg: React.FC<SupabaseImgProps> = ({ filename, alt, classNa
     // Generate URL synchronously/immediately to start fetching as soon as possible
     const src = useMemo(() => filename ? getAssetUrl(filename) : '', [filename]);
     const [error, setError] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false);
 
-    // Reset error state if filename changes
+    // Reset state if filename changes
     useEffect(() => {
         setError(false);
+        setIsLoaded(false);
     }, [filename]);
 
     if (error || !src) {
@@ -34,7 +36,12 @@ export const SupabaseImg: React.FC<SupabaseImgProps> = ({ filename, alt, classNa
         <img 
             src={src} 
             alt={alt} 
-            className={className} 
+            loading="lazy"
+            decoding="async"
+            // Reordered classes: Default transition first, then className overrides. 
+            // This allows 'transition-all' in className to supersede 'transition-opacity'.
+            className={`transition-opacity duration-700 ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'} ${className}`} 
+            onLoad={() => setIsLoaded(true)}
             onError={(e) => {
                 console.warn(`[SupabaseImg] Failed to load image: ${filename}`);
                 // Don't warn about bucket here, just set error state

@@ -109,6 +109,15 @@
       ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
       ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
       .text-glow { text-shadow: 0 0 30px rgba(139, 92, 246, 0.5); }
+      
+      /* Hide Scrollbar for Swiper Cards */
+      .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+      }
+      .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+      }
     </style>
 
     <script type="importmap">

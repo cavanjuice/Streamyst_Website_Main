@@ -276,7 +276,7 @@ const App: React.FC = () => {
 
   return (
     <div className="relative w-full min-h-screen bg-cosmic-950 text-white selection:bg-cyan-500/30 overflow-x-hidden">
-      <MemoizedParticleBackground />
+      {/* <MemoizedParticleBackground /> */}
       <GDPRBanner 
         forceOpen={isCookieBannerOpen} 
         onCloseForce={() => setIsCookieBannerOpen(false)} 
