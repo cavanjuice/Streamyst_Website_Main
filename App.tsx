@@ -19,6 +19,7 @@ import AboutPage from './components/AboutPage';
 import SurveyPage from './components/SurveyPage'; // Import Survey Page
 import HowItWorks from './components/HowItWorks';
 import GDPRBanner from './components/GDPRBanner'; // Import GDPR Banner
+import CreatorGallery from './components/CreatorGallery'; // Import Gallery
 
 // Legal Pages
 import LegalNotice from './components/LegalNotice';
@@ -265,6 +266,7 @@ const App: React.FC = () => {
               <MemoizedFeaturesShowcase />
               <MemoizedProductShowcase />
               <MemoizedInteractiveDemo />
+              <CreatorGallery />
               <MemoizedSingleStatShowcase />
               <MemoizedWaitlist onJoinSurvey={handleJoinSurvey} />
           </motion.div>
@@ -300,7 +302,7 @@ const App: React.FC = () => {
 
       {currentView !== 'survey' && (
         <MemoizedFooter 
-            onNavigate={(view) => setCurrentView(view)} 
+            onNavigate={(view, id) => handleNavigation(view as ViewState, id)} 
             onOpenCookieSettings={handleOpenCookieSettings}
         />
       )}

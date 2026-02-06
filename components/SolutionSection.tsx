@@ -185,7 +185,7 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
   return (
     <section ref={sectionRef} className="py-20 lg:py-32 relative z-10 overflow-hidden flex flex-col justify-center min-h-[90vh]">
       <div 
-        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[600px] rounded-full blur-[100px] pointer-events-none mix-blend-screen transition-all duration-1000 ${
+        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[600px] rounded-full blur-[100px] pointer-events-none mix-blend-screen transition-all duration-1000 ${
             leveledUp 
                 ? (isStreamer ? 'bg-violet-900/20' : 'bg-orange-900/20') 
                 : 'bg-gray-900/10'
@@ -385,7 +385,7 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                                             animate={{ opacity: 1 }}
                                             exit={{ opacity: 0 }}
                                             transition={{ duration: 0.3 }}
-                                            className="relative lg:absolute top-0 lg:top-[5px] left-0 w-full text-gray-400 text-[11px] lg:text-[10px] leading-tight lg:leading-relaxed font-light"
+                                            className="relative lg:absolute top-0 lg:top-[5px] left-0 w-full text-gray-400 text-[13px] lg:text-[12px] leading-tight lg:leading-relaxed font-light"
                                         >
                                             {currentState.desc}
                                         </motion.p>

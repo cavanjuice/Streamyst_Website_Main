@@ -16,7 +16,7 @@ const TwitchLogo = ({ size = 20 }: { size?: number }) => (
 );
 
 interface FooterProps {
-    onNavigate?: (view: any) => void;
+    onNavigate?: (view: any, id?: string) => void;
     onOpenCookieSettings?: () => void;
 }
 
@@ -70,8 +70,22 @@ const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCookieSettings }) => 
              <motion.div variants={itemVariants}>
                 <h4 className="font-bold text-white mb-4">Product</h4>
                 <ul className="space-y-2 text-sm text-gray-400">
-                    <li><button onClick={() => onNavigate?.('home')} className="hover:text-orange-400 transition-colors">The Vybe</button></li>
-                    <li><button onClick={() => onNavigate?.('home')} className="hover:text-orange-400 transition-colors">Software</button></li>
+                    <li>
+                        <button 
+                            onClick={() => onNavigate?.('home', 'product')} 
+                            className="hover:text-orange-400 transition-colors"
+                        >
+                            The Vybe
+                        </button>
+                    </li>
+                    <li>
+                        <button 
+                            onClick={() => onNavigate?.('home', 'how-it-works')} 
+                            className="hover:text-orange-400 transition-colors"
+                        >
+                            Software
+                        </button>
+                    </li>
                 </ul>
              </motion.div>
              

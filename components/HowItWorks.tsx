@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { MessageSquare, Zap, Activity } from 'lucide-react';
@@ -135,7 +134,7 @@ const HowItWorks: React.FC = () => {
         </div>
 
         {/* Grid / Horizontal Scroll */}
-        <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-12 md:grid md:grid-cols-3 md:gap-8 md:pb-0 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0">
+        <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-12 md:grid md:grid-cols-3 md:gap-8 md:pb-0 md:overflow-visible scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0">
           {steps.map((step, i) => (
             <PremiumCard key={i} step={step} index={i} />
           ))}
