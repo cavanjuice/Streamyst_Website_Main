@@ -1,3 +1,4 @@
+
 // @ts-nocheck
 import React, { useState, Suspense, useMemo, useRef, Component, ReactNode, useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -6,7 +7,7 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { OrbitControls, Center, Resize, Environment, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { Loader2, Eye, Zap, Sun } from 'lucide-react';
-import { supabase } from '../utils/supabaseClient';
+import { supabase, getAssetUrl } from '../utils/supabaseClient';
 
 // --- Error Boundary for 3D Model ---
 class ModelErrorBoundary extends Component<{ children: ReactNode, fallback: ReactNode }, { hasError: boolean }> {
@@ -452,7 +453,7 @@ const ProductShowcase: React.FC = () => {
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            className="relative h-[280px] md:h-[450px] lg:h-[500px] flex items-center justify-center group w-full"
+            className="relative h-[320px] md:h-[450px] lg:h-[500px] flex items-center justify-center group w-full"
           >
             <div className="absolute w-[120%] h-[120%] bg-violet-600/5 rounded-full blur-[100px] pointer-events-none" />
             
@@ -464,13 +465,13 @@ const ProductShowcase: React.FC = () => {
                     </div>
                  }>
                     <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 8], fov: 40 }} gl={{ preserveDrawingBuffer: true, alpha: true }}>
-                         <Environment preset="city" />
-                         
-                         <ModelErrorBoundary fallback={<FallbackModel activeFeature={activeFeature} />}>
+                        <Environment preset="city" />
+                        
+                        <ModelErrorBoundary fallback={<FallbackModel activeFeature={activeFeature} />}>
                             <VybeModel activeFeature={activeFeature} />
-                         </ModelErrorBoundary>
-                         
-                         <OrbitControls 
+                        </ModelErrorBoundary>
+                        
+                        <OrbitControls 
                             makeDefault 
                             enableZoom={false} 
                             enablePan={false}
@@ -478,7 +479,7 @@ const ProductShowcase: React.FC = () => {
                             dampingFactor={0.05}
                             minPolarAngle={0}
                             maxPolarAngle={Math.PI}
-                         />
+                        />
                     </Canvas>
                  </Suspense>
 

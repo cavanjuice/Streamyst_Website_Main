@@ -21,7 +21,7 @@ interface GalleryItem {
   creator?: CreatorInfo;
 }
 
-// All available items (Pool of 12)
+// All available items (Pool of 10 - Removed Lea)
 const CREATOR_POOL: GalleryItem[] = [
   // Originally Row 1
   { 
@@ -100,41 +100,38 @@ const CREATOR_POOL: GalleryItem[] = [
   { 
     src: 'STREAMER2.webp', 
     creator: { name: "Lilly", status: "Offline" }
-  },
-  { 
-    src: 'mad3stranspa.PNG', 
-    creator: { name: "Lea" }
-  },
-  { 
-    src: 'transpafiredmads.png', 
-    creator: { name: "Lea" }
-  },
+  }
 ];
 
 // Define the 9 fixed slots layout
-// Adjusted for Mobile (2 cols) and Desktop (4 cols)
+// Adjusted for Mobile (2 cols, first 3 only) and Desktop (4 cols, 9 slots)
 const GRID_LAYOUT = [
   { span: 'col-span-1 md:col-span-1 md:row-span-1' }, // 0
   { span: 'col-span-1 md:col-span-2 md:row-span-1' }, // 1
   { span: 'col-span-2 md:col-span-1 md:row-span-1' }, // 2 (Wide on Mobile)
-  { span: 'col-span-1 row-span-2 md:col-span-1 md:row-span-2' }, // 3 (Tall on both)
-  { span: 'col-span-1 md:col-span-1 md:row-span-1' }, // 4
-  { span: 'col-span-1 md:col-span-2 md:row-span-1' }, // 5
-  { span: 'hidden md:block md:col-span-1 md:row-span-1' }, // 6 (Hidden on Mobile)
-  { span: 'hidden md:block md:col-span-1 md:row-span-1' }, // 7 (Hidden on Mobile)
-  { span: 'hidden md:block md:col-span-1 md:row-span-1' }, // 8 (Hidden on Mobile)
+  { span: 'hidden md:block md:col-span-1 md:row-span-2' }, // 3 (Tall on Desktop, Hidden Mobile)
+  { span: 'hidden md:block md:col-span-1 md:row-span-1' }, // 4 (Hidden Mobile)
+  { span: 'hidden md:block md:col-span-2 md:row-span-1' }, // 5 (Hidden Mobile)
+  { span: 'hidden md:block md:col-span-1 md:row-span-1' }, // 6 (Hidden Mobile)
+  { span: 'hidden md:block md:col-span-1 md:row-span-1' }, // 7 (Hidden Mobile)
+  { span: 'hidden md:block md:col-span-1 md:row-span-1' }, // 8 (Hidden Mobile)
 ];
 
 const CreatorGallery: React.FC = () => {
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, margin: "100px" });
   const [isPageLoaded, setIsPageLoaded] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   
   // State: Which index from CREATOR_POOL is in which slot?
-  // Initialize with 0-8. Indices 9-11 are in reserve.
+  // Initialize with 0-8. Index 9 is in reserve.
   const [slotIndices, setSlotIndices] = useState<number[]>([0, 1, 2, 3, 4, 5, 6, 7, 8]);
 
   useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
     // 1. Preload Images for smooth swapping
     CREATOR_POOL.forEach(item => {
         const img = new Image();
@@ -152,6 +149,7 @@ const CreatorGallery: React.FC = () => {
         const timeout = setTimeout(handleLoad, 4000);
         return () => {
             window.removeEventListener('load', handleLoad);
+            window.removeEventListener('resize', checkMobile);
             clearTimeout(timeout);
         };
     }
@@ -161,6 +159,9 @@ const CreatorGallery: React.FC = () => {
   useEffect(() => {
     if (!isInView) return;
 
+    // Mobile: 4 seconds, Desktop: 7 seconds
+    const intervalTime = isMobile ? 4000 : 7000;
+
     const intervalId = setInterval(() => {
         setSlotIndices(current => {
             // Identify images NOT currently displayed
@@ -168,8 +169,11 @@ const CreatorGallery: React.FC = () => {
             
             if (availablePoolIndices.length === 0) return current;
 
-            // 1. Pick a random slot to update (0-8)
-            const slotToUpdate = Math.floor(Math.random() * current.length);
+            // 1. Pick a random slot to update
+            // On Mobile: Only update slots 0, 1, or 2 (the visible ones)
+            // On Desktop: Update any slot 0-8
+            const maxSlotIndex = isMobile ? 3 : current.length;
+            const slotToUpdate = Math.floor(Math.random() * maxSlotIndex);
             
             // 2. Pick a random image from the reserve
             const newImageIndex = availablePoolIndices[Math.floor(Math.random() * availablePoolIndices.length)];
@@ -179,10 +183,10 @@ const CreatorGallery: React.FC = () => {
             next[slotToUpdate] = newImageIndex;
             return next;
         });
-    }, 7000); // Increased from 4000ms to 7000ms
+    }, intervalTime);
 
     return () => clearInterval(intervalId);
-  }, [isInView]);
+  }, [isInView, isMobile]);
 
   const shouldRenderImages = isInView && isPageLoaded;
 
@@ -233,6 +237,9 @@ const CreatorGallery: React.FC = () => {
           {shouldRenderImages ? GRID_LAYOUT.map((layout, i) => {
             const itemIndex = slotIndices[i];
             const item = CREATOR_POOL[itemIndex];
+
+            // If item is missing (index out of bounds due to array length change), fallback
+            if (!item) return <div key={i} className={`rounded-lg bg-white/5 ${layout.span}`} />;
 
             return (
               <motion.div

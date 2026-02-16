@@ -156,14 +156,25 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ onOpenVideo }) => {
   const [hasScrolled, setHasScrolled] = useState(false);
+  const [isMobile, setIsMobile] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
       setHasScrolled(window.scrollY > 20);
     };
 
+    const checkMobile = () => {
+        setIsMobile(window.innerWidth < 1024); // lg breakpoint
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    
+    return () => {
+        window.removeEventListener('scroll', handleScroll);
+        window.removeEventListener('resize', checkMobile);
+    };
   }, []);
 
   const handleJoinWaitlist = () => {
@@ -205,12 +216,14 @@ const Hero: React.FC<HeroProps> = ({ onOpenVideo }) => {
                              }}
                          >
                              
-                             {/* 3D Canvas */}
-                             <div className="absolute inset-0 z-20 pointer-events-auto opacity-100">
-                                <Canvas camera={{ position: [0, 0, 10], fov: 45 }} gl={{ antialias: true, alpha: true }} dpr={[1, 2]}>
-                                    <HolographicField />
-                                </Canvas>
-                             </div>
+                             {/* 3D Canvas - DISABLED ON MOBILE TO PREVENT CRASHING */}
+                             {!isMobile && (
+                                <div className="absolute inset-0 z-20 pointer-events-auto opacity-100">
+                                    <Canvas camera={{ position: [0, 0, 10], fov: 45 }} gl={{ antialias: true, alpha: true }} dpr={[1, 2]}>
+                                        <HolographicField />
+                                    </Canvas>
+                                </div>
+                             )}
 
                              <SupabaseImg 
                                filename="DSC006262.webp"

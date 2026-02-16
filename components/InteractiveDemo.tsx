@@ -180,11 +180,13 @@ const InteractiveDemo: React.FC = () => {
 
   const activeEmotionData = emotions.find(e => e.id === activeEmotion);
 
-  // --- RESTORED ANIMATION LOGIC FROM OLD CODE ---
+  // --- ANIMATION LOGIC ---
+  // Reduced particle counts for mobile to improve performance
+  const particleCountMultiplier = isMobile ? 0.3 : 1;
 
   // Lightning Paths (Calculated dynamically as in old code)
   const lightningPaths = useMemo(() => {
-    return Array.from({ length: 8 }).map((_, i) => {
+    return Array.from({ length: Math.max(2, Math.floor(8 * particleCountMultiplier)) }).map((_, i) => {
         const angle = (i / 8) * Math.PI * 2;
         let d = `M 50 50`;
         let cx = 50;
@@ -198,11 +200,11 @@ const InteractiveDemo: React.FC = () => {
         }
         return d;
     });
-  }, [triggerKey]);
+  }, [triggerKey, particleCountMultiplier]);
 
   // Love Particles (Old Code Version)
   const loveParticles = useMemo(() => {
-    return Array.from({ length: 30 }).map((_, i) => {
+    return Array.from({ length: Math.max(5, Math.floor(30 * particleCountMultiplier)) }).map((_, i) => {
         const angle = Math.random() * Math.PI * 2;
         const velocity = 60 + Math.random() * 100;
         const lift = 150 + Math.random() * 250;
@@ -228,11 +230,11 @@ const InteractiveDemo: React.FC = () => {
             fill: i % 2 === 0 ? 'url(#heart-grad-1)' : 'url(#heart-grad-2)'
         };
     });
-  }, [triggerKey]);
+  }, [triggerKey, particleCountMultiplier]);
 
   // Joy Particles (Old Code Version)
   const joyParticles = useMemo(() => {
-    return Array.from({ length: 40 }).map((_, i) => {
+    return Array.from({ length: Math.max(8, Math.floor(40 * particleCountMultiplier)) }).map((_, i) => {
         const angle = (i / 40) * Math.PI * 2 + (Math.random() - 0.5); 
         const dist = 150 + Math.random() * 200;
         
@@ -247,11 +249,11 @@ const InteractiveDemo: React.FC = () => {
             color: Math.random() > 0.5 ? '#22c55e' : '#86efac' 
         };
     });
-  }, [triggerKey]);
+  }, [triggerKey, particleCountMultiplier]);
 
   // Clap Particles (Exact Logic from Old Code)
   const clapParticles = useMemo(() => {
-    return Array.from({ length: 60 }).map((_, i) => {
+    return Array.from({ length: Math.max(10, Math.floor(60 * particleCountMultiplier)) }).map((_, i) => {
         const startX = (Math.random() - 0.5) * 400; 
         const startY = 400; 
         const endX = startX + (Math.random() - 0.5) * 200;
@@ -274,7 +276,7 @@ const InteractiveDemo: React.FC = () => {
             duration: 3 + Math.random() * 2 
         };
     });
-  }, [triggerKey]);
+  }, [triggerKey, particleCountMultiplier]);
 
   return (
     <section 
@@ -463,7 +465,7 @@ const InteractiveDemo: React.FC = () => {
                                             transition={{ duration: 0.5, ease: "circOut" }}
                                             className="absolute bottom-0 w-60 h-40 bg-orange-200 rounded-full blur-[50px] mix-blend-hard-light"
                                         />
-                                        {[...Array(25)].map((_, i) => (
+                                        {[...Array(Math.floor(25 * particleCountMultiplier))].map((_, i) => (
                                             <motion.div
                                                 key={`flame-${i}`}
                                                 initial={{ opacity: 0, y: 50, scale: 0.5, x: (Math.random() - 0.5) * 50 }}

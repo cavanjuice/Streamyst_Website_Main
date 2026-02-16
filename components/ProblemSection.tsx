@@ -50,6 +50,14 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
   const [inputValue, setInputValue] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const msgIdRef = useRef(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+      const checkMobile = () => setIsMobile(window.innerWidth < 768);
+      checkMobile();
+      window.addEventListener('resize', checkMobile);
+      return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // --- Chat Generation Logic ---
   useEffect(() => {
@@ -84,9 +92,9 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
           }
         }
         
-        // Keep buffer size manageable
+        // Keep buffer size manageable. Reduced on mobile to 50.
         const combined = [...prev, ...newMsgs];
-        return combined.slice(-100); 
+        return combined.slice(isMobile ? -50 : -100); 
       });
     };
 
@@ -96,12 +104,13 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
       // Initial population for quiet
       if (messages.length === 0) addMessage(3);
     } else {
-      // CHAOS MODE - Adjusted for ~5000 viewers
-      interval = setInterval(() => addMessage(1), 150); 
+      // CHAOS MODE - Adjusted for mobile performance
+      // Desktop: 150ms, Mobile: 350ms to prevent scroll lag and layout shifts
+      interval = setInterval(() => addMessage(1), isMobile ? 350 : 150); 
     }
 
     return () => clearInterval(interval);
-  }, [mode]);
+  }, [mode, isMobile]);
 
   // --- Auto Scroll ---
   useEffect(() => {
