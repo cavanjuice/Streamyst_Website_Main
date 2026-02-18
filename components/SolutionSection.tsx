@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useScroll } from 'framer-motion';
 import { Activity, DollarSign, Users, Heart, ArrowUp, Eye, Crown, Signal, Zap, Wifi, Lock } from 'lucide-react';
@@ -320,7 +321,7 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                                                 opacity: currentFrame === index ? 1 : 0, 
                                                 scale: 0.95,
                                                 y: [0, -5, 0],
-                                                filter: `brightness(1.1) contrast(1.1)` 
+                                                filter: 'drop-shadow(0 0 0 rgba(0,0,0,0)) brightness(1.1) contrast(1.1) grayscale(0%)'
                                             }}
                                             transition={{ 
                                                 opacity: { duration: 0.5 },
@@ -345,7 +346,7 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                                             scale: leveledUp ? 0.95 : 1,
                                             y: leveledUp ? [0, -5, 0] : 0,
                                             filter: leveledUp 
-                                                ? `brightness(1.1) contrast(1.1)` 
+                                                ? 'drop-shadow(0 0 0 rgba(0,0,0,0)) grayscale(0%) brightness(1.1) contrast(1.1)' 
                                                 : 'drop-shadow(0 10px 20px rgba(0,0,0,0.5)) grayscale(100%) brightness(0.7) contrast(0.9)'
                                         }}
                                         transition={{ 

@@ -45,12 +45,12 @@ const Hero: React.FC<HeroProps> = ({ onOpenVideo }) => {
   };
 
   return (
-    // Updated: Poster layout for mobile (Image Top, Text Bottom Overlay), Grid for Desktop
+    // Updated: Constrained layout for desktop to avoid "too big" look
     <section className="relative h-[100dvh] w-full overflow-hidden flex flex-col">
         {/* Clean background - No Gradients */}
 
-        <div className="container mx-auto px-0 lg:px-24 xl:px-32 relative z-10 h-full max-w-7xl">
-            <div className="relative h-full w-full lg:grid lg:grid-cols-2 lg:items-center lg:gap-16 pt-0 lg:pt-24">
+        <div className="container mx-auto px-6 lg:px-12 relative z-10 h-full max-w-6xl">
+            <div className="relative h-full w-full lg:grid lg:grid-cols-2 lg:items-center lg:gap-20 pt-0 lg:pt-16">
                 
                 {/* --- IMAGE SECTION --- */}
                 {/* Mobile: Absolute Top. Reduced pt and height adjusted to pull image up closing the gap. */}
@@ -65,7 +65,7 @@ const Hero: React.FC<HeroProps> = ({ onOpenVideo }) => {
                          {/* Asset Wrapper: Reduced max-width on desktop to 360px to decrease scale and prevent overcrowding */}
                          {/* APPLIED MASK TO CONTAINER FOR CLEANER FADE */}
                          <div 
-                             className="relative z-10 w-full h-full max-h-[600px] lg:max-h-[65vh] lg:max-w-[360px] xl:max-w-[420px] flex items-center justify-center"
+                             className="relative z-10 w-full h-full max-h-[600px] lg:max-h-[60vh] lg:max-w-[340px] xl:max-w-[380px] flex items-center justify-center"
                              style={{
                                  // Adjusted mask to start fading lower (80%) for smoother blend without cutting body too early
                                  maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)',
