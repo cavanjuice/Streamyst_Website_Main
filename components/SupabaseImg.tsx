@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { getAssetUrl } from '../utils/supabaseClient';
 import { ImageOff } from 'lucide-react';
 
@@ -13,12 +13,23 @@ export const SupabaseImg: React.FC<SupabaseImgProps> = ({ filename, alt, classNa
     const src = useMemo(() => filename ? getAssetUrl(filename) : '', [filename]);
     const [error, setError] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
+    const imgRef = useRef<HTMLImageElement>(null);
 
     // Reset state if filename changes
     useEffect(() => {
         setError(false);
         setIsLoaded(false);
     }, [filename]);
+
+    // Check if image is already loaded (e.g. from cache) immediately upon mount or src change
+    useEffect(() => {
+        if (imgRef.current && imgRef.current.complete) {
+            // Check naturalWidth to ensure it's not a broken image 'complete' state
+            if (imgRef.current.naturalWidth > 0) {
+                setIsLoaded(true);
+            }
+        }
+    }, [src]);
 
     if (error || !src) {
         if (fallback) return <>{fallback}</>;
@@ -34,6 +45,7 @@ export const SupabaseImg: React.FC<SupabaseImgProps> = ({ filename, alt, classNa
 
     return (
         <img 
+            ref={imgRef}
             src={src} 
             alt={alt} 
             loading="lazy"

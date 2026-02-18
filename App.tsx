@@ -38,12 +38,18 @@ type ViewState = 'home' | 'about' | 'survey' | 'legal-notice' | 'privacy' | 'ter
 // Helper to determine initial view from URL
 const getInitialView = (): ViewState => {
   if (typeof window === 'undefined') return 'home';
-  const params = new URLSearchParams(window.location.search);
-  const view = params.get('view') as ViewState | null;
-  const validViews: ViewState[] = ['home', 'about', 'survey', 'legal-notice', 'privacy', 'terms', 'accessibility'];
-  
-  if (view && validViews.includes(view)) {
-    return view;
+  // In blob/sandboxed environments, accessing location might be restricted or weird, 
+  // but usually reading search params is safe. We wrap in try/catch just in case.
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const view = params.get('view') as ViewState | null;
+    const validViews: ViewState[] = ['home', 'about', 'survey', 'legal-notice', 'privacy', 'terms', 'accessibility'];
+    
+    if (view && validViews.includes(view)) {
+      return view;
+    }
+  } catch (e) {
+    console.warn("Could not parse URL parameters:", e);
   }
   return 'home';
 };
@@ -208,13 +214,18 @@ const App: React.FC = () => {
       trackEvent('page_view', { view: currentView });
 
       // Sync URL with current view for sharing
-      const url = new URL(window.location.href);
-      if (currentView === 'home') {
-          url.searchParams.delete('view');
-      } else {
-          url.searchParams.set('view', currentView);
+      try {
+        const url = new URL(window.location.href);
+        if (currentView === 'home') {
+            url.searchParams.delete('view');
+        } else {
+            url.searchParams.set('view', currentView);
+        }
+        window.history.replaceState({}, '', url.toString());
+      } catch (e) {
+        // Fallback for environments where history API is restricted (e.g., blob/sandboxed iframes)
+        console.debug('URL sync skipped due to environment restrictions.');
       }
-      window.history.replaceState({}, '', url.toString());
 
       const scrollTargetId = pendingScrollRef.current;
       
