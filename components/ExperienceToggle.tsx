@@ -244,12 +244,13 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: role === 'streamer' ? 20 : -20 }}
                     transition={{ duration: 0.4 }}
-                    className="flex flex-row items-center justify-center gap-6 md:grid md:grid-cols-2 md:gap-12 lg:gap-16"
+                    // LAYOUT UPDATE: Tighter gap, side-by-side on mobile
+                    className="flex flex-row items-center gap-3 xs:gap-6 md:grid md:grid-cols-2 md:gap-12 lg:gap-16"
                 >
-                    {/* LEFT: CHARACTER IMAGE - Reduced height */}
-                    <div className="relative w-56 h-72 sm:w-64 sm:h-80 md:w-full md:h-[260px] lg:h-[280px] flex items-center justify-center shrink-0 order-1 md:order-none">
+                    {/* LEFT: CHARACTER IMAGE - Shifted left with negative margin, reduced base width */}
+                    <div className="relative w-36 h-56 xs:w-44 xs:h-64 sm:w-56 sm:h-80 md:w-full md:h-[260px] lg:h-[350px] flex items-center justify-center shrink-0 order-1 md:order-none -ml-4 md:ml-0">
                          {/* Background Glow - Scaled down */}
-                         <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] md:w-[240px] md:h-[240px] rounded-full blur-[50px] lg:blur-[60px] opacity-40 ${role === 'streamer' ? 'bg-violet-600' : 'bg-orange-600'}`} />
+                         <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[160px] h-[160px] md:w-[240px] md:h-[240px] rounded-full blur-[40px] lg:blur-[60px] opacity-40 ${role === 'streamer' ? 'bg-violet-600' : 'bg-orange-600'}`} />
 
                          <SupabaseImg 
                              filename={role === 'streamer' ? "streamersad.webp" : "viewersad.webp"}
@@ -259,25 +260,25 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
                     </div>
 
                     {/* RIGHT: STATS & CONTENT */}
-                    <div className="relative z-10 order-2 md:order-none flex-1 min-w-0">
-                        {/* Reduced Font Size for Header */}
-                        <h3 className={`text-2xl sm:text-3xl lg:text-4xl font-display font-bold mb-3 italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r ${role === 'streamer' ? 'from-white via-violet-200 to-indigo-400' : 'from-white via-orange-200 to-red-400'}`}>
+                    <div className="relative z-10 order-2 md:order-none flex-1 min-w-0 flex flex-col justify-center">
+                        {/* Title - Responsive Size */}
+                        <h3 className={`text-xl xs:text-2xl sm:text-3xl lg:text-4xl font-display font-bold mb-2 italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r ${role === 'streamer' ? 'from-white via-violet-200 to-indigo-400' : 'from-white via-orange-200 to-red-400'}`}>
                             {activeStats.title}
                         </h3>
 
-                        {/* Reduced Font Size for Description */}
-                        <p className="text-gray-400 text-xs sm:text-sm lg:text-sm leading-relaxed mb-5 lg:mb-6 max-w-md font-light line-clamp-4 md:line-clamp-none">
+                        {/* Description - Smaller on mobile */}
+                        <p className="text-gray-400 text-[10px] xs:text-xs sm:text-sm lg:text-base leading-tight md:leading-relaxed mb-4 lg:mb-6 max-w-md font-light">
                             {activeStats.desc}
                         </p>
 
                         {/* Progress Bars - Scaled */}
-                        <div className="space-y-3 lg:space-y-3 mb-0 max-w-sm">
+                        <div className="space-y-2 lg:space-y-3 w-full">
                             {activeStats.bars.map((stat, i) => (
                                 <div key={i}>
                                     <div className="flex justify-between items-end mb-1">
                                         {/* Smaller labels */}
-                                        <span className="text-[10px] lg:text-[11px] font-bold text-gray-500 uppercase tracking-widest">{stat.label}</span>
-                                        <span className={`font-mono text-xs lg:text-xs font-bold ${role === 'streamer' ? 'text-violet-400' : 'text-orange-400'}`}>{stat.value}%</span>
+                                        <span className="text-[9px] lg:text-[11px] font-bold text-gray-500 uppercase tracking-widest truncate">{stat.label}</span>
+                                        <span className={`font-mono text-[10px] lg:text-xs font-bold ${role === 'streamer' ? 'text-violet-400' : 'text-orange-400'}`}>{stat.value}%</span>
                                     </div>
                                     <div className="h-1 lg:h-1.5 bg-white/5 rounded-full overflow-hidden">
                                         <motion.div 
@@ -392,7 +393,7 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
                     <div 
                         ref={scrollRef}
                         onScroll={handleScroll}
-                        className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 md:grid md:grid-cols-2 md:gap-4 lg:grid-cols-4 scrollbar-hide"
+                        className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 md:grid md:grid-cols-2 md:gap-4 lg:grid-cols-4 scrollbar-hide px-6 md:px-0"
                         style={{ scrollSnapType: 'x mandatory' }} 
                     >
                         {currentProblem.items.map((item, i) => (
