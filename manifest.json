@@ -1,0 +1,21 @@
+{
+  "name": "Streamyst",
+  "short_name": "Streamyst",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#030205",
+  "theme_color": "#030205",
+  "description": "Streamyst transforms livestreaming with interactive XR and haptic feedback. Creating meaningful connection between streamers and viewers.",
+  "icons": [
+    {
+      "src": "https://ssdjhkdkoqgmysgncfqa.supabase.co/storage/v1/object/public/assetscompressed/logostreamyst.webp",
+      "sizes": "192x192",
+      "type": "image/webp"
+    },
+    {
+      "src": "https://ssdjhkdkoqgmysgncfqa.supabase.co/storage/v1/object/public/assetscompressed/logostreamyst.webp",
+      "sizes": "512x512",
+      "type": "image/webp"
+    }
+  ]
+}

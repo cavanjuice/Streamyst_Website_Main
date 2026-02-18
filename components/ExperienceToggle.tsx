@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { EyeOff, MessageSquare, Settings, Frown, Ghost, Lock, BatteryWarning, MonitorStop } from 'lucide-react';
@@ -57,6 +58,7 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
   const scrollRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   // Preload images to prevent flickering when switching roles
   useEffect(() => {
@@ -71,6 +73,7 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
   }, []);
 
   const handleRoleChange = (newRole: Role) => {
+      setHasInteracted(true);
       setRole(newRole);
       // Tracking occurs in parent or we can track here if needed, but parent tracks primary switch
   };
@@ -292,62 +295,87 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
             </AnimatePresence>
         </div>
 
-        {/* 2. TOGGLE BUTTON - Scaled Down */}
+        {/* 2. TOGGLE BUTTON - Scaled Down & Sophisticated Diffused Animation */}
         <div className="flex justify-center mb-10 md:mb-10 relative z-20">
-             <div className="relative inline-flex p-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
-                 
-                 <motion.div 
-                   className="absolute top-1 bottom-1 rounded-full border border-white/10 bg-white/5 pointer-events-none z-0"
-                   initial={false}
-                   animate={{ 
-                       left: role === 'streamer' ? 'calc(100% - 4px)' : '4px',
-                       x: role === 'streamer' ? '-100%' : '0%',
-                       opacity: [0, 0.4, 0], 
-                       scale: [0.95, 1.02, 0.95]
-                   }}
-                   transition={{ 
-                       left: { type: "spring", stiffness: 300, damping: 30 },
-                       x: { type: "spring", stiffness: 300, damping: 30 },
-                       opacity: { duration: 3, repeat: Infinity, repeatDelay: 1.5, ease: "easeInOut" },
-                       scale: { duration: 3, repeat: Infinity, repeatDelay: 1.5, ease: "easeInOut" }
-                   }}
-                   style={{ 
-                       width: 'calc(50% - 4px)'
-                   }}
-                 />
+             <div className="relative rounded-full p-[1px] overflow-hidden cursor-pointer group">
+                
+                {/* The Diffused Light Sheen (Border Animation) */}
+                <AnimatePresence>
+                    {!hasInteracted && (
+                        <motion.div 
+                            className="absolute -inset-[1px] rounded-full overflow-hidden z-0"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0, transition: { duration: 0.5 } }}
+                        >
+                            {/* Rotating diffused gradient - slower and softer */}
+                            <motion.div 
+                                className="absolute inset-[-50%] bg-[conic-gradient(from_0deg,transparent_0%,rgba(255,255,255,0.05)_35%,rgba(255,255,255,0.6)_50%,rgba(255,255,255,0.05)_65%,transparent_100%)]"
+                                animate={{ rotate: 360 }}
+                                transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+                                style={{ filter: 'blur(3px)' }} 
+                            />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
-                 <motion.div 
-                   className="absolute top-1 bottom-1 left-1 rounded-full z-0"
-                   layout
-                   initial={false}
-                   animate={{ 
-                       x: role === 'streamer' ? '0%' : '100%',
-                       background: role === 'streamer' 
-                        ? 'linear-gradient(to right, #8b5cf6, #4f46e5)' 
-                        : 'linear-gradient(to right, #f97316, #dc2626)',
-                   }}
-                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                   style={{ 
-                       width: 'calc(50% - 4px)',
-                       boxShadow: role === 'streamer' 
-                        ? '0 0 30px 2px rgba(139, 92, 246, 0.4)' 
-                        : '0 0 30px 2px rgba(249, 115, 22, 0.4)' 
-                   }}
-                 />
-                 
-                 {/* BUTTONS - Reduced Width */}
-                 <button
-                   onClick={() => handleRoleChange('streamer')}
-                   className={`relative z-10 w-32 md:w-36 lg:w-40 py-2 md:py-2.5 rounded-full font-bold font-display tracking-widest text-[10px] md:text-xs transition-colors duration-200 ${role === 'streamer' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
-                 >
-                   STREAMER
-                 </button>
-                 <button
-                   onClick={() => handleRoleChange('viewer')}
-                   className={`relative z-10 w-32 md:w-36 lg:w-40 py-2 md:py-2.5 rounded-full font-bold font-display tracking-widest text-[10px] md:text-xs transition-colors duration-200 ${role === 'viewer' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
-                 >
-                   VIEWER
-                 </button>
+                {/* The Actual Content Container */}
+                <motion.div 
+                    className="relative z-10 inline-flex p-1 rounded-full bg-[#0A0A0B]/80 border border-white/10 backdrop-blur-md cursor-pointer hover:border-white/30 hover:bg-white/10"
+                >
+                    <motion.div 
+                        className="absolute top-1 bottom-1 rounded-full border border-white/10 bg-white/5 pointer-events-none z-0"
+                        initial={false}
+                        animate={{ 
+                            left: role === 'streamer' ? 'calc(100% - 4px)' : '4px',
+                            x: role === 'streamer' ? '-100%' : '0%',
+                            opacity: [0, 0.4, 0], 
+                            scale: [0.95, 1.02, 0.95]
+                        }}
+                        transition={{ 
+                            left: { type: "spring", stiffness: 300, damping: 30 },
+                            x: { type: "spring", stiffness: 300, damping: 30 },
+                            opacity: { duration: 3, repeat: Infinity, repeatDelay: 1.5, ease: "easeInOut" },
+                            scale: { duration: 3, repeat: Infinity, repeatDelay: 1.5, ease: "easeInOut" }
+                        }}
+                        style={{ 
+                            width: 'calc(50% - 4px)'
+                        }}
+                    />
+
+                    <motion.div 
+                        className="absolute top-1 bottom-1 left-1 rounded-full z-0"
+                        layout
+                        initial={false}
+                        animate={{ 
+                            x: role === 'streamer' ? '0%' : '100%',
+                            background: role === 'streamer' 
+                                ? 'linear-gradient(to right, #8b5cf6, #4f46e5)' 
+                                : 'linear-gradient(to right, #f97316, #dc2626)',
+                        }}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        style={{ 
+                            width: 'calc(50% - 4px)',
+                            boxShadow: role === 'streamer' 
+                                ? '0 0 30px 2px rgba(139, 92, 246, 0.4)' 
+                                : '0 0 30px 2px rgba(249, 115, 22, 0.4)' 
+                        }}
+                    />
+                    
+                    {/* BUTTONS - Reduced Width */}
+                    <button
+                        onClick={() => handleRoleChange('streamer')}
+                        className={`relative z-10 w-32 md:w-36 lg:w-40 py-2 md:py-2.5 rounded-full font-bold font-display tracking-widest text-[10px] md:text-xs transition-colors duration-200 ${role === 'streamer' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
+                    >
+                        STREAMER
+                    </button>
+                    <button
+                        onClick={() => handleRoleChange('viewer')}
+                        className={`relative z-10 w-32 md:w-36 lg:w-40 py-2 md:py-2.5 rounded-full font-bold font-display tracking-widest text-[10px] md:text-xs transition-colors duration-200 ${role === 'viewer' ? 'text-white' : 'text-gray-500 hover:text-white'}`}
+                    >
+                        VIEWER
+                    </button>
+                </motion.div>
              </div>
         </div>
 

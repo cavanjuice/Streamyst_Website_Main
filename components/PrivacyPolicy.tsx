@@ -32,7 +32,7 @@ const PrivacyPolicy: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                             <p>
                                 Streamyst BV<br />
                                 Antwerp, Belgium<br />
-                                Email: hello@streamyst.com
+                                Email: <a href="mailto:hello@streamyst.com" className="text-violet-400 hover:underline">hello@streamyst.com</a>
                             </p>
                         </section>
 
@@ -44,7 +44,7 @@ const PrivacyPolicy: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                                 <li><strong>Profile Data:</strong> Your role (Streamer, Viewer, or Other), streaming frequency, viewer count estimates, and platform usage habits.</li>
                                 <li><strong>Preference & Feedback Data:</strong> Information on your challenges (pain points), desired features, interaction styles, and free-text feedback regarding the livestreaming experience.</li>
                                 <li><strong>Economic Research Data:</strong> Pricing sensitivity data (Van Westendorp price sensitivity meter), preferred business models (subscription vs one-time), and purchase intent levels.</li>
-                                <li><strong>Usage Data:</strong> We collect IP addresses, browser types, and interaction data (clicks, heatmaps, scroll behavior) via Supabase and analytics tools. This is used to optimize the UX and is only active if you explicitly click "Accept" on our cookie banner.</li>
+                                <li><strong>Usage Data:</strong> IP addresses, browser type, and interaction data (clicks, heatmaps, scroll behavior) collected via analytics tools. <strong>Note:</strong> Behavioural tracking is only active if you explicitly click "Accept" on our cookie banner.</li>
                             </ul>
                         </section>
 
@@ -62,11 +62,15 @@ const PrivacyPolicy: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                         <section>
                             <h2 className="text-xl font-bold text-white mb-3">4. Third-Party Services</h2>
                             <p className="mb-2">
-                                We utilize specialized partners to ensure a high-quality experience. <strong>Streamyst BV maintains a Zero-Tolerance Policy: we never sell, license, or trade platform-derived data or user insights to third parties.</strong>
+                                We utilize specialized partners to ensure a high-quality experience. We maintain a <strong>Zero-Tolerance Policy</strong>: we never sell or license platform-derived data to third parties.
                             </p>
                             <ul className="list-disc pl-5 space-y-2 text-gray-400">
-                                <li><strong>Supabase:</strong> For secure database management. Data is stored on secure servers located within the European Union (EU-Central).</li>
-                                <li><strong>Analytics Tools:</strong> We use industry-standard tools for UX tracking. These scripts are strictly blocked until you provide consent via our Cookie Banner.</li>
+                                <li>
+                                    <strong>Supabase:</strong> For secure database management. Data is stored on servers within the European Union (EU-Central). A Data Processing Agreement (DPA) is in place with all sub-processors to ensure GDPR-equivalent protection.
+                                </li>
+                                <li>
+                                    <strong>Analytics Tools:</strong> We use industry-standard tools (Google Analytics) for UX tracking. These scripts are strictly blocked until you provide consent via our Cookie Banner.
+                                </li>
                             </ul>
                         </section>
 
@@ -86,6 +90,9 @@ const PrivacyPolicy: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                                 <li>Withdraw consent at any time (e.g., unsubscribing from emails).</li>
                                 <li>Lodge a complaint with the Belgian Data Protection Authority (GBA).</li>
                             </ul>
+                            <p className="mt-4">
+                                Contact: <a href="mailto:hello@streamyst.com" className="text-violet-400 hover:underline">hello@streamyst.com</a> to request any of the above data modifications.
+                            </p>
                         </section>
 
                         <section>

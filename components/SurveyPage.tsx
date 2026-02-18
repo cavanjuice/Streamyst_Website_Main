@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -457,10 +458,10 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
     const renderEmailStep = () => (
         <div className="max-w-xl mx-auto text-center relative">
             <h2 className="text-3xl font-display font-bold mb-6">
-                {initialEmail ? "Just to confirm—is this email correct?" : "Quick—we'll need your email to send you early access"}
+                {initialEmail ? "Just to confirm—is this email correct?" : "We would love to keep you in the loop"}
             </h2>
             <p className="text-gray-400 mb-8 leading-relaxed">
-                 {initialEmail ? "We grabbed this from your waitlist entry. We want to make sure your invite lands safely." : "We're building in public. We'll send you early invites first."}
+                 {initialEmail ? "We grabbed this from your waitlist entry. We want to make sure your invite lands safely." : "Sign up to be the first to get early access."}
             </p>
             
             <div className="relative group">

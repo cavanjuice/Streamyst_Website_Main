@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { SupabaseImg } from './SupabaseImg';
@@ -68,21 +69,21 @@ const CREATOR_POOL: GalleryItem[] = [
   }, 
   { 
     src: 'lily.webp', 
-    creator: { name: "Lilly", status: "Offline" }
+    creator: { name: "Lily", status: "Offline" }
   },
   { 
     src: '_DSC0148.webp', 
-    creator: { name: "Lilly", status: "Offline" }
+    creator: { name: "Lily", status: "Offline" }
   },
   
   // Originally Row 3 Fillers
   { 
     src: '_DSC0156purple.webp', 
-    creator: { name: "Lilly", status: "Offline" }
+    creator: { name: "Lily", status: "Offline" }
   },
   { 
     src: '_DSC0139.webp', 
-    creator: { name: "Lilly", status: "Offline" }
+    creator: { name: "Lily", status: "Offline" }
   },
   { 
     src: 'ayron.webp', 
@@ -99,7 +100,7 @@ const CREATOR_POOL: GalleryItem[] = [
   // Originally Row 4 (Now part of the swapping pool)
   { 
     src: 'STREAMER2.webp', 
-    creator: { name: "Lilly", status: "Offline" }
+    creator: { name: "Lily", status: "Offline" }
   }
 ];
 
@@ -247,7 +248,7 @@ const CreatorGallery: React.FC = () => {
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.05, duration: 0.5, ease: "circOut" }}
-                className={`relative group overflow-hidden rounded-lg bg-white/5 border border-white/10 ${layout.span}`}
+                className={`relative group overflow-hidden rounded-lg border border-white/10 ${layout.span}`}
               >
                 <AnimatePresence mode="wait">
                     <motion.div 
@@ -258,18 +259,32 @@ const CreatorGallery: React.FC = () => {
                         transition={{ duration: 1.5, ease: "easeInOut" }} // Slow and smooth fade
                         className="absolute inset-0 w-full h-full"
                     >
-                        {/* Image Container */}
-                        <div className="w-full h-full overflow-hidden bg-white/5">
+                        {/* Image Container with Custom Background */}
+                        <div className="w-full h-full overflow-hidden relative bg-[#050406]">
+                            {/* 1. Spotlight Gradient */}
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(45,35,65,0.4)_0%,rgba(5,4,6,1)_100%)]" />
+                            
+                            {/* 2. High-Fidelity Noise Texture (Inline SVG for sharpness/transparency) */}
+                            <div 
+                                className="absolute inset-0 opacity-30 mix-blend-overlay pointer-events-none"
+                                style={{
+                                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
+                                }}
+                            />
+                            
+                            {/* 3. Subtle Color Orbs */}
+                            <div className="absolute -top-[40%] -right-[40%] w-[80%] h-[80%] bg-violet-600/20 blur-[60px] rounded-full mix-blend-screen opacity-60" />
+                            <div className="absolute -bottom-[40%] -left-[40%] w-[80%] h-[80%] bg-orange-600/10 blur-[60px] rounded-full mix-blend-screen opacity-60" />
+
                             <SupabaseImg
                                 filename={item.src}
                                 alt={item.creator?.name || `Prototype Session`}
-                                // Snappy hover zoom kept separate from the slow swap fade
-                                className="w-full h-full object-cover grayscale-[40%] group-hover:grayscale-0 group-hover:scale-110 !transition-all !duration-500 ease-out transform-gpu will-change-transform"
+                                className="w-full h-full object-cover grayscale-[40%] group-hover:grayscale-0 group-hover:scale-110 !transition-all !duration-500 ease-out transform-gpu will-change-transform relative z-10"
                             />
                         </div>
 
                         {/* Overlay Content */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-3 md:p-4">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-3 md:p-4 z-20">
                             {item.creator && (
                                 <div className="translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-75 ease-out">
                                     <div className="flex items-end justify-between mb-1">

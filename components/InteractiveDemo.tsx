@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useMotionTemplate } from 'framer-motion';
-import { Sparkles, Wifi } from 'lucide-react';
+import { Sparkles, Wifi, MousePointer2 } from 'lucide-react';
 import { getAssetUrl, trackEvent } from '../utils/supabaseClient';
 
 // Custom Icons from Old Code to ensure exact animation match
@@ -83,6 +83,7 @@ const InteractiveDemo: React.FC = () => {
   const [activeEmotion, setActiveEmotion] = useState<Emotion | null>(null);
   const [triggerKey, setTriggerKey] = useState(0);
   const [shake, setShake] = useState(0);
+  const [hasInteracted, setHasInteracted] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     { id: 1, user: "System", text: "Connected to Streamyst server...", color: "text-gray-500", isSystem: true },
     { id: 2, user: "System", text: "Waiting for input...", color: "text-gray-500", isSystem: true }
@@ -143,6 +144,7 @@ const InteractiveDemo: React.FC = () => {
   const triggerReaction = (emotionId: Emotion) => {
     setActiveEmotion(emotionId);
     setTriggerKey(prev => prev + 1);
+    setHasInteracted(true);
     
     trackEvent('demo_emotion_click', { emotion: emotionId });
 
@@ -688,13 +690,39 @@ const InteractiveDemo: React.FC = () => {
 
                         {/* INTERACTION CONTROLS */}
                         <div>
-                            <div className="flex items-center gap-2 mb-2">
-                                <Sparkles className="w-3 h-3 text-violet-400 animate-pulse" />
-                                <span className="text-[9px] font-bold text-violet-200 tracking-wider uppercase">Send Feedback</span>
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-2">
+                                    <Sparkles className="w-3 h-3 text-violet-400 animate-pulse" />
+                                    <span className="text-[9px] font-bold text-violet-200 tracking-wider uppercase">
+                                        Tap to React
+                                    </span>
+                                </div>
+                                {!hasInteracted && (
+                                    <span className="text-[9px] text-violet-400 animate-pulse font-mono hidden md:inline-block">
+                                        &lt; Try it
+                                    </span>
+                                )}
                             </div>
                             
                             {/* Grid changes for mobile: single row (grid-cols-5) vs multi-row desktop */}
-                            <div className="grid grid-cols-5 lg:grid-cols-3 gap-2 lg:gap-2">
+                            <div className="grid grid-cols-5 lg:grid-cols-3 gap-2 lg:gap-3 relative">
+                                {/* Hint Overlay for Mobile */}
+                                <AnimatePresence>
+                                    {!hasInteracted && (
+                                        <motion.div 
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0 }}
+                                            className="absolute -top-10 left-1/2 -translate-x-1/2 z-50 pointer-events-none text-white drop-shadow-md lg:hidden"
+                                        >
+                                            <div className="flex flex-col items-center">
+                                                <span className="text-[9px] font-bold uppercase tracking-widest bg-violet-600 px-2 py-1 rounded-full mb-1 shadow-lg border border-violet-400">Tap Me</span>
+                                                <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-violet-600"></div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+
                                 {emotions.map((e) => (
                                     <motion.button
                                         key={e.id}
@@ -702,15 +730,21 @@ const InteractiveDemo: React.FC = () => {
                                         whileTap={{ scale: 0.95 }}
                                         onClick={() => triggerReaction(e.id)}
                                         className={`
-                                            relative h-9 lg:h-10 rounded-xl border border-white/10 overflow-hidden group transition-all duration-300
-                                            ${activeEmotion === e.id ? 'bg-white/10 border-white/40 ring-1 ring-white/20' : 'bg-white/5 hover:bg-white/10'}
+                                            relative h-11 lg:h-14 rounded-xl border transition-all duration-200 overflow-hidden group
+                                            ${activeEmotion === e.id 
+                                                ? 'bg-white/20 border-white/50 ring-1 ring-white/50 shadow-[0_0_20px_rgba(255,255,255,0.2)] scale-95' 
+                                                : 'bg-white/10 border-white/10 hover:bg-white/15 hover:border-white/30 hover:-translate-y-0.5 shadow-sm'}
                                         `}
                                     >
-                                        <div className={`absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity ${e.color}`} />
+                                        {/* Glossy highlight */}
+                                        <div className="absolute inset-x-0 top-0 h-[40%] bg-gradient-to-b from-white/10 to-transparent opacity-50 pointer-events-none" />
                                         
-                                        <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                                            <span className="text-lg lg:text-xl mb-0 lg:mb-0.5 filter drop-shadow-lg group-hover:scale-110 transition-transform duration-200">{e.emoji}</span>
-                                            <span className="hidden lg:block text-[7px] lg:text-[8px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-white transition-colors">{e.label}</span>
+                                        {/* Color hint on hover */}
+                                        <div className={`absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300 bg-${e.color.split('-')[1]}-500`} /> 
+                                        
+                                        <div className="relative z-10 flex flex-col items-center justify-center h-full gap-0.5">
+                                            <span className="text-xl lg:text-2xl filter drop-shadow-md group-hover:scale-110 transition-transform duration-200">{e.emoji}</span>
+                                            <span className="text-[7px] lg:text-[8px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-white transition-colors">{e.label}</span>
                                         </div>
 
                                         {activeEmotion === e.id && (
@@ -723,10 +757,10 @@ const InteractiveDemo: React.FC = () => {
                                 ))}
                             </div>
 
-                            <div className="mt-3 pt-2 border-t border-white/5">
+                            <div className="mt-4 pt-2 border-t border-white/5">
                                 <p className="text-[8px] lg:text-[9px] text-gray-600 font-mono leading-relaxed">
                                     &gt; STREAM STATUS: LIVE <br/>
-                                    &gt; WAITING FOR INPUT... <span className="animate-pulse text-violet-500">_</span>
+                                    &gt; {hasInteracted ? 'INPUT RECEIVED' : 'WAITING FOR INPUT...'} <span className="animate-pulse text-violet-500">_</span>
                                 </p>
                             </div>
                         </div>

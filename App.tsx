@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef, useCallback, memo, useTransition } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -33,6 +34,19 @@ import { trackEvent } from './utils/supabaseClient';
 
 // Define the View Type including new legal pages
 type ViewState = 'home' | 'about' | 'survey' | 'legal-notice' | 'privacy' | 'terms' | 'accessibility';
+
+// Helper to determine initial view from URL
+const getInitialView = (): ViewState => {
+  if (typeof window === 'undefined') return 'home';
+  const params = new URLSearchParams(window.location.search);
+  const view = params.get('view') as ViewState | null;
+  const validViews: ViewState[] = ['home', 'about', 'survey', 'legal-notice', 'privacy', 'terms', 'accessibility'];
+  
+  if (view && validViews.includes(view)) {
+    return view;
+  }
+  return 'home';
+};
 
 // --- MEMOIZED COMPONENTS ---
 const MemoizedNavbar = memo(Navbar);
@@ -135,7 +149,7 @@ const App: React.FC = () => {
   const [isPending, startTransition] = useTransition();
 
   const [isVideoOpen, setIsVideoOpen] = useState(false);
-  const [currentView, setCurrentView] = useState<ViewState>('home');
+  const [currentView, setCurrentView] = useState<ViewState>(getInitialView);
   const pendingScrollRef = useRef<string | null>(null);
   const [userEmail, setUserEmail] = useState('');
   const [isCookieBannerOpen, setIsCookieBannerOpen] = useState(false);
@@ -192,6 +206,15 @@ const App: React.FC = () => {
 
   useEffect(() => {
       trackEvent('page_view', { view: currentView });
+
+      // Sync URL with current view for sharing
+      const url = new URL(window.location.href);
+      if (currentView === 'home') {
+          url.searchParams.delete('view');
+      } else {
+          url.searchParams.set('view', currentView);
+      }
+      window.history.replaceState({}, '', url.toString());
 
       const scrollTargetId = pendingScrollRef.current;
       
@@ -262,8 +285,8 @@ const App: React.FC = () => {
               }} />
               <ProblemSection role={contentRole} />
               <SolutionSection role={contentRole} />
-              <MemoizedHowItWorks />
               <MemoizedFeaturesShowcase />
+              <MemoizedHowItWorks />
               <MemoizedProductShowcase />
               <MemoizedInteractiveDemo />
               <CreatorGallery />

@@ -157,7 +157,7 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
                 transition={{ delay: 0.1 }}
                 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl text-white mb-6 tracking-tight"
             >
-                The <span className="text-red-500">Visibility</span> Problem.
+                The <span className="text-red-500">Digital</span> Barrier.
             </motion.h2>
             
             <motion.p 
@@ -168,8 +168,8 @@ const ProblemSection: React.FC<ProblemSectionProps> = ({ role }) => {
                 className="text-lg md:text-xl text-gray-400 font-light leading-relaxed max-w-2xl mx-auto"
             >
                 {role === 'streamer' 
-                    ? "When the chat moves too fast, you lose the ability to connect with individuals. It becomes a wall of text."
-                    : "In a crowded chat, your voice is lost instantly. You're just another line of text scrolling by."
+                    ? "Streaming is a conversation, but currently, you’re only reading. There is a world of emotional data in your chat that is ready to be felt."
+                    : "You're more than a line of text. It’s time to let your streamer experience your presence, not just read it."
                 }
             </motion.p>
         </div>

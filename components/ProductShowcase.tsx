@@ -6,7 +6,7 @@ import { Canvas, useLoader, useFrame, useThree } from '@react-three/fiber';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { OrbitControls, Center, Resize, Environment, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
-import { Loader2, Eye, Zap, Sun } from 'lucide-react';
+import { Loader2, Eye, Zap, Sun, MousePointer2 } from 'lucide-react';
 import { supabase, getAssetUrl } from '../utils/supabaseClient';
 
 // --- Error Boundary for 3D Model ---
@@ -21,7 +21,7 @@ class ModelErrorBoundary extends Component<{ children: ReactNode, fallback: Reac
   }
 
   componentDidCatch(error: any, errorInfo: any) {
-    console.warn("3D Model failed to load. Switching to fallback.", error);
+    console.warn("3D Model failed to load:", error);
   }
 
   render() {
@@ -165,9 +165,9 @@ const FallbackModel = ({ activeFeature }: { activeFeature: number | null }) => {
                 <mesh ref={meshRef}>
                     <capsuleGeometry args={[1, 3, 4, 16]} />
                     <meshStandardMaterial 
-                        color="#1a1a1a" 
-                        roughness={0.2} 
-                        metalness={0.9} 
+                        color="#2a2a2a" 
+                        roughness={0.3} 
+                        metalness={0.8} 
                         emissive={activeFeature === 1 ? "#fbbf24" : "#000000"}
                         emissiveIntensity={activeFeature === 1 ? 0.5 : 0}
                     />
@@ -355,41 +355,12 @@ const LoadedVybeModel = ({ url, activeFeature }: { url: string, activeFeature: n
 };
 
 const VybeModel = ({ activeFeature }: { activeFeature: number | null }) => {
-    const [modelUrl, setModelUrl] = useState<string | null>(null);
-    const [error, setError] = useState(false);
-
-    useEffect(() => {
-        // --- CONFIGURATION ---
-        // Change this filename to point to a GLB/Draco file if you upload one.
-        // Current: 'Assembly vybe 3.obj' (OBJ)
-        // Option: 'assembly_model_3.glb' (GLB/Draco)
-        const FILENAME = 'Assembly vybe 3.obj'; 
-        
-        const { data } = supabase.storage.from('assets').getPublicUrl(FILENAME);
-        const url = data.publicUrl;
-
-        const checkUrl = async () => {
-            try {
-                const res = await fetch(url, { method: 'HEAD' });
-                if (res.ok) {
-                    setModelUrl(url);
-                } else {
-                    console.warn(`Model check failed with status: ${res.status}`);
-                    setError(true);
-                }
-            } catch (err) {
-                console.warn("Model validation error:", err);
-                setError(true);
-            }
-        };
-
-        checkUrl();
-    }, []);
-
-    if (error) return <FallbackModel activeFeature={activeFeature} />;
-    if (!modelUrl) return null;
-
-    return <LoadedVybeModel url={modelUrl} activeFeature={activeFeature} />;
+    // Reverted to 'assets' as per original file structure indicating where the file lives.
+    // Removed HEAD check to prevent potential CORS/Network blocking of pre-flight checks.
+    const FILENAME = 'Assembly vybe 3.obj'; 
+    const { data } = supabase.storage.from('assets').getPublicUrl(FILENAME);
+    
+    return <LoadedVybeModel url={data.publicUrl} activeFeature={activeFeature} />;
 };
 
 const ProductShowcase: React.FC = () => {
@@ -419,8 +390,8 @@ const ProductShowcase: React.FC = () => {
     }
   ];
 
-  const handleToggleFeature = (index: number) => {
-    setActiveFeature(prev => prev === index ? null : index);
+  const handleActivateFeature = (index: number) => {
+    setActiveFeature(index);
   };
 
   return (
@@ -466,6 +437,8 @@ const ProductShowcase: React.FC = () => {
                  }>
                     <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 8], fov: 40 }} gl={{ preserveDrawingBuffer: true, alpha: true }}>
                         <Environment preset="city" />
+                        <ambientLight intensity={0.5} />
+                        <directionalLight position={[10, 10, 5]} intensity={1} />
                         
                         <ModelErrorBoundary fallback={<FallbackModel activeFeature={activeFeature} />}>
                             <VybeModel activeFeature={activeFeature} />
@@ -483,8 +456,9 @@ const ProductShowcase: React.FC = () => {
                     </Canvas>
                  </Suspense>
 
-                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-white/10 text-[9px] font-mono tracking-[0.3em] pointer-events-none uppercase w-full text-center">
-                    Interactive Model • Tap Features to Preview
+                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-violet-300/50 text-[10px] font-mono tracking-[0.2em] pointer-events-none uppercase w-full justify-center">
+                    <MousePointer2 size={12} className="animate-bounce" />
+                    <span>Interactive Model • Explore Features</span>
                  </div>
             </div>
           </motion.div>
@@ -505,7 +479,7 @@ const ProductShowcase: React.FC = () => {
             </div>
 
             <motion.div 
-                className="space-y-2 lg:space-y-3 mb-6 lg:mb-8"
+                className="space-y-3 lg:space-y-4 mb-6 lg:mb-8"
                 variants={{
                     hidden: { opacity: 0 },
                     visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
@@ -521,32 +495,45 @@ const ProductShowcase: React.FC = () => {
                             hidden: { opacity: 0, x: 20 },
                             visible: { opacity: 1, x: 0, transition: { duration: 0.5 } }
                         }}
-                        className={`relative p-3 lg:p-5 rounded-xl lg:rounded-2xl border transition-all duration-500 cursor-pointer group flex justify-between items-center overflow-hidden ${activeFeature === i ? 'bg-white/5 border-white/20 shadow-2xl shadow-violet-500/10' : 'bg-transparent border-white/5 hover:border-white/10'}`}
-                        onClick={() => handleToggleFeature(i)}
-                        onMouseEnter={() => setActiveFeature(i)}
+                        className={`
+                            relative p-4 lg:p-5 rounded-xl border transition-all duration-300 cursor-pointer group flex justify-between items-center overflow-hidden
+                            ${activeFeature === i 
+                                ? 'bg-white/10 border-white/30 shadow-[0_0_30px_rgba(139,92,246,0.2)]' 
+                                : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
+                            }
+                        `}
+                        onClick={() => handleActivateFeature(i)}
+                        onMouseEnter={() => handleActivateFeature(i)}
                         onMouseLeave={() => setActiveFeature(null)}
+                        role="button"
+                        tabIndex={0}
                     >
-                        <div className="relative z-10 flex flex-col">
-                            <div className="flex items-center gap-3 mb-1">
-                                <span className={`text-[10px] font-mono font-bold transition-colors ${activeFeature === i ? item.accentColor : 'text-gray-700'}`}>0{i + 1}</span>
-                                <h3 className={`text-sm md:text-lg font-bold font-display transition-colors ${activeFeature === i ? 'text-white' : 'text-gray-400'}`}>
+                        {/* Hover highlight background */}
+                        <div className={`absolute inset-0 bg-gradient-to-r from-violet-500/10 to-transparent opacity-0 transition-opacity duration-500 ${activeFeature === i ? 'opacity-100' : 'group-hover:opacity-100'}`} />
+
+                        <div className="relative z-10 flex flex-col flex-1 mr-4">
+                            <div className="flex items-center gap-3 mb-1.5">
+                                <span className={`text-[10px] font-mono font-bold transition-colors ${activeFeature === i ? item.accentColor : 'text-gray-500 group-hover:text-gray-400'}`}>0{i + 1}</span>
+                                <h3 className={`text-base md:text-lg font-bold font-display transition-colors ${activeFeature === i ? 'text-white' : 'text-gray-300 group-hover:text-white'}`}>
                                     {item.title}
                                 </h3>
                             </div>
-                            <p className={`text-[10px] lg:text-xs transition-colors duration-500 ${activeFeature === i ? 'text-gray-300' : 'text-gray-600'}`}>
+                            <p className={`text-[11px] lg:text-xs leading-relaxed transition-colors duration-300 ${activeFeature === i ? 'text-gray-300' : 'text-gray-500 group-hover:text-gray-400'}`}>
                                 {item.description}
                             </p>
                         </div>
                         
-                        <div className={`transition-all duration-700 relative z-10 ${activeFeature === i ? item.accentColor + ' opacity-100 scale-110 drop-shadow-[0_0_10px_currentColor]' : 'text-gray-800 opacity-20'}`}>
-                            {item.icon}
+                        <div className="relative z-10 flex items-center gap-4">
+                            <div className={`transition-all duration-500 ${activeFeature === i ? item.accentColor + ' scale-110 drop-shadow-[0_0_10px_currentColor]' : 'text-gray-600 group-hover:text-gray-400'}`}>
+                                {item.icon}
+                            </div>
                         </div>
 
-                        {/* Animated background bar for active state */}
+                        {/* Animated bottom bar for active state */}
                         <motion.div 
-                            className={`absolute left-0 bottom-0 h-full w-[2px] ${item.accentColor.replace('text-', 'bg-')}`}
-                            initial={{ scaleY: 0 }}
-                            animate={{ scaleY: activeFeature === i ? 1 : 0 }}
+                            className={`absolute left-0 bottom-0 h-[2px] w-full ${item.accentColor.replace('text-', 'bg-')}`}
+                            initial={{ scaleX: 0, originX: 0 }}
+                            animate={{ scaleX: activeFeature === i ? 1 : 0 }}
                             transition={{ duration: 0.3 }}
                         />
                     </motion.div>

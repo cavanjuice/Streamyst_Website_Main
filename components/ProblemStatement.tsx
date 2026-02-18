@@ -9,11 +9,11 @@ interface ProblemStatementProps {
 const ProblemStatement: React.FC<ProblemStatementProps> = ({ role }) => {
   const content = {
     streamer: {
-      title: "Streaming feels lonely.",
+      title: "You have a community waiting to be felt.",
       description: "Whether you have 1 viewer or 1000, you're pouring your energy into a camera lens. The digital barrier blocks the real human connection you crave."
     },
     viewer: {
-      title: "Watching feels passive.",
+      title: "You're more than a message in the chat.",
       description: "You're trying to be part of the moment, but you're just text on a screen. The digital barrier keeps your excitement from truly reaching the Creator."
     }
   };
