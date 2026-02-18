@@ -45,37 +45,43 @@ const Hero: React.FC<HeroProps> = ({ onOpenVideo }) => {
   };
 
   return (
-    // Updated: Constrained layout for desktop to avoid "too big" look
-    <section className="relative h-[100dvh] w-full overflow-hidden flex flex-col">
+    <section className="relative h-[100dvh] w-full overflow-hidden flex flex-col bg-cosmic-950">
         {/* Clean background - No Gradients */}
 
         <div className="container mx-auto px-6 lg:px-12 relative z-10 h-full max-w-6xl">
-            <div className="relative h-full w-full lg:grid lg:grid-cols-2 lg:items-center lg:gap-20 pt-0 lg:pt-16">
+            {/* 
+               LAYOUT STRATEGY CHANGE:
+               Mobile: Flex Column. Image takes top portion (38%), Content takes bottom space.
+               Desktop: Grid with 2 columns.
+            */}
+            <div className="relative h-full w-full flex flex-col lg:grid lg:grid-cols-2 lg:items-center lg:gap-16 pt-16 lg:pt-24">
                 
                 {/* --- IMAGE SECTION --- */}
-                {/* Mobile: Absolute Top. Reduced pt and height adjusted to pull image up closing the gap. */}
-                {/* Desktop: Removed pt-24 to align vertically center with text */}
+                {/* Reduced height on mobile to 38vh to leave more room for text below */}
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 1, ease: "circOut" }}
-                    className="absolute top-0 left-0 w-full h-[65%] lg:static lg:h-auto lg:order-2 flex items-center justify-center z-0 lg:z-10 pt-20 lg:pt-0"
+                    className="relative w-full h-[38vh] lg:h-auto lg:order-2 flex items-end lg:items-center justify-center z-0 lg:z-10 shrink-0"
                 >
-                    <div className="relative w-full h-full flex items-center justify-center lg:justify-end">
-                         {/* Asset Wrapper: Reduced max-width on desktop to 360px to decrease scale and prevent overcrowding */}
-                         {/* APPLIED MASK TO CONTAINER FOR CLEANER FADE */}
+                    <div className="relative w-full h-full flex items-end lg:items-center justify-center lg:justify-end pb-0 lg:pb-0">
+                         {/* Asset Wrapper */}
                          <div 
-                             className="relative z-10 w-full h-full max-h-[600px] lg:max-h-[60vh] lg:max-w-[340px] xl:max-w-[380px] flex items-center justify-center"
+                             className="relative z-10 w-full h-full max-h-[600px] lg:max-h-[60vh] lg:max-w-[400px] xl:max-w-[450px] flex items-end lg:items-center justify-center"
                              style={{
-                                 // Adjusted mask to start fading lower (80%) for smoother blend without cutting body too early
-                                 maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)',
-                                 WebkitMaskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)'
+                                 // Subtle fade at bottom to blend with text section on mobile
+                                 maskImage: isMobile 
+                                    ? 'linear-gradient(to bottom, black 60%, transparent 100%)'
+                                    : 'linear-gradient(to bottom, black 80%, transparent 100%)',
+                                 WebkitMaskImage: isMobile 
+                                    ? 'linear-gradient(to bottom, black 60%, transparent 100%)'
+                                    : 'linear-gradient(to bottom, black 80%, transparent 100%)'
                              }}
                          >
                              <SupabaseImg 
                                filename="DSC006262.webp"
                                alt="Streamyst Wearable Tech"
-                               className="relative z-10 h-full w-auto object-contain lg:w-full lg:h-auto animate-float"
+                               className="relative z-10 h-full w-auto object-contain object-bottom lg:object-center animate-float"
                                // @ts-ignore
                                fetchPriority="high"
                                loading="eager"
@@ -85,9 +91,8 @@ const Hero: React.FC<HeroProps> = ({ onOpenVideo }) => {
                 </motion.div>
 
                 {/* --- TEXT SECTION --- */}
-                {/* Mobile: Absolute Bottom Overlay. Increased pb to push buttons up away from scroll indicator. */}
-                {/* Desktop: Removed padding to allow grid centering to work perfectly */}
-                <div className="absolute bottom-0 left-0 w-full lg:static lg:w-auto z-20 lg:order-1 flex flex-col items-center lg:items-start text-center lg:text-left pb-24 pt-12 px-6 lg:py-0 lg:px-0 bg-gradient-to-t from-cosmic-950 via-cosmic-950/60 to-transparent lg:bg-none">
+                {/* Mobile: Pushed up with negative margin to blend. Tightened vertical spacing. */}
+                <div className="relative z-20 lg:order-1 flex flex-col items-center lg:items-start text-center lg:text-left flex-1 lg:flex-none justify-start lg:justify-center -mt-6 lg:mt-0 pt-2 lg:pt-0">
                     
                     <motion.div
                         initial={{ opacity: 0, y: 15 }}
@@ -115,7 +120,7 @@ const Hero: React.FC<HeroProps> = ({ onOpenVideo }) => {
                         initial={{ opacity: 0, y: 15 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.4 }}
-                        className="font-body text-sm sm:text-base lg:text-base xl:text-lg text-gray-400 max-w-lg mb-6 lg:mb-10 leading-relaxed font-light"
+                        className="font-body text-sm sm:text-base lg:text-base xl:text-lg text-gray-400 max-w-lg mb-6 lg:mb-10 leading-relaxed font-light px-4 lg:px-0"
                     >
                         STREAMYST transforms emotional reactions into physical sensations. Don't just read the chat, <span className="text-white font-medium">feel the room</span>.
                     </motion.p>
@@ -128,7 +133,7 @@ const Hero: React.FC<HeroProps> = ({ onOpenVideo }) => {
                     >
                         <button
                             onClick={handleJoinWaitlist}
-                            className="group relative px-6 py-3 bg-white text-cosmic-950 font-bold text-xs sm:text-sm lg:text-base rounded-full transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_40px_rgba(255,255,255,0.35)] overflow-hidden"
+                            className="group relative px-5 py-3 md:px-6 md:py-3 bg-white text-cosmic-950 font-bold text-xs sm:text-sm lg:text-base rounded-full transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_40px_rgba(255,255,255,0.35)] overflow-hidden"
                         >
                             <span className="relative z-10 flex items-center justify-center gap-2 group-hover:translate-x-1 transition-transform">
                                 Join the Waitlist <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -138,7 +143,7 @@ const Hero: React.FC<HeroProps> = ({ onOpenVideo }) => {
 
                         <button
                             onClick={handleWatchDemo}
-                            className="relative px-6 py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-semibold text-xs sm:text-sm lg:text-base rounded-full transition-all duration-300 flex items-center justify-center gap-2 group backdrop-blur-sm"
+                            className="relative px-5 py-3 md:px-6 md:py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-semibold text-xs sm:text-sm lg:text-base rounded-full transition-all duration-300 flex items-center justify-center gap-2 group backdrop-blur-sm"
                         >
                              <div className="relative flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/10 border border-white/20 group-hover:border-violet-400 transition-colors">
                                 <span className="absolute w-full h-full rounded-full bg-violet-500/30 animate-ping opacity-0 group-hover:opacity-100" />

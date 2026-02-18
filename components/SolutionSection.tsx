@@ -321,7 +321,7 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                                                 opacity: currentFrame === index ? 1 : 0, 
                                                 scale: 0.95,
                                                 y: [0, -5, 0],
-                                                filter: 'drop-shadow(0 0 0 rgba(0,0,0,0)) brightness(1.1) contrast(1.1) grayscale(0%)'
+                                                filter: 'brightness(1.1) contrast(1.1) grayscale(0%)'
                                             }}
                                             transition={{ 
                                                 opacity: { duration: 0.5 },
@@ -345,9 +345,10 @@ const SolutionSection: React.FC<SolutionSectionProps> = ({ role }) => {
                                             opacity: 1, 
                                             scale: leveledUp ? 0.95 : 1,
                                             y: leveledUp ? [0, -5, 0] : 0,
+                                            // FIX: Removed drop-shadow to prevent keyframe parsing errors in some browsers
                                             filter: leveledUp 
-                                                ? 'drop-shadow(0 0 0 rgba(0,0,0,0)) grayscale(0%) brightness(1.1) contrast(1.1)' 
-                                                : 'drop-shadow(0 10px 20px rgba(0,0,0,0.5)) grayscale(100%) brightness(0.7) contrast(0.9)'
+                                                ? 'grayscale(0%) brightness(1.1) contrast(1.1)' 
+                                                : 'grayscale(100%) brightness(0.7) contrast(0.9)'
                                         }}
                                         transition={{ 
                                             opacity: { duration: 0.5 },
