@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { getAssetUrl } from '../utils/supabaseClient';
@@ -36,36 +37,15 @@ const features = [
 const FeaturesShowcase: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  // Create 3 sets for infinite scroll illusion on mobile
-  const extendedFeatures = [...features, ...features, ...features];
 
   useEffect(() => {
     const container = scrollRef.current;
     if (!container) return;
 
-    // Get all card elements
-    const cards = Array.from(container.children) as HTMLElement[];
-    if (cards.length < extendedFeatures.length) return;
-
-    // Initialize Scroll Position: Center on Index 5 (Set 2, Card 2 "Engage Audiences")
-    const initializeScroll = () => {
-        if (container.scrollWidth <= container.clientWidth) return;
-        
-        // Target: Index 5 (Second card of the middle set)
-        const targetIndex = 5; 
-        
-        if (cards[targetIndex]) {
-            const card = cards[targetIndex];
-            const scrollPos = card.offsetLeft - (container.clientWidth / 2) + (card.clientWidth / 2);
-            container.scrollLeft = scrollPos;
-        }
-    };
-
     const handleScroll = () => {
-         if (container.scrollWidth <= container.clientWidth) return;
-
          // Determine which card is currently closest to the center of the viewport
          const containerCenter = container.scrollLeft + container.clientWidth / 2;
+         const cards = Array.from(container.children) as HTMLElement[];
          
          let closestCard = cards[0];
          let minDistance = Infinity;
@@ -80,42 +60,11 @@ const FeaturesShowcase: React.FC = () => {
              }
          });
 
-         const rawIndex = cards.indexOf(closestCard);
-         // Map raw index back to 0-3 range for indicators
-         const realIndex = rawIndex % features.length;
-         setActiveIndex(realIndex);
-
-         const setLength = features.length; // 4 cards per set
-
-         // Infinite Loop Logic based on Active Card Index
-         // Set 1: Indices 0-3
-         // Set 2: Indices 4-7 (Target Zone)
-         // Set 3: Indices 8-11
-
-         // If we drift into Set 1 (left), jump forward to Set 2
-         if (rawIndex < setLength) {
-             const targetIndex = rawIndex + setLength;
-             // Calculate precise distance between the identical cards
-             const delta = cards[targetIndex].offsetLeft - cards[rawIndex].offsetLeft;
-             container.scrollLeft += delta;
-         }
-         // If we drift into Set 3 (right), jump backward to Set 2
-         else if (rawIndex >= setLength * 2) {
-             const targetIndex = rawIndex - setLength;
-             const delta = cards[rawIndex].offsetLeft - cards[targetIndex].offsetLeft;
-             container.scrollLeft -= delta;
-         }
+         const index = cards.indexOf(closestCard);
+         if (index !== -1) setActiveIndex(index);
     };
 
-    // Initialize after layout
-    requestAnimationFrame(() => {
-        initializeScroll();
-        // Add listener after initial scroll to avoid triggering it during setup
-        setTimeout(() => {
-            container.addEventListener('scroll', handleScroll);
-        }, 100);
-    });
-    
+    container.addEventListener('scroll', handleScroll);
     return () => container.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -150,8 +99,8 @@ const FeaturesShowcase: React.FC = () => {
         </div>
 
         {/* 
-            MOBILE: Horizontal Scroll Snap with Infinite Loop logic
-            DESKTOP: Grid (duplicates hidden)
+            MOBILE: Standard Horizontal Scroll Snap
+            DESKTOP: Grid
         */}
         <motion.div 
             ref={scrollRef}
@@ -163,16 +112,15 @@ const FeaturesShowcase: React.FC = () => {
                 visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
             }}
             className="flex overflow-x-auto snap-x snap-mandatory gap-4 pt-12 pb-8 lg:pt-0 lg:grid lg:grid-cols-4 lg:gap-x-6 lg:gap-y-8 lg:overflow-visible scrollbar-hide -mx-6 px-6 lg:mx-0 lg:px-0"
-            style={{ scrollBehavior: 'auto' }} // Ensure instant jumps don't animate
         >
-          {extendedFeatures.map((feature, i) => (
+          {features.map((feature, i) => (
             <motion.div
               key={i}
               variants={{
                  hidden: { opacity: 0, y: 40 },
                  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
               }}
-              className={`snap-center shrink-0 w-[85vw] sm:w-[350px] lg:w-auto group relative flex flex-col justify-end min-h-[380px] lg:min-h-[420px] hover:-translate-y-2 transition-transform duration-500 ${i >= features.length ? 'lg:hidden' : ''}`}
+              className="snap-center shrink-0 w-[85vw] sm:w-[350px] lg:w-auto group relative flex flex-col justify-end min-h-[380px] lg:min-h-[420px] hover:-translate-y-2 transition-transform duration-500"
             >
               {/* 
                   THE CARD BASE 
@@ -232,10 +180,10 @@ const FeaturesShowcase: React.FC = () => {
           ))}
         </motion.div>
 
-        {/* Mobile Indicators */}
-        <div className="flex lg:hidden justify-center gap-3 mt-6">
+        {/* Mobile Indicators - Using exact animated element style from HowItWorks */}
+        <div className="flex lg:hidden justify-center gap-2 mt-6">
             {features.map((_, i) => (
-                 <div key={i} className={`rounded-full transition-all duration-300 ${activeIndex === i ? 'w-2 h-2 bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]' : 'w-1.5 h-1.5 bg-white/20'}`} />
+                 <div key={i} className={`h-1 rounded-full transition-all duration-300 ${activeIndex === i ? 'w-8 bg-violet-500' : 'w-2 bg-white/20'}`} />
             ))}
         </div>
 

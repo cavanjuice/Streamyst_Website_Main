@@ -137,74 +137,74 @@ const STREAMER_PRICING_MODELS = [
         id: 'free_start',
         title: 'Free-to-Start',
         desc: 'I want to try Streamyst for free and unlock more as my channel grows.',
-        features: ['Free core features', 'Paid visual and experience upgrades (€9,99–14,99 / month)']
+        features: ['Free core features', 'Paid visual upgrades']
     },
     {
         id: 'brand_supported',
         title: 'Brand Supported',
-        desc: 'I want me and my audiences to use the features of streamyst for free, but it will be watermarked with brands every so often.',
-        features: ['Free interactive experience with branded ads woven into', 'Create branded overlay presets']
+        desc: 'Free usage for me and audience, supported by watermarked brand ads.',
+        features: ['Free interactive experience', 'Branded overlay presets']
     },
     {
         id: 'creator_sub',
         title: 'Creator Subscription',
-        desc: 'I want full access to all digital overlays, customization, and updates, no hardware required.',
-        features: ['Customizable overlays and experiences', '€14,99 / month']
+        desc: 'Full access to all digital overlays and customization, no hardware required.',
+        features: ['Customizable overlays', '€14,99 / month']
     },
     {
         id: 'community_growth',
-        title: 'Community-Supported Growth',
-        desc: 'I want my community to help unlock Streamyst features together.',
-        features: ['Free base experience', 'Monthly goal-based upgrades (hardware/software)']
+        title: 'Community-Supported',
+        desc: 'My community helps unlock Streamyst features together through goals.',
+        features: ['Free base experience', 'Monthly goal upgrades']
     },
     {
         id: 'hardware_first',
-        title: 'Hardware-First Creator',
-        desc: 'I want to feel the digital experience myself, for better immersion, interaction with my audience and makes me emotionally more connected!',
-        features: ['€150 device + free core features', '€9,99 / month digital custom service']
+        title: 'Hardware-First',
+        desc: 'I want to feel the digital experience myself for better immersion.',
+        features: ['€150 device', '€9,99 / month service']
     },
     {
         id: 'affiliate_hardware',
-        title: 'Affiliate Hardware Program',
-        desc: 'I like earning hardware through engagement rather than paying upfront',
-        features: ['Reach +/- 500 unique extention interactions through digital overlays', 'Device discounted at €50 instead of €150']
+        title: 'Affiliate Program',
+        desc: 'Earn hardware through engagement rather than paying upfront.',
+        features: ['Reach interaction goals', 'Discounted device']
     },
     {
         id: 'all_in',
         title: 'All-In Creator',
-        desc: 'I want to own Streamyst outright with no monthly fees.',
-        features: ['€349 one-time for both hardware and service', 'Lifetime digital overlays + continuous support']
+        desc: 'Own Streamyst outright with no monthly fees.',
+        features: ['€349 one-time', 'Lifetime support']
     }
 ];
 
 const VIEWER_PRICING_MODELS = [
     {
         id: 'community_goal',
-        title: 'Community Goal Contributions',
-        desc: 'I like contributing small amounts together with others to unlock Streamyst features.',
-        features: ['€1–€3 micro-contributions', 'Visible collective achievement']
+        title: 'Community Goals',
+        desc: 'Contributing small amounts together to unlock features.',
+        features: ['Micro-contributions', 'Collective achievement']
     },
     {
         id: 'interaction_boosts',
         title: 'Interaction Boosts',
-        desc: 'I’d pay occasionally to trigger special interactions or effects during streams.',
-        features: ['One-time boosts (Similar to bits)', 'Visual + physical responses']
+        desc: 'Pay occasionally to trigger special effects.',
+        features: ['One-time boosts', 'Visual responses']
     },
     {
         id: 'monthly_supporter',
-        title: 'Monthly Supporter Tier',
-        desc: 'I’d support Streamyst’s service as part of my monthly support for a streamer.',
-        features: ['€3–€5 / month', 'Receive exclusive interactions with streamer overlays']
+        title: 'Monthly Supporter',
+        desc: 'Support service as part of monthly sub.',
+        features: ['€3–€5 / month', 'Exclusive interactions']
     },
     {
         id: 'hardware_unlock',
-        title: 'Hardware Unlock Campaign',
-        desc: 'I’d help save up to unlock the physical Streamyst device for a streamer I love.',
-        features: ['Small donations throughout streams', 'Community milestones!']
+        title: 'Hardware Campaign',
+        desc: 'Help save up to unlock the device for a streamer.',
+        features: ['Donations', 'Community milestones']
     },
     {
         id: 'no_pay',
-        title: 'I wouldn’t pay for this',
+        title: 'No Payment',
         desc: 'I prefer watching without spending money.',
         features: []
     }
@@ -228,7 +228,7 @@ const Card: React.FC<CardProps> = ({
         whileHover={{ scale: 1.02, y: -2 }}
         whileTap={{ scale: 0.98 }}
         className={`
-            cursor-pointer relative p-6 rounded-2xl border transition-all duration-300 overflow-hidden group
+            cursor-pointer relative p-3 md:p-6 rounded-xl md:rounded-2xl border transition-all duration-300 overflow-hidden group
             ${selected 
                 ? 'bg-violet-900/20 border-violet-500 shadow-[0_0_30px_rgba(139,92,246,0.3)]' 
                 : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10'}
@@ -244,11 +244,12 @@ const Card: React.FC<CardProps> = ({
                 exit={{ opacity: 0 }}
             />
         )}
-        <div className="relative z-10">
+        <div className="relative z-10 w-full">
             {children}
         </div>
-        <div className={`absolute top-4 right-4 w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${selected ? 'bg-violet-500 border-violet-500' : 'border-white/20'}`}>
-            {selected && <Check size={14} className="text-white" />}
+        <div className={`absolute top-2 right-2 md:top-4 md:right-4 w-4 h-4 md:w-6 md:h-6 rounded-full border flex items-center justify-center transition-colors ${selected ? 'bg-violet-500 border-violet-500' : 'border-white/20'}`}>
+            {selected && <Check size={12} className="text-white md:hidden" />}
+            {selected && <Check size={14} className="text-white hidden md:block" />}
         </div>
     </motion.div>
 );
@@ -381,8 +382,8 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
     };
 
     const renderScale = (val: number, setVal: (n: number) => void, minLabel = "Low", maxLabel = "High") => (
-        <div className="relative mb-8 px-4">
-            <div className="flex justify-between text-2xl mb-8">
+        <div className="relative mb-4 md:mb-8 px-2 md:px-4">
+            <div className="flex justify-between text-lg md:text-2xl mb-4 md:mb-8">
                 <span className={`transition-opacity ${val < 4 ? 'opacity-100' : 'opacity-30'}`}>😐</span>
                 <span className={`transition-opacity ${val > 7 ? 'opacity-100' : 'opacity-30'}`}>🤩</span>
             </div>
@@ -391,28 +392,28 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 min="0" max="10" 
                 value={val}
                 onChange={(e) => setVal(parseInt(e.target.value))}
-                className="w-full h-4 bg-white/10 rounded-full appearance-none cursor-pointer accent-violet-500"
+                className="w-full h-3 md:h-4 bg-white/10 rounded-full appearance-none cursor-pointer accent-violet-500 touch-none"
             />
-            <div className="flex justify-between text-xs text-gray-500 mt-4 font-mono uppercase tracking-widest">
+            <div className="flex justify-between text-[10px] md:text-xs text-gray-500 mt-3 md:mt-4 font-mono uppercase tracking-widest">
                 <span>{minLabel}</span>
                 <span>{maxLabel}</span>
             </div>
-            <div className="mt-4 text-4xl font-bold text-violet-400 text-center">{val} / 10</div>
+            <div className="mt-3 md:mt-4 text-2xl md:text-4xl font-bold text-violet-400 text-center">{val} / 10</div>
         </div>
     );
 
     const renderMultiSelect = (options: string[], selected: string[], field: any) => (
-        <div className="grid md:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3">
             {options.map((opt) => (
                 <div 
                     key={opt}
                     onClick={() => toggleArrayItem(field, opt)}
-                    className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${selected?.includes(opt) ? 'bg-violet-900/20 border-violet-500' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
+                    className={`p-3 md:p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${selected?.includes(opt) ? 'bg-violet-900/20 border-violet-500' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
                 >
-                    <div className={`mt-0.5 w-5 h-5 rounded border flex items-center justify-center shrink-0 ${selected?.includes(opt) ? 'border-violet-500 bg-violet-500' : 'border-gray-500'}`}>
-                        {selected?.includes(opt) && <Check size={14} className="text-white" />}
+                    <div className={`mt-0.5 w-4 h-4 md:w-5 md:h-5 rounded border flex items-center justify-center shrink-0 ${selected?.includes(opt) ? 'border-violet-500 bg-violet-500' : 'border-gray-500'}`}>
+                        {selected?.includes(opt) && <Check size={12} className="text-white" />}
                     </div>
-                    <span className="text-sm">{opt}</span>
+                    <span className="text-xs md:text-sm">{opt}</span>
                 </div>
             ))}
         </div>
@@ -423,16 +424,16 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
             value={value || ''}
             onChange={(e) => updateData(field, e.target.value)}
             placeholder={placeholder}
-            className="w-full h-40 bg-[#1A1830] border border-white/10 rounded-xl p-5 text-white placeholder-gray-500 focus:border-violet-500 outline-none resize-none"
+            className="w-full h-24 md:h-40 bg-[#1A1830] border border-white/10 rounded-xl p-3 md:p-5 text-sm md:text-base text-white placeholder-gray-500 focus:border-violet-500 outline-none resize-none"
         />
     );
 
     const renderContinue = (disabled = false) => (
-        <div className="mt-12 flex justify-end">
+        <div className="mt-4 md:mt-12 flex justify-end">
             <button 
                 onClick={nextStep}
                 disabled={disabled}
-                className="px-8 py-3 bg-white text-black font-bold rounded-full hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2.5 md:px-8 md:py-3 bg-white text-black text-sm md:text-base font-bold rounded-full hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 Continue →
             </button>
@@ -440,15 +441,15 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
     );
 
     const renderConsent = () => (
-        <div className="mt-8 p-4 bg-white/5 border border-white/10 rounded-xl">
+        <div className="mt-4 md:mt-8 p-3 md:p-4 bg-white/5 border border-white/10 rounded-xl">
             <div 
                 className="flex items-start gap-3 cursor-pointer"
                 onClick={() => setHasAgreedToTerms(!hasAgreedToTerms)}
             >
-                <div className={`mt-0.5 w-5 h-5 rounded border flex items-center justify-center shrink-0 transition-colors ${hasAgreedToTerms ? 'bg-violet-500 border-violet-500' : 'border-gray-500 hover:border-white'}`}>
-                    {hasAgreedToTerms && <Check size={14} className="text-white" />}
+                <div className={`mt-0.5 w-4 h-4 md:w-5 md:h-5 rounded border flex items-center justify-center shrink-0 transition-colors ${hasAgreedToTerms ? 'bg-violet-500 border-violet-500' : 'border-gray-500 hover:border-white'}`}>
+                    {hasAgreedToTerms && <Check size={12} className="text-white" />}
                 </div>
-                <p className="text-xs text-gray-400 leading-relaxed select-none">
+                <p className="text-[10px] md:text-xs text-gray-400 leading-relaxed select-none">
                     I agree to the Terms of Service regarding Feedback and Privacy. I understand my feedback is provided voluntarily to help build Streamyst.
                 </p>
             </div>
@@ -457,10 +458,10 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
 
     const renderEmailStep = () => (
         <div className="max-w-xl mx-auto text-center relative">
-            <h2 className="text-3xl font-display font-bold mb-6">
+            <h2 className="text-2xl md:text-3xl font-display font-bold mb-4 md:mb-6">
                 {initialEmail ? "Just to confirm—is this email correct?" : "We would love to keep you in the loop"}
             </h2>
-            <p className="text-gray-400 mb-8 leading-relaxed">
+            <p className="text-sm md:text-base text-gray-400 mb-6 md:mb-8 leading-relaxed">
                  {initialEmail ? "We grabbed this from your waitlist entry. We want to make sure your invite lands safely." : "Sign up to be the first to get early access."}
             </p>
             
@@ -470,11 +471,11 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                     placeholder="yourname@email.com"
                     value={data.email || ''}
                     onChange={(e) => updateData('email', e.target.value)}
-                    className="w-full bg-[#1A1830] border border-white/20 rounded-xl p-5 text-xl text-center text-white focus:border-violet-500 outline-none mb-6 placeholder-gray-600 font-mono transition-all group-hover:border-white/40"
+                    className="w-full bg-[#1A1830] border border-white/20 rounded-xl p-4 md:p-5 text-lg md:text-xl text-center text-white focus:border-violet-500 outline-none mb-4 md:mb-6 placeholder-gray-600 font-mono transition-all group-hover:border-white/40"
                 />
             </div>
             
-            <div className="flex items-center justify-center gap-2 text-sm text-gray-400 mb-10">
+            <div className="flex items-center justify-center gap-2 text-xs md:text-sm text-gray-400 mb-8 md:mb-10">
                 <Check size={16} className="text-violet-500" />
                 <span>We promise not to spam you. Ever.</span>
             </div>
@@ -482,17 +483,61 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
             <button 
                 onClick={nextStep}
                 disabled={!data.email?.includes('@')}
-                className="w-full py-4 bg-gradient-to-r from-violet-600 to-indigo-600 rounded-xl font-bold text-white shadow-lg hover:shadow-violet-500/20 transition-all disabled:opacity-50"
+                className="w-full py-3.5 md:py-4 bg-gradient-to-r from-violet-600 to-indigo-600 rounded-xl font-bold text-white shadow-lg hover:shadow-violet-500/20 transition-all disabled:opacity-50"
             >
                 {initialEmail ? "Yes, that's me →" : "Lock In Access →"}
             </button>
         </div>
     );
 
+    const renderExit = () => (
+        <div className="max-w-2xl mx-auto text-center pt-8 md:pt-12 relative">
+             <Mascot src={MASCOT_3} className="-right-20 top-0 w-32 opacity-50 md:hidden" delay={0} />
+             <Mascot src={MASCOT_3} className="-right-32 bottom-20 w-56 opacity-80 hidden md:block" delay={0.6} />
+             
+             <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.8 }}
+                className="relative z-10"
+             >
+                 <div className="w-16 h-16 md:w-20 md:h-20 bg-green-500/10 rounded-full flex items-center justify-center mb-6 mx-auto text-green-400 border border-green-500/20">
+                    <Check className="w-8 h-8 md:w-10 md:h-10" />
+                 </div>
+                 
+                 <h1 className="font-display font-bold text-3xl md:text-5xl mb-4 md:mb-6 leading-tight">
+                    You're officially <br/>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-500">on the list.</span>
+                 </h1>
+                 
+                 <p className="text-sm md:text-xl text-gray-400 mb-8 md:mb-12 font-light leading-relaxed max-w-lg mx-auto">
+                    Thank you for shaping the future of streaming with us. We'll be in touch soon.
+                 </p>
+
+                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                     <button
+                        onClick={onExit}
+                        className="px-8 py-3 bg-white text-black font-bold rounded-full hover:scale-105 transition-transform w-full sm:w-auto"
+                     >
+                        Back to Home
+                     </button>
+                     <a
+                        href="https://discord.gg/ty8mJHNS"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-8 py-3 bg-[#5865F2] text-white font-bold rounded-full hover:scale-105 transition-transform flex items-center gap-2 w-full sm:w-auto justify-center"
+                     >
+                        Join Discord <ArrowRight size={16} />
+                     </a>
+                 </div>
+             </motion.div>
+        </div>
+    );
+
     const renderStep = () => {
         if (step === 0) {
              return (
-                <div className="text-center max-w-2xl mx-auto pt-10 relative">
+                <div className="text-center max-w-2xl mx-auto pt-4 md:pt-10 relative">
                     <Mascot src={MASCOT_3} className="-right-32 bottom-20 w-56 opacity-80" delay={0.6} />
                     <motion.div
                         initial={{ scale: 0.9, opacity: 0 }}
@@ -500,11 +545,11 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                         transition={{ duration: 0.8 }}
                         className="relative z-10"
                     >
-                        <h1 className="font-display font-bold text-5xl md:text-7xl mb-8 leading-tight">
+                        <h1 className="font-display font-bold text-3xl md:text-5xl lg:text-7xl mb-4 md:mb-8 leading-tight">
                             Help Us Build The <br/>
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-500">Future of Streaming</span>
                         </h1>
-                        <p className="text-xl text-gray-400 mb-12 font-light leading-relaxed max-w-lg mx-auto">
+                        <p className="text-sm md:text-xl text-gray-400 mb-8 md:mb-12 font-light leading-relaxed max-w-lg mx-auto">
                             We're creating something that could change how creators and audiences connect. 
                             <br/><br/>
                             This takes 3 minutes. Your answers could shape what we build.
@@ -514,12 +559,12 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                                 trackEvent('survey_start_click');
                                 nextStep();
                             }}
-                            className="group relative px-10 py-5 bg-white text-black font-bold text-lg rounded-full overflow-hidden transition-transform hover:scale-105 active:scale-95"
+                            className="group relative px-8 py-4 md:px-10 md:py-5 bg-white text-black font-bold text-base md:text-lg rounded-full overflow-hidden transition-transform hover:scale-105 active:scale-95"
                         >
                             <span className="relative z-10 flex items-center gap-2">I'm In <ArrowRight size={20} /></span>
                             <div className="absolute inset-0 bg-gradient-to-r from-violet-300 via-indigo-300 to-violet-300 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         </button>
-                        <p className="mt-6 text-xs text-gray-500 uppercase tracking-widest font-mono mb-12">
+                        <p className="mt-4 md:mt-6 text-[10px] md:text-xs text-gray-500 uppercase tracking-widest font-mono mb-8 md:mb-12">
                             + Early Access Perks Included
                         </p>
 
@@ -537,12 +582,12 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
         if (step === 1) {
              return (
                 <div className="max-w-5xl mx-auto">
-                    <h2 className="text-3xl font-display font-bold text-center mb-12">First things first—which best describes you?</h2>
-                    <div className="grid md:grid-cols-3 gap-6">
+                    <h2 className="text-2xl md:text-3xl font-display font-bold text-center mb-6 md:mb-12">First things first—which best describes you?</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-6">
                         {[
-                            { id: 'streamer', icon: <MonitorPlay size={32} />, title: "I Create Content", desc: "I stream/broadcast to an audience" },
-                            { id: 'viewer', icon: <Eye size={32} />, title: "I Watch Content", desc: "I'm part of streaming communities" },
-                            { id: 'other', icon: <Globe size={32} />, title: "Other", desc: "Brand, Developer, Agency, or Curious" }
+                            { id: 'streamer', icon: <MonitorPlay size={24} />, title: "I Create Content", desc: "I stream/broadcast to an audience" },
+                            { id: 'viewer', icon: <Eye size={24} />, title: "I Watch Content", desc: "I'm part of streaming communities" },
+                            { id: 'other', icon: <Globe size={24} />, title: "Other", desc: "Brand, Developer, Agency, or Curious" }
                         ].map((opt) => (
                             <Card
                                 key={opt.id}
@@ -551,11 +596,11 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                                     updateData('userType', opt.id as UserType);
                                     setTimeout(nextStep, 300);
                                 }}
-                                className="flex flex-col items-center text-center py-10"
+                                className="flex flex-col items-center text-center py-6 md:py-10"
                             >
-                                <div className="mb-6 p-4 bg-white/5 rounded-full text-violet-400">{opt.icon}</div>
-                                <h3 className="text-xl font-bold mb-2">{opt.title}</h3>
-                                <p className="text-sm text-gray-400">{opt.desc}</p>
+                                <div className="mb-3 md:mb-6 p-3 md:p-4 bg-white/5 rounded-full text-violet-400">{opt.icon}</div>
+                                <h3 className="text-lg md:text-xl font-bold mb-1 md:mb-2">{opt.title}</h3>
+                                <p className="text-xs md:text-sm text-gray-400">{opt.desc}</p>
                             </Card>
                         ))}
                     </div>
@@ -568,7 +613,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 case 2:
                     return (
                         <div className="max-w-3xl mx-auto">
-                            <h2 className="text-3xl font-display font-bold text-center mb-12">Please describe your role(s)</h2>
+                            <h2 className="text-xl md:text-3xl font-display font-bold text-center mb-6 md:mb-12">Please describe your role(s)</h2>
                             {renderMultiSelect(OTHER_ROLES, data.otherRoles || [], 'otherRoles')}
                             {renderContinue()}
                         </div>
@@ -576,7 +621,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 case 3:
                     return (
                         <div className="max-w-3xl mx-auto">
-                            <h2 className="text-3xl font-display font-bold text-center mb-12">In what context are you interested in livestreaming?</h2>
+                            <h2 className="text-xl md:text-3xl font-display font-bold text-center mb-6 md:mb-12">In what context are you interested in livestreaming?</h2>
                             {renderMultiSelect(OTHER_CONTEXTS, data.otherContexts || [], 'otherContexts')}
                             {renderContinue()}
                         </div>
@@ -584,7 +629,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 case 4:
                     return (
                         <div className="max-w-2xl mx-auto">
-                            <h2 className="text-3xl font-display font-bold text-center mb-12">How familiar are you with livestreaming platforms?</h2>
+                            <h2 className="text-xl md:text-3xl font-display font-bold text-center mb-6 md:mb-12">How familiar are you with livestreaming platforms?</h2>
                             {renderScale(data.platformFamiliarity || 5, (n) => updateData('platformFamiliarity', n), "Curious", "Expert")}
                             {renderContinue()}
                         </div>
@@ -592,7 +637,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 case 5:
                     return (
                         <div className="max-w-3xl mx-auto">
-                            <h2 className="text-3xl font-display font-bold text-center mb-12">What initially caught your interest about Streamyst?</h2>
+                            <h2 className="text-xl md:text-3xl font-display font-bold text-center mb-6 md:mb-12">What initially caught your interest about Streamyst?</h2>
                             {renderMultiSelect(OTHER_INTERESTS, data.initialInterest || [], 'initialInterest')}
                             {renderContinue()}
                         </div>
@@ -600,7 +645,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 case 6:
                     return (
                         <div className="max-w-2xl mx-auto">
-                            <h2 className="text-3xl font-display font-bold text-center mb-6">From your perspective, what is currently missing in livestream experiences?</h2>
+                            <h2 className="text-xl md:text-3xl font-display font-bold text-center mb-4 md:mb-6">From your perspective, what is currently missing in livestream experiences?</h2>
                             {renderTextArea(data.missingInLivestream, 'missingInLivestream', "Share your thoughts...")}
                             {renderContinue()}
                         </div>
@@ -608,8 +653,8 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 case 7:
                      return (
                         <div className="max-w-2xl mx-auto">
-                            <h2 className="text-3xl font-display font-bold text-center mb-2">How do you see Streamyst fitting into your world?</h2>
-                            <p className="text-gray-400 text-center mb-8">What potential use cases do you imagine? (e.g. brand campaigns, events, installations, etc.)</p>
+                            <h2 className="text-xl md:text-3xl font-display font-bold text-center mb-2">How do you see Streamyst fitting into your world?</h2>
+                            <p className="text-sm md:text-base text-gray-400 text-center mb-6 md:mb-8">What potential use cases do you imagine? (e.g. brand campaigns, events, installations, etc.)</p>
                             {renderTextArea(data.streamystFit, 'streamystFit', "Describe potential use cases...")}
                             {renderContinue()}
                         </div>
@@ -617,13 +662,13 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 case 8:
                     return (
                         <div className="max-w-2xl mx-auto">
-                            <h2 className="text-3xl font-display font-bold text-center mb-8">What problem would you most want Streamyst to help solve?</h2>
+                            <h2 className="text-xl md:text-3xl font-display font-bold text-center mb-6 md:mb-8">What problem would you most want Streamyst to help solve?</h2>
                             <input
                                 type="text"
                                 value={data.problemToSolve || ''}
                                 onChange={(e) => updateData('problemToSolve', e.target.value)}
                                 placeholder="Short description of the problem..."
-                                className="w-full bg-[#1A1830] border border-white/10 rounded-xl p-5 text-white placeholder-gray-500 focus:border-violet-500 outline-none"
+                                className="w-full bg-[#1A1830] border border-white/10 rounded-xl p-4 md:p-5 text-white placeholder-gray-500 focus:border-violet-500 outline-none text-sm md:text-base"
                             />
                             {renderContinue()}
                         </div>
@@ -631,8 +676,8 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 case 9:
                      return (
                         <div className="max-w-2xl mx-auto">
-                            <h2 className="text-3xl font-display font-bold text-center mb-2">What would make Streamyst truly valuable for you?</h2>
-                            <p className="text-gray-400 text-center mb-8">(Features, integrations, scale, customization, data, etc.)</p>
+                            <h2 className="text-xl md:text-3xl font-display font-bold text-center mb-2">What would make Streamyst truly valuable for you?</h2>
+                            <p className="text-sm md:text-base text-gray-400 text-center mb-6 md:mb-8">(Features, integrations, scale, customization, data, etc.)</p>
                             {renderTextArea(data.valueDrivers, 'valueDrivers', "What features matter most?")}
                             {renderContinue()}
                         </div>
@@ -640,7 +685,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 case 10:
                     return (
                         <div className="max-w-3xl mx-auto">
-                            <h2 className="text-3xl font-display font-bold text-center mb-12">What concerns or frictions do you foresee?</h2>
+                            <h2 className="text-xl md:text-3xl font-display font-bold text-center mb-6 md:mb-12">What concerns or frictions do you foresee?</h2>
                             {renderMultiSelect(OTHER_CONCERNS, data.concerns || [], 'concerns')}
                             {renderContinue()}
                         </div>
@@ -648,16 +693,16 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 case 11:
                     return (
                          <div className="max-w-2xl mx-auto">
-                            <h2 className="text-3xl font-display font-bold text-center mb-12">How would you expect Streamyst to be priced for your use case?</h2>
-                            <div className="grid gap-3">
+                            <h2 className="text-xl md:text-3xl font-display font-bold text-center mb-6 md:mb-12">How would you expect Streamyst to be priced for your use case?</h2>
+                            <div className="grid gap-2 md:gap-3">
                                 {OTHER_PRICING.map((opt) => (
                                      <div 
                                         key={opt}
                                         onClick={() => updateData('pricingExpectation', opt)}
-                                        className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${data.pricingExpectation === opt ? 'bg-violet-900/20 border-violet-500' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
+                                        className={`p-3 md:p-4 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${data.pricingExpectation === opt ? 'bg-violet-900/20 border-violet-500' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
                                     >
-                                        <span className="font-medium">{opt}</span>
-                                        {data.pricingExpectation === opt && <div className="w-4 h-4 rounded-full bg-violet-500" />}
+                                        <span className="font-medium text-sm md:text-base">{opt}</span>
+                                        {data.pricingExpectation === opt && <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-violet-500" />}
                                     </div>
                                 ))}
                             </div>
@@ -667,7 +712,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 case 12:
                      return (
                         <div className="max-w-2xl mx-auto">
-                            <h2 className="text-3xl font-display font-bold text-center mb-12">How interested are you in Streamyst?</h2>
+                            <h2 className="text-xl md:text-3xl font-display font-bold text-center mb-6 md:mb-12">How interested are you in Streamyst?</h2>
                             {renderScale(data.interestLevel || 5, (n) => updateData('interestLevel', n), "Not Interested", "Very Interested")}
                             {renderContinue()}
                         </div>
@@ -675,7 +720,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 case 13:
                     return (
                         <div className="max-w-3xl mx-auto">
-                            <h2 className="text-3xl font-display font-bold text-center mb-12">Would you be open to collaborating or exploring further?</h2>
+                            <h2 className="text-xl md:text-3xl font-display font-bold text-center mb-6 md:mb-12">Would you be open to collaborating or exploring further?</h2>
                             {renderMultiSelect(OTHER_COLLAB, data.collaborationInterest || [], 'collaborationInterest')}
                             {renderContinue()}
                         </div>
@@ -685,8 +730,8 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 case 15:
                      return (
                         <div className="max-w-2xl mx-auto">
-                            <h2 className="text-3xl font-display font-bold text-center mb-2">Anything else you’d like to share?</h2>
-                            <p className="text-gray-400 text-center mb-8">Ideas, questions, concerns, wild concepts, we’d love to hear them.</p>
+                            <h2 className="text-xl md:text-3xl font-display font-bold text-center mb-2">Anything else you’d like to share?</h2>
+                            <p className="text-sm md:text-base text-gray-400 text-center mb-6 md:mb-8">Ideas, questions, concerns, wild concepts, we’d love to hear them.</p>
                             {renderTextArea(data.anythingElse, 'anythingElse', "Open floor...")}
                             
                             {renderConsent()}
@@ -705,12 +750,12 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 if (isViewer) {
                     return (
                         <div className="max-w-2xl mx-auto">
-                            <h2 className="text-3xl font-display font-bold text-center mb-12">Tell us about your viewing habits</h2>
+                            <h2 className="text-xl md:text-3xl font-display font-bold text-center mb-6 md:mb-12">Tell us about your viewing habits</h2>
                             
-                            <div className="mb-12">
-                                <label className="block text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Hours per week watching streams?</label>
+                            <div className="mb-8 md:mb-12">
+                                <label className="block text-xs md:text-sm font-bold text-gray-400 uppercase tracking-widest mb-2 md:mb-4">Hours per week watching streams?</label>
                                 <div className="flex items-center gap-4">
-                                    <span className="font-mono text-violet-400 text-xl w-12 text-right">{data.hoursWatched || 0}</span>
+                                    <span className="font-mono text-violet-400 text-lg md:text-xl w-12 text-right">{data.hoursWatched || 0}</span>
                                     <input 
                                         type="range" 
                                         min="0" max="60" 
@@ -718,22 +763,22 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                                         onChange={(e) => updateData('hoursWatched', parseInt(e.target.value))}
                                         className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-violet-500"
                                     />
-                                    <span className="text-gray-500">40+</span>
+                                    <span className="text-gray-500 text-xs md:text-base">40+</span>
                                 </div>
                             </div>
 
-                            <div className="space-y-4">
-                                <label className="block text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">How do you interact?</label>
+                            <div className="space-y-2 md:space-y-4">
+                                <label className="block text-xs md:text-sm font-bold text-gray-400 uppercase tracking-widest mb-1 md:mb-2">How do you interact?</label>
                                 {['I chat actively', 'I lurk but sometimes interact', 'I mostly just watch', 'I never interact'].map((opt) => (
                                     <div 
                                         key={opt}
                                         onClick={() => updateData('interactionStyle', opt)}
-                                        className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${data.interactionStyle === opt ? 'bg-violet-900/20 border-violet-500' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
+                                        className={`p-3 md:p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${data.interactionStyle === opt ? 'bg-violet-900/20 border-violet-500' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
                                     >
-                                        <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${data.interactionStyle === opt ? 'border-violet-500' : 'border-gray-500'}`}>
-                                            {data.interactionStyle === opt && <div className="w-2.5 h-2.5 rounded-full bg-violet-500" />}
+                                        <div className={`w-4 h-4 md:w-5 md:h-5 rounded-full border flex items-center justify-center ${data.interactionStyle === opt ? 'border-violet-500' : 'border-gray-500'}`}>
+                                            {data.interactionStyle === opt && <div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-violet-500" />}
                                         </div>
-                                        <span>{opt}</span>
+                                        <span className="text-sm md:text-base">{opt}</span>
                                     </div>
                                 ))}
                             </div>
@@ -743,13 +788,13 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 }
                 return (
                     <div className="max-w-2xl mx-auto">
-                        <h2 className="text-3xl font-display font-bold text-center mb-12">Tell us about your stream</h2>
+                        <h2 className="text-xl md:text-3xl font-display font-bold text-center mb-6 md:mb-12">Tell us about your stream</h2>
                         
-                        <div className="space-y-8">
+                        <div className="space-y-4 md:space-y-8">
                             <div>
-                                <label className="block text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">How often do you stream?</label>
+                                <label className="block text-xs md:text-sm font-bold text-gray-400 uppercase tracking-widest mb-2 md:mb-4">How often do you stream?</label>
                                 <select 
-                                    className="w-full bg-[#1A1830] border border-white/10 rounded-xl p-4 text-white focus:border-violet-500 outline-none"
+                                    className="w-full bg-[#1A1830] border border-white/10 rounded-xl p-3 md:p-4 text-sm md:text-base text-white focus:border-violet-500 outline-none appearance-none"
                                     onChange={(e) => updateData('streamFreq', e.target.value)}
                                     value={data.streamFreq || ''}
                                 >
@@ -763,9 +808,9 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                             </div>
 
                             <div>
-                                <label className="block text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Typical viewer count?</label>
+                                <label className="block text-xs md:text-sm font-bold text-gray-400 uppercase tracking-widest mb-2 md:mb-4">Typical viewer count?</label>
                                 <select 
-                                    className="w-full bg-[#1A1830] border border-white/10 rounded-xl p-4 text-white focus:border-violet-500 outline-none"
+                                    className="w-full bg-[#1A1830] border border-white/10 rounded-xl p-3 md:p-4 text-sm md:text-base text-white focus:border-violet-500 outline-none appearance-none"
                                     onChange={(e) => updateData('viewerCount', e.target.value)}
                                     value={data.viewerCount || ''}
                                 >
@@ -779,11 +824,11 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                             </div>
                         </div>
 
-                        <div className="mt-12 flex justify-end">
+                        <div className="mt-8 md:mt-12 flex justify-end">
                             <button 
                                 onClick={nextStep} 
                                 disabled={!data.streamFreq || !data.viewerCount}
-                                className="px-8 py-3 bg-white text-black font-bold rounded-full hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-6 py-2.5 md:px-8 md:py-3 bg-white text-black font-bold rounded-full hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Continue →
                             </button>
@@ -795,19 +840,20 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 const problemOptions = isViewer ? VIEWER_PROBLEM_OPTIONS : STREAMER_PROBLEM_OPTIONS;
 
                 return (
-                    <div className="max-w-4xl mx-auto relative">
-                        <Mascot src={MASCOT_1} className="-top-24 right-10 w-40" delay={0.3} />
+                    <div className="max-w-4xl mx-auto relative h-full flex flex-col">
+                        <Mascot src={MASCOT_1} className="-top-24 right-10 w-40 hidden md:block" delay={0.3} />
                         
-                        <div className="text-center mb-8 relative z-10">
-                            <h2 className="text-3xl font-display font-bold mb-2">
-                                {isViewer ? "What frustrates you most as a viewer?" : "Rank your TOP 3 streaming challenges"}
+                        <div className="text-center mb-4 md:mb-8 relative z-10 shrink-0">
+                            <h2 className="text-xl md:text-3xl font-display font-bold mb-1 md:mb-2">
+                                {isViewer ? "What frustrates you most?" : "Rank TOP 3 challenges"}
                             </h2>
-                            <p className="text-gray-400">Drag items from the list below into your top 3 slots.</p>
+                            <p className="text-xs md:text-base text-gray-400">Select 3 items from below.</p>
                         </div>
 
-                        <div className="flex flex-col md:flex-row gap-8 relative z-10">
-                            <div className="md:w-1/2 space-y-4">
-                                <h3 className="text-xs font-bold uppercase tracking-widest text-violet-400 mb-4">Your Top 3 Priorities</h3>
+                        <div className="flex flex-col md:flex-row gap-4 md:gap-8 relative z-10 flex-1 min-h-0">
+                            {/* Top 3 Section */}
+                            <div className="md:w-1/2 space-y-2 md:space-y-4 shrink-0">
+                                <h3 className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-violet-400 mb-1 md:mb-4">Your Priorities</h3>
                                 {[0, 1, 2].map((index) => {
                                     const item = data.problemRank ? data.problemRank[index] : null;
                                     const itemDetails = item ? problemOptions.find(p => p.id === item) : null;
@@ -815,33 +861,34 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                                     return (
                                         <div 
                                             key={index} 
-                                            className={`h-20 rounded-xl border-2 border-dashed flex items-center px-4 relative transition-colors ${item ? 'border-violet-500 bg-violet-900/10 border-solid' : 'border-white/10 bg-white/5'}`}
+                                            className={`h-12 md:h-20 rounded-xl border-2 border-dashed flex items-center px-3 md:px-4 relative transition-colors ${item ? 'border-violet-500 bg-violet-900/10 border-solid' : 'border-white/10 bg-white/5'}`}
                                         >
-                                            <div className="absolute left-4 font-display font-bold text-4xl text-white/10 pointer-events-none">{index + 1}</div>
+                                            <div className="absolute left-3 md:left-4 font-display font-bold text-xl md:text-4xl text-white/10 pointer-events-none">{index + 1}</div>
                                             {itemDetails ? (
-                                                <div className="flex items-center justify-between w-full pl-8">
-                                                    <div className="flex items-center gap-3">
-                                                        {itemDetails.icon}
-                                                        <span className="font-bold text-sm leading-tight">{itemDetails.label}</span>
+                                                <div className="flex items-center justify-between w-full pl-6 md:pl-8">
+                                                    <div className="flex items-center gap-2 md:gap-3 overflow-hidden">
+                                                        <div className="shrink-0 scale-75 md:scale-100">{itemDetails.icon}</div>
+                                                        <span className="font-bold text-xs md:text-sm leading-tight truncate">{itemDetails.label}</span>
                                                     </div>
                                                     <button 
                                                         onClick={() => updateData('problemRank', data.problemRank?.filter(id => id !== item))}
                                                         className="p-1 hover:bg-white/10 rounded-full shrink-0"
                                                     >
-                                                        <X size={16} />
+                                                        <X size={14} />
                                                     </button>
                                                 </div>
                                             ) : (
-                                                <span className="w-full text-center text-sm text-gray-500 pl-8">Select from list →</span>
+                                                <span className="w-full text-center text-xs md:text-sm text-gray-500 pl-6 md:pl-8">Select below</span>
                                             )}
                                         </div>
                                     )
                                 })}
                             </div>
 
-                            <div className="md:w-1/2">
-                                <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">Available Challenges</h3>
-                                <div className="space-y-2 h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                            {/* Available List Section */}
+                            <div className="md:w-1/2 flex flex-col min-h-0 h-full">
+                                <h3 className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 md:mb-4 shrink-0">Available Options</h3>
+                                <div className="space-y-2 overflow-y-auto pr-2 custom-scrollbar flex-1 min-h-[200px] md:min-h-0">
                                     {problemOptions.filter(opt => !data.problemRank?.includes(opt.id)).map(opt => (
                                         <motion.div
                                             key={opt.id}
@@ -851,11 +898,11 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                                                     updateData('problemRank', [...(data.problemRank || []), opt.id]);
                                                 }
                                             }}
-                                            className="p-4 bg-[#1A1830] border border-white/5 rounded-xl flex items-center gap-3 cursor-pointer hover:bg-white/10 transition-colors group"
+                                            className="p-3 md:p-4 bg-[#1A1830] border border-white/5 rounded-xl flex items-center gap-3 cursor-pointer hover:bg-white/10 transition-colors group"
                                         >
-                                            <div className="text-gray-500 group-hover:text-white transition-colors">{opt.icon}</div>
-                                            <span className="text-sm">{opt.label}</span>
-                                            <div className="ml-auto opacity-0 group-hover:opacity-100 text-violet-400">
+                                            <div className="text-gray-500 group-hover:text-white transition-colors scale-75 md:scale-100">{opt.icon}</div>
+                                            <span className="text-xs md:text-sm leading-tight">{opt.label}</span>
+                                            <div className="ml-auto opacity-0 group-hover:opacity-100 text-violet-400 hidden md:block">
                                                 <ArrowLeft size={16} />
                                             </div>
                                         </motion.div>
@@ -864,11 +911,11 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                             </div>
                         </div>
 
-                        <div className="mt-8 flex justify-end relative z-10">
+                        <div className="mt-4 md:mt-8 flex justify-end relative z-10 shrink-0">
                             <button 
                                 onClick={nextStep}
                                 disabled={(data.problemRank?.length || 0) !== 3}
-                                className="px-8 py-3 bg-white text-black font-bold rounded-full hover:scale-105 transition-transform disabled:opacity-50"
+                                className="px-6 py-2.5 md:px-8 md:py-3 bg-white text-black font-bold rounded-full hover:scale-105 transition-transform disabled:opacity-50"
                             >
                                 Continue →
                             </button>
@@ -877,15 +924,16 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 );
 
             case 4:
+                // ... (Applying scale helper update for Step 4 automatically via renderScale change)
                 const currentProblemList = isViewer ? VIEWER_PROBLEM_OPTIONS : STREAMER_PROBLEM_OPTIONS;
                 const problemLabel = currentProblemList.find(p => p.id === (data.problemRank?.[0]))?.label || "Your top challenge";
 
                 return (
                     <div className="max-w-2xl mx-auto text-center relative">
-                        <Mascot src={MASCOT_2} className="-left-32 bottom-0 w-48 opacity-60" delay={0.4} />
+                        <Mascot src={MASCOT_2} className="-left-32 bottom-0 w-48 opacity-60 hidden md:block" delay={0.4} />
                         <div className="relative z-10">
-                            <h2 className="text-3xl font-display font-bold mb-4">How painful is your #1 challenge?</h2>
-                            <div className="bg-white/5 p-4 rounded-xl inline-block mb-12 text-violet-300">
+                            <h2 className="text-xl md:text-3xl font-display font-bold mb-4">How painful is your #1 challenge?</h2>
+                            <div className="bg-white/5 p-3 md:p-4 rounded-xl inline-block mb-8 md:mb-12 text-violet-300 text-sm md:text-base font-bold max-w-full truncate">
                                 {problemLabel}
                             </div>
                             {renderScale(data.painIntensity || 5, (n) => updateData('painIntensity', n), "Minor Annoyance", "Considering Quitting")}
@@ -895,6 +943,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 );
 
             case 5:
+                // ... (Attempted solutions grid update)
                 const attemptOptions = isViewer 
                     ? [
                         "Donated to get attention", "Joined Discord communities",
@@ -911,18 +960,18 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
 
                 return (
                     <div className="max-w-3xl mx-auto">
-                        <h2 className="text-3xl font-display font-bold text-center mb-12">Have you tried to improve this before?</h2>
-                        <div className="grid md:grid-cols-2 gap-4">
+                        <h2 className="text-xl md:text-3xl font-display font-bold text-center mb-6 md:mb-12">Have you tried to improve this before?</h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-4">
                             {attemptOptions.map((sol) => (
                                 <div 
                                     key={sol}
                                     onClick={() => toggleArrayItem('attemptedSolutions', sol)}
-                                    className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${data.attemptedSolutions?.includes(sol) ? 'bg-violet-900/20 border-violet-500' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
+                                    className={`p-3 md:p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${data.attemptedSolutions?.includes(sol) ? 'bg-violet-900/20 border-violet-500' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
                                 >
-                                    <div className={`mt-0.5 w-5 h-5 rounded border flex items-center justify-center ${data.attemptedSolutions?.includes(sol) ? 'border-violet-500 bg-violet-500' : 'border-gray-500'}`}>
-                                        {data.attemptedSolutions?.includes(sol) && <Check size={14} className="text-white" />}
+                                    <div className={`mt-0.5 w-4 h-4 md:w-5 md:h-5 rounded border flex items-center justify-center shrink-0 ${data.attemptedSolutions?.includes(sol) ? 'border-violet-500 bg-violet-500' : 'border-gray-500'}`}>
+                                        {data.attemptedSolutions?.includes(sol) && <Check size={12} className="text-white" />}
                                     </div>
-                                    <span>{sol}</span>
+                                    <span className="text-xs md:text-sm leading-tight">{sol}</span>
                                 </div>
                             ))}
                         </div>
@@ -931,57 +980,51 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 );
 
             case 6:
+                // ... (Solution preference)
                 const solutionOptions = isViewer
                     ? [
-                        { id: 'interaction', icon: <Zap size={32} />, title: "Better Interaction", desc: "Tools to affect the stream directly" },
-                        { id: 'recognition', icon: <Crown size={32} />, title: "Recognition", desc: "Ways to stand out without paying" },
-                        { id: 'xr', icon: <Heart size={32} />, title: "Ambient Connection", desc: "Wearable tech to FEEL the stream vibe", highlight: true },
-                        { id: 'content', icon: <PlayCircle size={32} />, title: "Better Content", desc: "Higher quality streams" },
-                        { id: 'community', icon: <Users size={32} />, title: "Community Tools", desc: "Easier ways to make friends" }
+                        { id: 'interaction', icon: <Zap size={24} />, title: "Better Interaction", desc: "Tools to affect the stream directly" },
+                        { id: 'recognition', icon: <Crown size={24} />, title: "Recognition", desc: "Ways to stand out without paying" },
+                        { id: 'xr', icon: <Heart size={24} />, title: "Ambient Connection", desc: "Wearable tech to FEEL the stream vibe", highlight: true },
+                        { id: 'content', icon: <PlayCircle size={24} />, title: "Better Content", desc: "Higher quality streams" },
+                        { id: 'community', icon: <Users size={24} />, title: "Community Tools", desc: "Easier ways to make friends" }
                       ]
                     : [
-                        { id: 'analytics', icon: <Activity size={32} />, title: "Better Analytics", desc: "Deeper insights into chat & behavior" },
-                        { id: 'ai', icon: <Cpu size={32} />, title: "AI Moderation", desc: "Smarter bots to filter spam & highlight VIPs" },
-                        { id: 'xr', icon: <Zap size={32} />, title: "Ambient Awareness", desc: "Wearable tech to FEEL audience emotion without reading chat", highlight: true },
-                        { id: 'gamification', icon: <PlayCircle size={32} />, title: "Interaction Tools", desc: "More polls, predictions & mini-games" },
-                        { id: 'other', icon: <MessageSquare size={32} />, title: "Something Else", desc: "I have a different idea..." }
+                        { id: 'analytics', icon: <Activity size={24} />, title: "Better Analytics", desc: "Deeper insights into chat & behavior" },
+                        { id: 'ai', icon: <Cpu size={24} />, title: "AI Moderation", desc: "Smarter bots to filter spam & highlight VIPs" },
+                        { id: 'xr', icon: <Zap size={24} />, title: "Ambient Awareness", desc: "Wearable tech to FEEL audience emotion without reading chat", highlight: true },
+                        { id: 'gamification', icon: <PlayCircle size={24} />, title: "Interaction Tools", desc: "More polls, predictions & mini-games" },
+                        { id: 'other', icon: <MessageSquare size={24} />, title: "Something Else", desc: "I have a different idea..." }
                       ];
 
                 return (
                     <div className="max-w-5xl mx-auto">
-                        <h2 className="text-3xl font-display font-bold text-center mb-4">If you could choose ONE way to improve connection?</h2>
-                        <p className="text-gray-400 text-center mb-12">Which of these sounds most like magic to you?</p>
+                        <h2 className="text-xl md:text-3xl font-display font-bold text-center mb-2 md:mb-4">If you could choose ONE way to improve connection?</h2>
+                        <p className="text-xs md:text-base text-gray-400 text-center mb-6 md:mb-12">Which of these sounds most like magic to you?</p>
 
-                        <div className="grid md:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
                             {solutionOptions.map((opt) => (
                                 <Card
                                     key={opt.id}
                                     selected={data.solutionPreference === opt.id}
                                     onClick={() => updateData('solutionPreference', opt.id)}
-                                    className={`flex flex-col items-center text-center h-full ${opt.highlight ? 'md:col-span-1 md:row-span-1 ring-2 ring-violet-500/50' : ''}`}
+                                    className={`flex flex-col items-center text-center h-full p-3 md:p-6 ${opt.highlight ? 'col-span-2 md:col-span-1 md:row-span-1 ring-2 ring-violet-500/50' : ''}`}
                                 >
-                                    <div className={`mb-4 p-4 rounded-full ${opt.highlight ? 'bg-violet-500/20 text-violet-400' : 'bg-white/5 text-gray-400'}`}>
+                                    <div className={`mb-2 md:mb-4 p-3 md:p-4 rounded-full ${opt.highlight ? 'bg-violet-500/20 text-violet-400' : 'bg-white/5 text-gray-400'}`}>
                                         {opt.icon}
                                     </div>
-                                    <h3 className="text-lg font-bold mb-2">{opt.title}</h3>
-                                    <p className="text-sm text-gray-400">{opt.desc}</p>
-                                    {opt.highlight && <div className="mt-4 px-2 py-1 bg-violet-500/10 rounded text-[10px] font-bold text-violet-400 uppercase tracking-widest">Streamyst Approach</div>}
+                                    <h3 className="text-sm md:text-lg font-bold mb-1 md:mb-2 leading-tight">{opt.title}</h3>
+                                    <p className="text-[10px] md:text-sm text-gray-400 leading-tight">{opt.desc}</p>
+                                    {opt.highlight && <div className="mt-2 md:mt-4 px-2 py-1 bg-violet-500/10 rounded text-[9px] md:text-[10px] font-bold text-violet-400 uppercase tracking-widest">Streamyst Approach</div>}
                                 </Card>
                             ))}
                         </div>
-                        <div className="mt-12 flex justify-end">
-                            <button 
-                                onClick={nextStep}
-                                disabled={!data.solutionPreference}
-                                className="px-8 py-3 bg-white text-black font-bold rounded-full hover:scale-105 transition-transform disabled:opacity-50"
-                            >
-                                Continue →
-                            </button>
-                        </div>
+                        {renderContinue(!data.solutionPreference)}
                     </div>
                 );
 
             case 7:
+                // ... (Desired features)
                 const featureOptions = isViewer 
                     ? [
                         "My actions change the stream lighting/visuals",
@@ -1002,18 +1045,18 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
 
                 return (
                     <div className="max-w-3xl mx-auto relative">
-                        <div className="text-center mb-12 relative z-10">
-                            <h2 className="text-3xl font-display font-bold mb-2">Which features excite you most?</h2>
-                            <p className="text-violet-400 font-bold uppercase tracking-widest text-sm">Pick your top 2</p>
+                        <div className="text-center mb-6 md:mb-12 relative z-10">
+                            <h2 className="text-xl md:text-3xl font-display font-bold mb-2">Which features excite you most?</h2>
+                            <p className="text-violet-400 font-bold uppercase tracking-widest text-xs md:text-sm">Pick your top 2</p>
                         </div>
                         
-                        <div className="grid md:grid-cols-2 gap-4 relative z-10">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 relative z-10">
                             {featureOptions.map((feat) => (
                                 <div 
                                     key={feat}
                                     onClick={() => toggleArrayItem('desiredFeatures', feat)}
                                     className={`
-                                        p-6 rounded-xl border cursor-pointer transition-all flex items-start gap-4
+                                        p-3 md:p-6 rounded-xl border cursor-pointer transition-all flex items-start gap-3 md:gap-4
                                         ${data.desiredFeatures?.includes(feat) 
                                             ? 'bg-violet-900/20 border-violet-500' 
                                             : (data.desiredFeatures?.length || 0) >= 2 
@@ -1021,33 +1064,26 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                                                 : 'bg-white/5 border-white/10 hover:bg-white/10'}
                                     `}
                                 >
-                                    <div className={`mt-0.5 w-6 h-6 rounded border flex items-center justify-center shrink-0 ${data.desiredFeatures?.includes(feat) ? 'border-violet-500 bg-violet-500' : 'border-gray-500'}`}>
-                                        {data.desiredFeatures?.includes(feat) && <Check size={16} className="text-white" />}
+                                    <div className={`mt-0.5 w-5 h-5 md:w-6 md:h-6 rounded border flex items-center justify-center shrink-0 ${data.desiredFeatures?.includes(feat) ? 'border-violet-500 bg-violet-500' : 'border-gray-500'}`}>
+                                        {data.desiredFeatures?.includes(feat) && <Check size={14} className="text-white" />}
                                     </div>
-                                    <span className="font-medium text-lg">{feat}</span>
+                                    <span className="font-medium text-xs md:text-lg leading-snug">{feat}</span>
                                 </div>
                             ))}
                         </div>
-                        <div className="mt-12 flex justify-end relative z-10">
-                            <button 
-                                onClick={nextStep}
-                                disabled={(data.desiredFeatures?.length || 0) !== 2}
-                                className="px-8 py-3 bg-white text-black font-bold rounded-full hover:scale-105 transition-transform disabled:opacity-50"
-                            >
-                                Continue →
-                            </button>
-                        </div>
+                        {renderContinue((data.desiredFeatures?.length || 0) !== 2)}
                     </div>
                 );
 
             case 8:
+                // ... (Interest)
                 return (
                     <div className="max-w-xl mx-auto text-center relative">
-                        <Mascot src={MASCOT_2} className="-right-24 bottom-10 w-40 opacity-80" delay={0.4} />
+                        <Mascot src={MASCOT_2} className="-right-24 bottom-10 w-40 opacity-80 hidden md:block" delay={0.4} />
                         <div className="relative z-10">
-                            <h2 className="text-3xl font-display font-bold mb-12">How interested are you in Streamyst?</h2>
+                            <h2 className="text-xl md:text-3xl font-display font-bold mb-6 md:mb-12">How interested are you in Streamyst?</h2>
                             
-                            <div className="space-y-4">
+                            <div className="space-y-3 md:space-y-4">
                                 {[
                                     { id: 'take_money', label: "🔥 TAKE MY MONEY", sub: "I'd pre-order today if I could", glow: "shadow-[0_0_30px_rgba(139,92,246,0.4)] border-violet-500" },
                                     { id: 'very_interested', label: "✋ VERY INTERESTED", sub: "Definitely want early access", glow: "shadow-[0_0_20px_rgba(99,102,241,0.3)] border-indigo-500" },
@@ -1061,10 +1097,10 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                                             updateData('purchaseIntent', opt.id);
                                             setTimeout(nextStep, 300);
                                         }}
-                                        className={`w-full p-4 rounded-xl border bg-white/5 hover:bg-white/10 transition-all flex flex-col items-center ${opt.glow} hover:scale-102`}
+                                        className={`w-full p-3 md:p-4 rounded-xl border bg-white/5 hover:bg-white/10 transition-all flex flex-col items-center ${opt.glow} hover:scale-102`}
                                     >
-                                        <span className="font-bold text-lg mb-1">{opt.label}</span>
-                                        <span className="text-xs text-gray-400 uppercase tracking-widest">{opt.sub}</span>
+                                        <span className="font-bold text-base md:text-lg mb-1">{opt.label}</span>
+                                        <span className="text-[10px] md:text-xs text-gray-400 uppercase tracking-widest">{opt.sub}</span>
                                     </button>
                                 ))}
                             </div>
@@ -1073,21 +1109,22 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 );
 
             case 9:
+                // ... (Price Sliders)
                 return (
                     <div className="max-w-3xl mx-auto">
-                         <h2 className="text-3xl font-display font-bold text-center mb-4">Let's talk pricing for a moment...</h2>
-                         <p className="text-gray-400 text-center mb-12 max-w-lg mx-auto">There are no wrong answers here. We want to know what feels fair to you for the monthly software subscription.</p>
+                         <h2 className="text-xl md:text-3xl font-display font-bold text-center mb-2 md:mb-4">Let's talk pricing for a moment...</h2>
+                         <p className="text-gray-400 text-center mb-8 md:mb-12 max-w-lg mx-auto text-xs md:text-base">There are no wrong answers here. We want to know what feels fair to you for the monthly software subscription.</p>
 
-                         <div className="space-y-12">
+                         <div className="space-y-6 md:space-y-12">
                              {[
                                  { key: 'priceCheap', label: "At what price is it a GREAT DEAL?", color: "text-green-400" },
                                  { key: 'priceExpensive', label: "At what price is it EXPENSIVE but worth it?", color: "text-yellow-400" },
                                  { key: 'priceTooExpensive', label: "At what price is it TOO EXPENSIVE?", color: "text-red-400" },
                              ].map((q) => (
                                  <div key={q.key}>
-                                     <div className="flex justify-between items-end mb-4">
-                                        <label className={`font-bold uppercase tracking-widest text-sm ${q.color}`}>{q.label}</label>
-                                        <span className="font-mono text-2xl font-bold">€{(data as any)[q.key]}/mo</span>
+                                     <div className="flex justify-between items-end mb-2 md:mb-4">
+                                        <label className={`font-bold uppercase tracking-widest text-[10px] md:text-sm ${q.color} max-w-[70%] leading-tight`}>{q.label}</label>
+                                        <span className="font-mono text-lg md:text-2xl font-bold">€{(data as any)[q.key]}/mo</span>
                                      </div>
                                      <input 
                                         type="range" 
@@ -1096,7 +1133,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                                         onChange={(e) => updateData(q.key as keyof SurveyData, parseInt(e.target.value))}
                                         className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-white"
                                      />
-                                     <div className="flex justify-between text-xs text-gray-600 mt-2 font-mono">
+                                     <div className="flex justify-between text-[10px] md:text-xs text-gray-600 mt-2 font-mono">
                                          <span>€0</span>
                                          <span>€50</span>
                                          <span>€100+</span>
@@ -1104,26 +1141,28 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                                  </div>
                              ))}
                          </div>
-                         <div className="mt-12 flex justify-end">
-                             <button onClick={nextStep} className="px-8 py-3 bg-white text-black font-bold rounded-full hover:scale-105 transition-transform">Continue →</button>
+                         <div className="mt-8 md:mt-12 flex justify-end">
+                             <button onClick={nextStep} className="px-6 py-2.5 md:px-8 md:py-3 bg-white text-black font-bold rounded-full hover:scale-105 transition-transform">Continue →</button>
                          </div>
                     </div>
                 );
 
             case 10:
+                // ... (Pricing Models)
                 const pricingOptions = isViewer ? VIEWER_PRICING_MODELS : STREAMER_PRICING_MODELS;
                 const question = isViewer 
-                    ? "If Streamyst launches to make your favorite streamer’s content more interactive and meaningful, how would you prefer to support it?"
-                    : "If Streamyst becomes part of your regular stream. Which way would you most want to access it?";
+                    ? "If Streamyst launches, how would you prefer to support it?"
+                    : "Which way would you most want to access Streamyst?";
 
                 return (
                     <div className="max-w-6xl mx-auto">
-                        <div className="text-center mb-12 max-w-4xl mx-auto">
-                            <h2 className="text-2xl md:text-3xl font-display font-bold mb-4">{question}</h2>
-                            <p className="text-gray-400">Select the model that fits you best.</p>
+                        <div className="text-center mb-6 md:mb-12 max-w-4xl mx-auto">
+                            <h2 className="text-xl md:text-3xl font-display font-bold mb-2 md:mb-4">{question}</h2>
+                            <p className="text-xs md:text-base text-gray-400">Select the model that fits you best.</p>
                         </div>
                         
-                        <div className={`grid gap-6 ${isViewer ? 'md:grid-cols-2 lg:grid-cols-3' : 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
+                        {/* On mobile, use a 2-column grid for compactness or even a scrollable area if needed, but 2 cols usually fits well enough for short cards */}
+                        <div className={`grid grid-cols-1 xs:grid-cols-2 gap-3 md:gap-6 ${isViewer ? 'md:grid-cols-2 lg:grid-cols-3' : 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
                             {pricingOptions.map((opt) => (
                                 <Card
                                     key={opt.id}
@@ -1131,15 +1170,15 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                                     onClick={() => {
                                         updateData('pricingModel', opt.id);
                                     }}
-                                    className="flex flex-col text-left h-full"
+                                    className="flex flex-col text-left h-full p-4"
                                 >
-                                    <h3 className="text-lg font-bold text-white mb-3 leading-tight">{opt.title}</h3>
-                                    <p className="text-xs text-gray-400 mb-6 leading-relaxed flex-grow">{opt.desc}</p>
+                                    <h3 className="text-sm md:text-lg font-bold text-white mb-1 md:mb-3 leading-tight">{opt.title}</h3>
+                                    <p className="text-[10px] md:text-xs text-gray-400 mb-2 md:mb-6 leading-relaxed flex-grow">{opt.desc}</p>
                                     
                                     {opt.features.length > 0 && (
-                                        <ul className="space-y-3 mt-auto border-t border-white/5 pt-4">
+                                        <ul className="space-y-1 md:space-y-3 mt-auto border-t border-white/5 pt-2 md:pt-4">
                                             {opt.features.map((feat, i) => (
-                                                <li key={i} className="text-[11px] text-violet-200 flex items-start gap-2 leading-snug">
+                                                <li key={i} className="text-[9px] md:text-[11px] text-violet-200 flex items-start gap-2 leading-snug">
                                                     <span className="mt-1 w-1 h-1 rounded-full bg-violet-500 shrink-0" />
                                                     {feat}
                                                 </li>
@@ -1158,7 +1197,7 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 const frictionOptions = isViewer ? VIEWER_FRICTION_OPTIONS : STREAMER_FRICTION_OPTIONS;
                 return (
                     <div className="max-w-3xl mx-auto">
-                        <h2 className="text-3xl font-display font-bold text-center mb-12">
+                        <h2 className="text-xl md:text-3xl font-display font-bold text-center mb-6 md:mb-12">
                             {isViewer ? "What would stop you from supporting Streamyst?" : "What would most stop you from trying Streamyst?"}
                         </h2>
                         {renderMultiSelect(frictionOptions, data.frictionPoints || [], 'frictionPoints')}
@@ -1172,8 +1211,8 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
             case 13:
                 return (
                     <div className="max-w-2xl mx-auto">
-                        <h2 className="text-3xl font-display font-bold text-center mb-2">Anything else you’d like to share?</h2>
-                        <p className="text-gray-400 text-center mb-8">Ideas, questions, concerns, wild concepts, we’d love to hear them.</p>
+                        <h2 className="text-xl md:text-3xl font-display font-bold text-center mb-2">Anything else you’d like to share?</h2>
+                        <p className="text-sm md:text-base text-gray-400 text-center mb-6 md:mb-8">Ideas, questions, concerns, wild concepts, we’d love to hear them.</p>
                         {renderTextArea(data.anythingElse, 'anythingElse', "Open floor...")}
                         
                         {renderConsent()}
@@ -1189,64 +1228,6 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
         }
     };
 
-    const renderExit = () => (
-        <div className="max-w-2xl mx-auto text-center pt-10 relative">
-                <Mascot src={MASCOT_2} className="-left-40 bottom-20 w-56 opacity-80" delay={0.3} />
-                <Mascot src={MASCOT_3} className="-right-40 bottom-20 w-56 opacity-80" delay={0.6} />
-
-                <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className="mb-8 relative z-10"
-                >
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-violet-500/20 rounded-full blur-[80px]" />
-                <div className="w-24 h-24 bg-gradient-to-tr from-violet-400 to-indigo-500 rounded-full mx-auto flex items-center justify-center shadow-[0_0_50px_rgba(139,92,246,0.5)]">
-                    <Check size={48} className="text-white" />
-                </div>
-                </motion.div>
-                
-                <h1 className="font-display font-bold text-5xl mb-6 relative z-10">YOU'RE IN. 🚀</h1>
-                <p className="text-xl text-gray-300 mb-12 leading-relaxed relative z-10">
-                Thank you for helping us build the future of streaming.
-                <br/>
-                <span className="text-violet-400 font-bold">You've been added to our priority access list.</span>
-                </p>
-
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mb-12 relative z-10">
-                <h3 className="font-bold text-lg mb-4">What happens next?</h3>
-                <ul className="text-left space-y-4 text-gray-400">
-                    <li className="flex items-center gap-3">
-                        <Check size={16} className="text-green-400" />
-                        We analyze the data to refine the Vybe hardware.
-                    </li>
-                    <li className="flex items-center gap-3">
-                        <Check size={16} className="text-green-400" />
-                        You'll receive a personal invite when Early Access opens.
-                    </li>
-                    <li className="flex items-center gap-3">
-                        <Check size={16} className="text-green-400" />
-                        Founders pricing locked in for your account.
-                    </li>
-                </ul>
-                </div>
-
-                <div className="flex flex-col md:flex-row gap-4 justify-center relative z-10">
-                <a 
-                    href="https://discord.gg/ty8mJHNS" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="px-8 py-3 bg-[#5865F2] text-white font-bold rounded-full hover:bg-[#4752C4] transition-colors flex items-center justify-center gap-2"
-                >
-                    <MessageSquare size={20} /> Join Discord
-                </a>
-                <button onClick={onExit} className="px-8 py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-full transition-colors">
-                    Return to Site
-                </button>
-                </div>
-        </div>
-    );
-
     return (
         <div className="min-h-screen bg-cosmic-950 text-white font-body relative overflow-x-hidden">
             
@@ -1255,8 +1236,8 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                 <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-violet-900/10 blur-[120px]" />
             </div>
 
-            <div className="w-full min-h-screen pb-20 pt-24 px-6 scale-90 origin-top transform-gpu transition-transform duration-500">
-                <div className="fixed top-0 left-0 w-full h-2 bg-white/5 z-50">
+            <div className="w-full min-h-[100dvh] pb-4 md:pb-10 pt-20 md:pt-24 px-4 md:px-6 flex flex-col justify-center">
+                <div className="fixed top-0 left-0 w-full h-1 md:h-2 bg-white/5 z-50">
                     <motion.div 
                         className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 shadow-[0_0_20px_rgba(139,92,246,0.5)]"
                         initial={{ width: 0 }}
@@ -1269,13 +1250,13 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                     <>
                         <button 
                             onClick={prevStep}
-                            className="fixed top-8 left-6 z-50 p-2 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors border border-white/5"
+                            className="fixed top-6 left-4 md:top-8 md:left-6 z-50 p-2 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors border border-white/5"
                         >
                             <ArrowLeft size={20} />
                         </button>
 
-                        <div className="fixed top-6 right-6 z-40 flex items-center gap-4 text-xs font-mono text-gray-500 uppercase tracking-widest">
-                            <span>Survey In Progress</span>
+                        <div className="fixed top-4 right-4 md:top-6 md:right-6 z-40 flex items-center gap-4 text-[10px] md:text-xs font-mono text-gray-500 uppercase tracking-widest">
+                            <span className="hidden xs:inline">Survey In Progress</span>
                             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                             <span className="hidden md:inline">~{Math.max(1, 3 - Math.floor(step * 0.25))} mins left</span>
                         </div>
@@ -1289,12 +1270,13 @@ const SurveyPage: React.FC<{ onExit: () => void; initialEmail?: string }> = ({ o
                         initial="hidden"
                         animate="visible"
                         exit="exit"
-                        className="w-full"
+                        className="w-full h-full flex flex-col justify-center"
                     >
                         {renderStep()}
                     </motion.div>
                 </AnimatePresence>
 
+                {/* Exit Modal logic remains same */}
                 <AnimatePresence>
                     {showExitModal && (
                         <div className="fixed inset-0 bg-[#030205]/90 backdrop-blur-md z-[100] flex items-center justify-center p-4">

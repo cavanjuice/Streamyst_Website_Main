@@ -395,16 +395,16 @@ const ProductShowcase: React.FC = () => {
   };
 
   return (
-    <section id="product" className="relative z-10 min-h-screen flex items-center py-12 lg:py-24 overflow-hidden">
-      <div className="container mx-auto px-6 max-w-7xl">
+    <section id="product" className="relative z-10 min-h-[100dvh] flex flex-col justify-center py-8 lg:py-24 overflow-hidden">
+      <div className="container mx-auto px-6 max-w-7xl h-full flex flex-col justify-center">
         
-        <div className="text-center mb-16 lg:mb-20 max-w-4xl mx-auto">
+        <div className="text-center mb-6 lg:mb-20 max-w-4xl mx-auto shrink-0">
            <motion.h2 
              initial={{ opacity: 0, y: 20 }}
              whileInView={{ opacity: 1, y: 0 }}
              viewport={{ once: true, margin: "-100px" }}
              transition={{ delay: 0.1 }}
-             className="font-display font-bold text-4xl md:text-5xl lg:text-6xl text-white mb-6 tracking-tight"
+             className="font-display font-bold text-3xl md:text-5xl lg:text-6xl text-white mb-2 lg:mb-6 tracking-tight"
            >
              UPGRADE YOUR <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-500">EXPERIENCE</span>
            </motion.h2>
@@ -417,14 +417,14 @@ const ProductShowcase: React.FC = () => {
            />
         </div>
 
-        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-12 items-center">
+        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-4 lg:gap-12 items-center h-full">
           
           <motion.div 
             initial={{ opacity: 0, scale: 0.9, y: 30 }}
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            className="relative h-[320px] md:h-[450px] lg:h-[500px] flex items-center justify-center group w-full"
+            className="relative h-[35vh] min-h-[250px] md:h-[450px] lg:h-[500px] flex items-center justify-center group w-full shrink-0"
           >
             <div className="absolute w-[120%] h-[120%] bg-violet-600/5 rounded-full blur-[100px] pointer-events-none" />
             
@@ -456,9 +456,9 @@ const ProductShowcase: React.FC = () => {
                     </Canvas>
                  </Suspense>
 
-                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-violet-300/50 text-[10px] font-mono tracking-[0.2em] pointer-events-none uppercase w-full justify-center">
+                 <div className="absolute bottom-2 lg:bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-violet-300/50 text-[10px] font-mono tracking-[0.2em] pointer-events-none uppercase w-full justify-center">
                     <MousePointer2 size={12} className="animate-bounce" />
-                    <span>Interactive Model • Explore Features</span>
+                    <span>Interactive Model</span>
                  </div>
             </div>
           </motion.div>
@@ -471,15 +471,15 @@ const ProductShowcase: React.FC = () => {
              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
              className="relative z-20 w-full"
           >
-            <div className="mb-4 lg:mb-8">
-                <h2 className="font-display font-bold text-2xl lg:text-4xl mb-2 lg:mb-4 tracking-tight">THE <span className="text-violet-400">VYBE</span> CORE</h2>
-                <p className="text-sm lg:text-base text-gray-400 font-light leading-relaxed max-w-xl">
-                    Wearable emotional intelligence. A direct line to your community's heartbeat, translated into visible and physical feedback.
+            <div className="mb-4 lg:mb-8 text-center lg:text-left">
+                <h2 className="font-display font-bold text-xl lg:text-4xl mb-1 lg:mb-4 tracking-tight">THE <span className="text-violet-400">VYBE</span> CORE</h2>
+                <p className="text-xs lg:text-base text-gray-400 font-light leading-relaxed max-w-xl mx-auto lg:mx-0">
+                    Wearable emotional intelligence. A direct line to your community's heartbeat.
                 </p>
             </div>
 
             <motion.div 
-                className="space-y-3 lg:space-y-4 mb-6 lg:mb-8"
+                className="space-y-2 lg:space-y-4 mb-4 lg:mb-8"
                 variants={{
                     hidden: { opacity: 0 },
                     visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
@@ -496,7 +496,7 @@ const ProductShowcase: React.FC = () => {
                             visible: { opacity: 1, x: 0, transition: { duration: 0.5 } }
                         }}
                         className={`
-                            relative p-4 lg:p-5 rounded-xl border transition-all duration-300 cursor-pointer group flex justify-between items-center overflow-hidden
+                            relative p-3 lg:p-5 rounded-xl border transition-all duration-300 cursor-pointer group flex justify-between items-center overflow-hidden
                             ${activeFeature === i 
                                 ? 'bg-white/10 border-white/30 shadow-[0_0_30px_rgba(139,92,246,0.2)]' 
                                 : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
@@ -512,13 +512,13 @@ const ProductShowcase: React.FC = () => {
                         <div className={`absolute inset-0 bg-gradient-to-r from-violet-500/10 to-transparent opacity-0 transition-opacity duration-500 ${activeFeature === i ? 'opacity-100' : 'group-hover:opacity-100'}`} />
 
                         <div className="relative z-10 flex flex-col flex-1 mr-4">
-                            <div className="flex items-center gap-3 mb-1.5">
+                            <div className="flex items-center gap-3 mb-1">
                                 <span className={`text-[10px] font-mono font-bold transition-colors ${activeFeature === i ? item.accentColor : 'text-gray-500 group-hover:text-gray-400'}`}>0{i + 1}</span>
-                                <h3 className={`text-base md:text-lg font-bold font-display transition-colors ${activeFeature === i ? 'text-white' : 'text-gray-300 group-hover:text-white'}`}>
+                                <h3 className={`text-sm lg:text-lg font-bold font-display transition-colors ${activeFeature === i ? 'text-white' : 'text-gray-300 group-hover:text-white'}`}>
                                     {item.title}
                                 </h3>
                             </div>
-                            <p className={`text-[11px] lg:text-xs leading-relaxed transition-colors duration-300 ${activeFeature === i ? 'text-gray-300' : 'text-gray-500 group-hover:text-gray-400'}`}>
+                            <p className={`text-[10px] lg:text-xs leading-relaxed transition-colors duration-300 line-clamp-2 ${activeFeature === i ? 'text-gray-300' : 'text-gray-500 group-hover:text-gray-400'}`}>
                                 {item.description}
                             </p>
                         </div>
@@ -546,7 +546,7 @@ const ProductShowcase: React.FC = () => {
                 transition={{ delay: 0.6 }}
                 className="flex items-center gap-6"
             >
-                <span className="text-[11px] font-bold font-mono tracking-widest text-gray-500 uppercase">
+                <span className="text-[10px] lg:text-[11px] font-bold font-mono tracking-widest text-gray-500 uppercase">
                     Coming Soon
                 </span>
                 <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />

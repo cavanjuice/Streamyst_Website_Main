@@ -417,20 +417,12 @@ const ExperienceToggle: React.FC<ExperienceToggleProps> = ({ role, setRole }) =>
                         ))}
                     </div>
                     
-                    {/* Mobile Navigation Hint */}
+                    {/* Mobile Navigation Hint - Updated to match HowItWorks style */}
                     <div className="flex md:hidden justify-center gap-2 mt-2">
                         {currentProblem.items.map((_, i) => (
-                             <button 
+                             <div 
                                 key={i} 
-                                onClick={() => {
-                                    if (scrollRef.current) {
-                                        scrollRef.current.scrollTo({
-                                            left: i * scrollRef.current.clientWidth,
-                                            behavior: 'smooth'
-                                        });
-                                    }
-                                }}
-                                className={`rounded-full transition-all duration-300 ${activeIndex === i ? 'w-2 h-2 bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]' : 'w-1.5 h-1.5 bg-white/20'}`}
+                                className={`h-1 rounded-full transition-all duration-300 ${activeIndex === i ? (role === 'streamer' ? 'w-8 bg-violet-500' : 'w-8 bg-orange-500') : 'w-2 bg-white/20'}`}
                              />
                         ))}
                     </div>
